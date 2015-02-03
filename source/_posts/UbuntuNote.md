@@ -4,7 +4,7 @@ date: 2015-02-01
 
 categories: Ubuntu
 
-tags: ubuntu, note
+tags: [ubuntu, note]
 ---
 
 最近一直在习惯Linux系统，在这里记录下使用期间遇到的问题。 
