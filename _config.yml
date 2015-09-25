@@ -12,7 +12,7 @@ timezone:
 
 # URL
 ## If your site is put in a subdirectory, set url as 'http://yoursite.com/child' and root as '/child/'
-url: http://rookie9209.github.io/
+url: http://gnaix92.github.io/
 root: /
 permalink: :year/:month/:day/:title/
 permalink_defaults:
@@ -66,7 +66,7 @@ pagination_dir: page
 duoshuo_shortname: gnaix
 #社交连接
 social:
-	github: https://github.com/rookie9209
+	github: https://github.com/gnaix92
 
 # Extensions
 ## Plugins: http://hexo.io/plugins/
@@ -77,5 +77,5 @@ theme: next
 ## Docs: http://hexo.io/docs/deployment.html
 deploy:
   type: git
-  repository: git@github.com:rookie9209/rookie9209.github.io.git
+  repository: git@github.com:gnaix92/gnaix92.github.io.git
   branch: master
