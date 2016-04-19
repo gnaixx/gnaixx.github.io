@@ -1,4 +1,4 @@
-title: "Android SO开发－JNI基础(上)"
+title: "NDK开发 - JNI开发流程"
 date: 2016-03-22 18:42:00
 categories: android
 tags: [android, ndk, jni]

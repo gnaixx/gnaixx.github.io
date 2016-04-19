@@ -1,4 +1,4 @@
-title: "android studio NDK开发环境搭建"
+title: "NDK开发 - Android Studio环境搭建"
 date: 2016-03-07 22:54:43
 categories: android
 tags: [android, ndk]
