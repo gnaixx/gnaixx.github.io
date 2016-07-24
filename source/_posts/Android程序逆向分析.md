@@ -3,7 +3,7 @@ date: 2016-03-06 14:14:49
 categories: android
 tags: [android, crack]
 toc: true
-description: 最近在看《Android软件俺去与逆向分析》，所以把自己的实践过程整理一下。实例选自书中的第二章节，一个最简单的破解案例。分析Android程序是开发Android程序的一个逆向过程。在分析前必须要了解Android开发的流程，程序结构，语句分支，解密原理。
+description: 最近在看《Android软件安全与逆向分析》，所以把自己的实践过程整理一下。实例选自书中的第二章节，一个最简单的破解案例。分析Android程序是开发Android程序的一个逆向过程。在分析前必须要了解Android开发的流程，程序结构，语句分支，解密原理。
 
 ---
 

@@ -1,7 +1,7 @@
 title: "APK自我保护 - 代码乱序"
 date: 2016-04-12 11:40:29
 categories: android
-tags: [android, crack]
+tags: [android, hardening]
 toc: true
 description: 代码乱序是指在不影响原有的代码逻辑，打乱代码布局，增加逆向分析的难度。代码乱序的原理与操作并不复杂，但是必须分析编译后的源码逻辑，而且实际运用到生成中难度比较大，所以这里也只是提供一个思路。
 
