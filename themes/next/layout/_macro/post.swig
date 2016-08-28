@@ -61,6 +61,12 @@
           </span>
           {% endif %}
         {% endif %}
+        {% if !is_home() %}
+          <span id="busuanzi_container_page_pv">
+            &nbsp; | &nbsp;
+            {{ __('post.analytics') }}  <span id="busuanzi_value_page_pv"></span>
+          </span>
+        {% endif %}
       </div>
     </div>
 

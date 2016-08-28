@@ -24,8 +24,8 @@ NIEXPORT jstring JNICALL Java_cn_sdk_NativeEncode_getHello
     int len_data = strlen(c_data);
     int len_key = strlen(c_key);
     //拷贝到cc_data cc_key
-    char cc_data[len_data];
-    char cc_key[len_key];
+    char *cc_data = calloc((len_data * sizeof(char)), 1);
+    char *cc_key = calloc((len_key) * sizeof(char), 1);
     strcpy(cc_data, c_data);
     strcpy(cc_key, c_key);
 
@@ -35,7 +35,8 @@ NIEXPORT jstring JNICALL Java_cn_sdk_NativeEncode_getHello
 
     char result[1024];
     //数据处理
-
+    free(cc_data);
+    free(cc_key);
     return env->NewStringUTF(result);
 }
 
@@ -69,12 +70,14 @@ JNIEXPORT jstring JNICALL Java_cn_sdk_NativeEncode_getHello
 
     int len_data = strlen(c_data);
     int len_key = strlen(c_key);
-    char cc_data[len_data];
-    char cc_key[len_key];
+    char *cc_data = calloc((len_data * sizeof(char)), 1);
+    char *cc_key = calloc((len_key) * sizeof(char), 1);
 
     char result[1024];
     //数据处理
 
+    free(cc_data);
+    free(cc_key);
     env->ReleaseStringUTFChars(j_data, c_data);
     return env->NewStringUTF(result);
 }
