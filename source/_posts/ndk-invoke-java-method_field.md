@@ -9,7 +9,7 @@ description: 上一篇有提到 JNI 访问引用数组，涉及了 C/C++ 访问 
 
 　　C/C++ 访问 Java 层的方法和变量主要分为实例和静态。调用静态变量和方法，直接通过 `类名.方法/类名.变量`，而调用实例变量和方法，需要先实例化对象才可以调用。另外对于继承的子类访问父类的方法也是可以通过 JNI 实现，虽然可能用的不多。
 
-###调用静态变量和方法
+###0x00 调用静态变量和方法
 　　静态数据的访问其实比较简单。当我们在运行一个 Java 程序时，JVM 会先将程序运行时所要用到所有相关的 class 文件加载到 JVM 中，并采用按需加载的方式加载，也就是说某个类只有在被用到的时候才会被加载，这样设计的目的也是为了提高程序的性能和节约内存。本地代码也是按照上面的流程来访问类的静态方法或实例方法的。下面直接上代码：   
 ####Java层代码
 
@@ -87,7 +87,7 @@ JNIEXPORT void JNICALL Java_com_example_gnaix_ndk_NativeMethod_invokeStaticField
 ```
 
 ####运行结果
-<img width=700px height=100px src="http://gnaix92.github.io/blog_images/ndk/9.png" style="display:inline-block"/>
+<img width=700px height=100px src="https://gnaix92.github.io/blog_images/ndk/9.png" style="display:inline-block"/>
 
 ####代码解析
 第一步：调用 `jclass FindClass(const char* name)` 参数为 Java 类的 classPath 只是把`.`换成`/`，获取jclass。  
@@ -101,7 +101,7 @@ JNIEXPORT void JNICALL Java_com_example_gnaix_ndk_NativeMethod_invokeStaticField
 - name: 变量名/方法名
 - sig: 变量名/方法名签名ID   
 
-签名获取的方法在上一篇有提到过:[NDK开发 - JNI数组数据处理](http://gnaix92.github.io/2016/04/07/NDK%E5%BC%80%E5%8F%91-JNI%E6%95%B0%E7%BB%84%E6%95%B0%E6%8D%AE%E5%A4%84%E7%90%86/)
+签名获取的方法在上一篇有提到过:[NDK开发 - JNI数组数据处理](https://gnaix92.github.io/2016/04/07/NDK%E5%BC%80%E5%8F%91-JNI%E6%95%B0%E7%BB%84%E6%95%B0%E6%8D%AE%E5%A4%84%E7%90%86/)
 
 第三步1：获取静态变量的值
 `jint GetStaticIntField(jclass clazz, jfieldID fieldID)`方法获取int类型静态变量的值，相同的函数还有 `GetStaticLongField`, `GetStaticFloatField`, `GetStaticDoubleField`等，引用类型都是用 `GetStaticObjectField`。   
@@ -222,7 +222,7 @@ JNIEXPORT void JNICALL Java_com_example_gnaix_ndk_NativeMethod_invokeJobject
 ```
 
 ####运行结果
-<img width=700px height=100px src="http://gnaix92.github.io/blog_images/ndk/10.png" style="display:inline-block"/>
+<img width=700px height=100px src="https://gnaix92.github.io/blog_images/ndk/10.png" style="display:inline-block"/>
 
 ####代码解析
 　　访问实例变量和方法没有很大区别多了一个实例化的步骤。每个类会生成一个默认的构造函数，调用的时候用 `<init>` ，签名ID是 `()V`。如果是自定义的构造函数需要用相应的签名ID。
@@ -242,7 +242,7 @@ if(jobj == NULL){
     return;
 }
 ```
-###调用构造方法和父类实例方法
+###0x01 调用构造方法和父类实例方法
 
 ####Java 代码
 　　定义了 Animal 和 Dog 两个类，Animal 定义了一个 String 形参的构造方法，一个成员变量 name、两个成员函数 run 和 getName，Dog 继承自 Animal，并重写了 run 方法。在 JNI 中实现创建 Dog 对象的实例，调用 Animal 类的 run 和 getName 方法。代码如下所示:
@@ -377,7 +377,7 @@ JNIEXPORT void JNICALL Java_com_example_gnaix_ndk_NativeMethod_callSuperInstance
 ```
 
 ####运行结果
-<img width=700px height=100px src="http://gnaix92.github.io/blog_images/ndk/11.png" style="display:inline-block"/>
+<img width=700px height=100px src="https://gnaix92.github.io/blog_images/ndk/11.png" style="display:inline-block"/>
 
 ####代码解析
 

@@ -10,14 +10,14 @@ description: 第一篇搭建环境，第二篇了解开发流程，第三篇扯�
 　　JNI 开发中主要涉及基本数据的处理，引用数据的处理，数组的处理。String 作为比较常用的引用数据类型 JNI 也提供了特有的的方法处理。在处理应用类型的时候需要注意内存的释放，不然很可能造成内存溢出。C/C++ 中的内存不能依靠 Java 的 GC 线程管理，下一篇会介绍 JNI 的引用类型。    
 　　涉及的代码地址：[https://github.com/gnaix92/as-ndk](https://github.com/gnaix92/as-ndk)
 
-###C 和 C++ 函数实现的比较
+###0x00 C和C++ 函数实现的比较
 　　唯一的差异在于用来访问 JNI 函数的方法。在 C 中，JNI 函数调用由`(*env)->`作前缀，目的是为了取出函数指针所引用的值。在 C++ 中，JNIEnv 类拥有处理函数指针查找的内联成员函数。下面将说明这个细微的差异，其中，这两行代码访问同一函数，但每种语言都有各自的语法。    
 C 语法： `jsize len = (*env)->GetArrayLength(env,array);`   
 C++ 语法： `jsize len =env->GetArrayLength(array);`
 
 　　下面涉及的代码都是用 C++ 开发的。所以看到网上用 C 开发的 JNI 也不需要奇怪。
 
-###处理基本类型
+###0x01 处理基本类型
 　　JNI 中的基本类型和 Java 中的基本类型是一一对应的，这个在上一篇提到过。下面是 JNI 的基本类型定义：    
 
 ``` c++
@@ -49,7 +49,7 @@ JNIEXPORT jint JNICALL Java_com_example_gnaix_ndk_NativeMethod_getInt
 }
 ```
 
-###处理字符串
+###0x02 处理字符串
 
 　　JNI 把 Java 中所有对象当作一个 C 指针传递到本地方法中，这个指针指向 JVM 中的内部数据结构，而内部的数据结构在内存中的存储方式是不可见得。只能从 JNIEnv 指针指向的函数表中选择合适的 JNI 函数来操作 JVM 中的数据结构。    
 　　String 在 Java 是一个引用类型，所以在本地代码中只能通过GetStringUTFChars 这样的 JNI 函数来访问字符串的内容。
@@ -84,7 +84,7 @@ JNIEXPORT jstring JNICALL Java_com_example_gnaix_ndk_NativeMethod_getString
 }
 ```
 运行结果如下：
-<img width=700px height=100px src="http://gnaix92.github.io/blog_images/ndk/4.png" style="display:inline-block"/>
+<img width=700px height=100px src="https://gnaix92.github.io/blog_images/ndk/4.png" style="display:inline-block"/>
 
 ####访问字符串
 　　`getString` 函数接收一个 jstring 类型的参数 text，但是 jstring 类型是指向 JVM 内部的一个字符串，和 C/C++ 风格的字符串类型 char* 不同，所以在 JNI 中不能把 jstring 当做普通的 C/C++ 字符串一样来使用，必须使用 JNI 的函数来访问 JVM 内部的字符串数据结构。    

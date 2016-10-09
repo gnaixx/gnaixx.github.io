@@ -7,12 +7,12 @@ description: 代码乱序是指在不影响原有的代码逻辑，打乱代码�
 
 ---
 
-###乱序原理
+###0x00 乱序原理
 为了增加逆向分析的难度,可以将原有代码在 smali 格式上进行乱序处理同时又不会影响程序的正常运行。乱序的基本原理如下图所示,将指令重新布局,并给每块指令赋予一个 label,在函数开头处使用 goto 跳到原先的第一条指令处,然后第一条指令处理完,再跳到 第二条指令,以此类推。
 
-<img width=700px height=250px src="http://gnaix92.github.io/blog_images/apksafe/1.png" style="display:inline-block"/>
+<img width=700px height=250px src="https://gnaix92.github.io/blog_images/apksafe/1.png" style="display:inline-block"/>
 
-###乱序流程
+###0x01 乱序流程
 下面步骤需要使用到的 `smali`, `baksmali` 和 `dex2jar` 工具可以在：[/tools](https://github.com/gnaix92/crack/tree/master/tools) 下载。
 ####Java代码
 写了一个简单的Java代码：
@@ -106,7 +106,7 @@ java -jar baksmali-2.1.1.jar Hello.dex
 - 拼接字符
 - 打印字符串
 
-<img width=700px height=500px src="http://gnaix92.github.io/blog_images/apksafe/2.png" style="display:inline-block"/>
+<img width=700px height=500px src="https://gnaix92.github.io/blog_images/apksafe/2.png" style="display:inline-block"/>
 
 
 修改 smali 代码顺序（只要修改 main 函数其他不变）：
@@ -162,7 +162,7 @@ java -jar baksmali-2.1.1.jar Hello.dex
 ```
 
 修改后的代码顺序：
-<img width=700px height=500px src="http://gnaix92.github.io/blog_images/apksafe/3.png" style="display:inline-block"/>
+<img width=700px height=500px src="https://gnaix92.github.io/blog_images/apksafe/3.png" style="display:inline-block"/>
 
 
 ####重新编译回dex文件
@@ -182,9 +182,9 @@ java -jar smali-2.1.1.jar Hello.smali
 d2j-dex2jar.sh out.dex
 ```
 
-<img src="http://gnaix92.github.io/blog_images/apksafe/4.png" style="height:200px; width:700px"/>
+<img src="https://gnaix92.github.io/blog_images/apksafe/4.png" style="height:200px; width:700px"/>
 
-<img src="http://gnaix92.github.io/blog_images/apksafe/5.png" style="height:200px; width:700px;"/>
+<img src="https://gnaix92.github.io/blog_images/apksafe/5.png" style="height:200px; width:700px;"/>
 
 
 上边为未做处理的反编译代码，下边为乱序后的代码。可以看出右边的代码逻辑相对来说会比较难懂。

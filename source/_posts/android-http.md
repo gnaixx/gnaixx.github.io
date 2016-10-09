@@ -4,10 +4,11 @@ categories: android
 tags: [android, http/https]
 toc: true
 description: Android中实现网络请求主要通过HttpClient，网络请求又分为get和post两种。HttpClient支持http和https，http实现相对简单。https是安全的http协议，在使用的时候必须考虑SSL和数字证书的问题。
+
 ---
 Android中实现网络请求主要通过HttpClient，网络请求又分为get和post两种。HttpClient支持http和https，http实现相对简单。[https](http://www.cnblogs.com/P_Chou/archive/2010/12/27/https-ssl-certification.html)是安全的http协议，在使用的时候必须考虑SSL和数字证书的问题。
 
-##获取HttpClient
+##0x00 获取HttpClient
 ###默认单例HttpClient
 可以通过`new DefaultHttpClient()`获取默认HttpClient
 ``` java
@@ -65,7 +66,7 @@ public static synchronized HttpClient getSaveHttpClient(){
     return httpClient;
 }
 ```
-##实现get/post请求
+##0x01 实现get/post请求
 ###get请求
 get请求主要是为了获取数据，当然也可以发送简单的数据，如URL:'http://hexo.com?name=XX&pwd=XX'
 ```java
@@ -155,7 +156,7 @@ post请求用来作为数据的发送接口。
     }
 ```
 
-##解决HTTPS证书问题
+##0x02 解决HTTPS证书问题
 在Android使用https请求经常会遇到SSLPeerUnverifiedException异常：
 <span style="color:red;">javax.net.ssl.SSLPeerUnverifiedException: No peer certificate</span>
 这问题主要是因为https协议使用了SSL/TSL认证，认证过程中必须校验证书。
@@ -281,7 +282,7 @@ class SSLSocketFactoryEx extends SSLSocketFactory{
         return result;
     }
 ```
-##附录
+##0x03 附录
 HttpHelper的完整代码
 
 ```java

@@ -7,7 +7,7 @@ description: 在互联网安全通信方式上，目前用的最多的就是http
 
 ---
 
-###问题
+###0x00 问题
 ---
 相信在使用https协议开发中很多人都会遇到证书异常的情况：
 <font color=red>**javax.net.ssl.SSLPeerUnverifiedException: No peer certificate**</font>   
@@ -39,7 +39,7 @@ SSL/TLS协议能够提供的安全目标主要包括如下几个：
 在握手阶段完成后，进入应用阶段。在应用阶段通信双方使用握手阶段协商好的密钥进行安全通信。  
 [专业级的解释](http://drops.wooyun.org/tips/6002)就看懂了上面这部分
 
-###问题分析
+###0x01 问题分析
 ---     
 分析问题最重要的是要把https工作流程给搞清楚    
 **
@@ -54,7 +54,7 @@ S: Server用自己的私钥将ClientExchange中的消息解密出来作为对称
 清楚了流程不难定位出在Client验证证书时出现了异常。
 
 
-###原因及解决方案
+###0x02 原因及解决方案
 ---
 
 ####证书的颁发者不在“根受信任的证书颁发机构列表”中
@@ -154,7 +154,7 @@ S: Server用自己的私钥将ClientExchange中的消息解密出来作为对称
 <uses-permission android:name="android.permission.CHANGE_WIFI_STATE"/>
 ```
 
-###总结
+###0x03总结
 ---
 
 https中发生<font color=red>**javax.net.ssl.SSLPeerUnverifiedException: No peer certificate**</font> 的情况还是比较多的，解决问题的关键是先搞清楚https自己也是因为不是了解导致坑了很久。还有一点，多google。

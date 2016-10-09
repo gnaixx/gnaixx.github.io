@@ -4,6 +4,7 @@ categories: java
 tags: [java, proxy]
 toc: true
 description: java中不使用HTTP代理，获取真实IP
+
 ---
 在Android开发中你可能需要获取客户端的真实IP来判断客户端是否在做一些有风险的操作。比如借贷的或者一些以IP来限定投票次数的app，我们肯定想获取真实的IP。其实实现方式也很简单下面介绍了`HttpConnection` 和 `HttpClient` 两种实现方式。
 

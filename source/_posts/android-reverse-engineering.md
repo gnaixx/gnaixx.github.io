@@ -9,7 +9,7 @@ description: 最近在看《Android软件安全与逆向分析》，所以把自
 
 　　分析Android程序是开发Android程序的一个逆向过程。在分析前必须要了解Android开发的流程，程序结构，语句分支，解密原理。
 
-###编写一个Android程序
+###0x00 编写一个Android程序
 　　具体的编写过程就不做介绍了，源码已经上传github [github.com/gnaix92/crack](https://github.com/gnaix92/crack)可以下载实践(module crackme0201)。其中涉及的工具可以在根目录的tools文件夹中找到。    
 这里贴出关键代码：
 
@@ -86,9 +86,9 @@ description: 最近在看《Android软件安全与逆向分析》，所以把自
 
 ####编译生成APK
 执行效果:    
-<img width=250px height=400px src="http://gnaix92.github.io/blog_images/crackme/1.jpg"></img>
+<img width=250px height=400px src="https://gnaix92.github.io/blog_images/crackme/1.jpg"></img>
 
-###破解APK
+###0x01 破解APK
 　　通过apktool对APK包进行反编译，生成Smali文件。通过Smali代码找到程序的突破口进行修改，最后使用apktool重新编译并签名。
 
 ####反编译APK
@@ -99,7 +99,7 @@ description: 最近在看《Android软件安全与逆向分析》，所以把自
 apktool d ***.apk -o output
 ```
 生成的反编译文件都在output目录下。  
-<img width=400px height=200px src="http://gnaix92.github.io/blog_images/crackme/2.png"></img>  
+<img width=400px height=200px src="https://gnaix92.github.io/blog_images/crackme/2.png"></img>  
 
 ####分析APK文件
 　　反编译apk文件成功后，会在当前的output目录下生成一系列目录与文件.其中smali目录下存放了程序所有的反编译代码。res目录是程序的所有资源文件，这些目录的子目录和文件与开发时的源码目录结构是一致的。   
@@ -186,7 +186,7 @@ const v1, 0x7f06001c  #successed字符串
 　　`if-nez v0, :cond_0`作为程序破解的关键，我们只要将其修改成功能相反的指令即可。`if-nez`是Dalvik指令集中的一个条件跳转指令，类似的还有`if-eqz, if-gez, if-lez`等。与`if-nez`功能相反的是`if-eqz`。
 所以我们可以将`if-nez v0, :cond_0`修改为`if-eqz v0, :cond_0`。
 
-###重新编译APK并签名
+###0x02 重新编译APK并签名
 　　这里需要说一点，一开始我重新编译直接报错了,如下:
 
 ```shell
@@ -222,7 +222,7 @@ Caused by: brut.common.BrutException: could not exec command: [/var/folders/vr/n
 ```shell
 apktool b output
 ```
-<img width=500px height=200px src="http://gnaix92.github.io/blog_images/crackme/3.png"></img>
+<img width=500px height=200px src="https://gnaix92.github.io/blog_images/crackme/3.png"></img>
 
 　　编译成功后会在output目录下生成dist目录，里面有编译成功的apk文件。
 
@@ -236,5 +236,5 @@ java -jar signapk.jar testkey.x509.pem testkey.pk8 **.apk signgapk.apk
 
 ####安装测试
 　　安装签名好后的apk，输入原来测试的用户名和注册码。可以发现程序注册成功，成功破解。    
-<img width=250px height=400px src="http://gnaix92.github.io/blog_images/crackme/4.png"></img>
+<img width=250px height=400px src="https://gnaix92.github.io/blog_images/crackme/4.png"></img>
 

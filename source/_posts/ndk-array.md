@@ -8,7 +8,7 @@ description: 很多时候利用 NDK 开发都是为了对数据进行加密操�
 ---
 　　JNI 中的数组分为基本类型数组和对象数组，它们的处理方式是不一样的，基本类型数组中的所有元素都是 JNI 的基本数据类型，可以直接访问。而对象数组中的所有元素是一个类的实例或其它数组的引用，和字符串操作一样，不能直接访问 Java 传递给 JNI 层的数组，必须选择合适的 JNI 函数来访问和设置 Java 层的数组对象。
 
-###访问基本类型数组
+###0x00 访问基本类型数组
 Java 代码：
 
 ```java
@@ -45,7 +45,7 @@ JNIEXPORT jbyteArray JNICALL Java_com_example_gnaix_ndk_NativeMethod_getByteArra
 }
 ```
 运行结果：
-<img width=700px height=100px src="http://gnaix92.github.io/blog_images/ndk/5.png" style="display:inline-block"/>
+<img width=700px height=100px src="https://gnaix92.github.io/blog_images/ndk/5.png" style="display:inline-block"/>
 
 　　示例中，从 Java 层中传进去了一个数组，参数类型是 byte[], 对应 JNI 中 jbyteArray 类型。利用 `GetByteArrayElements` 函数获取数组指针，第二个参数返回的数组指针是原始数组，还是拷贝原始数据到临时缓冲区的指针，如果是 JNI_TRUE：表示临时缓冲区数组指针，JNI_FALSE：表示临时原始数组指针。开发当中，我们并不关心它从哪里返回的数组指针，这个参数填 NULL 即可，但在获取到的指针必须做校验。
 类似的函数还有 `GetIntArrayElements` , `GetFloatArrayElements` , `GetDoubleArrayElements` 等。   
@@ -83,7 +83,7 @@ JNIEXPORT jint JNICALL Java_com_example_gnaix_ndk_NativeMethod_getByteArray
 }
 ```
 
-###访问引用类型数组
+###0x01 访问引用类型数组
 　　JNI 提供了两个函数来访问对象数组，GetObjectArrayElement 返回数组中指定位置的元素，SetObjectArrayElement 修改数组中指定位置的元素。与基本类型不同的是，我们不能一次得到数据中的所有对象元素或者一次复制多个对象元素到缓冲区。因为字符串和数组都是引用类型，只能通过 Get/SetObjectArrayElement 这样的 JNI 函数来访问字符串数组或者数组中的数组元素。    
 　　下面的例子同调用 Native 方法 创建一个对象数组，返回后打印这个数组内容：
 
@@ -192,14 +192,14 @@ JNIEXPORT jobjectArray JNICALL Java_com_example_gnaix_ndk_NativeMethod_getPerson
 ```
 
 运行结果：
-<img width=700px height=100px src="http://gnaix92.github.io/blog_images/ndk/6.png" style="display:inline-block"/>
+<img width=700px height=100px src="https://gnaix92.github.io/blog_images/ndk/6.png" style="display:inline-block"/>
 
 　　Native 方法首先调用 JNI 函数 `FindClass` 获取 Person 类的引用，如果 Person 类加载失败的话， FindClass 会返回 NULL, 然后抛出一个 java.lang.NoClassDefFoundError 异常。    
 　　接下来通过 `GetMethodID` 获取了类的默认构造函数的ID（下一节会介绍）。并且通过 `GetFieldId` 获取了Person变量的ID，用于后面的赋值。    
 　　调用 `NewObjectArray` 创建一个数组，在for循环中 `NewObject` 实例化 Person类，并通过 `SetXXField` 函数给实例变量赋值。`SetObjectArrayElement` 将实例化对象插入数组。   
 　　最后调用 `DeleteLocalRef` 方法释放局部变量。 `DeleteLocalRef` 将新创建的 引用从引用表中移除。在 JNI 中，只有 jobject 以及子类属于引用变量，会占用引用表的空间，jint，jfloat，jboolean 等都是基本类型变量，不会占用引用表空间，即不需要释放。引用表最大空间为 512 个，如果超出这个范围，JVM 就会挂掉。
 
-###方法签名
+###0x02 方法签名
 　　在上面的的例子中，在调用实例变量或者方法，都必须传入一个 jmethodID 的参数。因为在 Java 中存在方法重载（方法名相同，参数列表不同），所以要明确告诉 JVM 调用的是类或实例中的哪一个方法。调用 JNI 的 GetMethodID 函数获取一个 jmethodID 时，需要传入一个方法名称和方法签名，方法名称就是在 Java 中定义的方法名，方法签名的格式为：(形参参数类型列表)返回值。形参参数列表中，引用类型以 L 开头，后面紧跟类的全路径名（需将.全部替换成/），<font color=red>以分号结尾</font>。  
 　　可以通过 `javap` 命令获取类的签名，以 Person 为例：
 
@@ -211,7 +211,7 @@ JNIEXPORT jobjectArray JNICALL Java_com_example_gnaix_ndk_NativeMethod_getPerson
 - -s: 输出内部类型签名  
 - -p: 显示所有类和成员
 
-<img width=500px height=700px src="http://gnaix92.github.io/blog_images/ndk/7.png" style="display:inline-block"/> 
+<img width=500px height=700px src="https://gnaix92.github.io/blog_images/ndk/7.png" style="display:inline-block"/> 
 
 Java 基本类型与方法签名中参数类型和返回值类型的映射关系如下：
 

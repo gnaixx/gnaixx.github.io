@@ -10,10 +10,10 @@ description: 相信现在的Android开发没有不知道Material Design的，但
 
 最近一段深深的被Material Design所吸引，厌倦了iPhone风格，特别是类iPhone风格的Android App。所以尝试开始学习写一些Material Design风格Demo。
 
-###抽屉菜单
+###0x00抽屉菜单
 Android的抽屉菜单很早就有应用使用了，不过自定义需要重写大量的代码。google官方的**Support v4**包中DrawerLayout可以轻松的实现该功能。[Demo源码地址DrawerrActivity页面](https://github.com/gnaix92/demo-material)。
 
-###新建项目添加依赖
+###0x01新建项目添加依赖
 新建一个Android应用并添加**Support v4**，当然你也可以直接添加**Design Support Library**因为它已经包含了 **Support v4** 和 **AppCompat v7**。
 `build.gradle`代码：
 
@@ -22,7 +22,7 @@ Android的抽屉菜单很早就有应用使用了，不过自定义需要重写�
     compile 'com.android.support:support-v4:23.1.0'
 ```
 
-###页面布局
+###0x02页面布局
 `DrawerLayout`的使用非常简单，它可以包含三个子控件，依次为：   
 
 - 主页面
@@ -58,7 +58,7 @@ Android的抽屉菜单很早就有应用使用了，不过自定义需要重写�
 
 需要注意的是左划菜单需要设置`android:layout_gravity`为`start/left`。右划菜单则为`end/right`。
 
-###设置toolbar关联
+###0x03设置toolbar关联
 写好xml其实已经可以最基础的左滑功能，但是我们需要做成下面的效果让他和toolbar关联。   
 ![](../../../../blog_images/material-darwer/1.gif)
 

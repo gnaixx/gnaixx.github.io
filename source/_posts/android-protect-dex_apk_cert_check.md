@@ -7,7 +7,7 @@ description: DEX/APK/证书 校验是在应用开发结束后，在本地计算�
 
 ---
 
-### DEX校验
+###0x00 DEX校验
 classes.dex 是 Android 虚拟机的可执行文件，我们所写的 java 代码其实都在这里面，所有很多对应用程序的篡改都是针对 classes.dex 文件的。    
 可以找一个 APK 解压就可以看到 classes.dex 文件。APK 其实就是一个压缩包，通过将后缀名改为 `zip` 就可以直接解压，或者用 `unzip` 命令。    
 
@@ -77,7 +77,7 @@ mac系统自带 crc32 命令:
 #####保存到 string.xml 文件
 因为 string.xml 文件是资源文件不会影响到 classes.dex 所以修改是没有关系的。
 
-### APK校验
+###0x01 APK校验
 
 与 DEX 校验不同 APK 检验必须把把计算好的 Hash 值放在网络服务端，因为对 APK 的任何改动都会影响到最后的 Hash 值。    
 **校验代码：**
@@ -128,7 +128,7 @@ mac 系统为例：
   
      md5 release.apk
 
-###证书校验
+###0x02 证书校验
 每个APK都会经过开发者独有的证书进行签名，如果破解者对APK进行二次打包一般会用自己的签名证书打包。这时候我们就可以通过校验签名证书的MD5值进行校验。
 **校验代码：**
 ```java
@@ -175,6 +175,7 @@ drwxr-xr-x  22 xiangqing  staff   748B  6  5 11:56 res
 -rw-r--r--   1 xiangqing  staff   173K  6  5 11:28 resources.arsc
 ```
 其中文件夹`META-INF`中的`CERT.RSA`文件就是签名文件，通过`keytool`工具就可以看到其中的MD5 等属性
+
 ```shell
 → keytool -printcert -file CERT.RSA
 所有者: CN=Android Debug, O=Android, C=US

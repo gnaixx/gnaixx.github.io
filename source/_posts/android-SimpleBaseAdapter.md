@@ -8,7 +8,7 @@ description: 在Android开发中ListView是必不可少的, 每个ListView都对
 ---
 SimpleBaseAdapter主要是解决了每次都要重写BaseAdapter那几个方法，还有优化了ViewHolder。我们可以先看看常见的Adapter写法。
 
-###常见Adapter
+###0x01 常见Adapter
 
 常见的Adapter大家都很熟了，直接贴代码：
 
@@ -63,7 +63,7 @@ public class NormalAdapter extends BaseAdapter {
 
 ```
 
-###抽象方法
+###0x01 抽象方法
 我们可以直接抽象一个SimpleBaseAdapter。解决上面代码中每次都需要重写复写的方法。   
 代码如下：
 
@@ -97,7 +97,7 @@ public abstract class SimpleBaseAdapter<T> extends BaseAdapter {
 
 ```
 
-###优化ViewHolder
+###0x02 优化ViewHolder
 上面代码只解决了代码复写的问题并没有getView()和ViewHolder，ViewHolder其实只要是作为ListView缓存的子选项，常见的写法是把子选项硬编码写在ViewHolder所以没有办法通用，我们可以考虑用列表保存选择子选项的控件。   
 优化后的ViewHolder:
 
@@ -125,7 +125,7 @@ SparseArray在代码理解上等价于HashMap<Integer, View>, SparseArray是Andr
 
 **<font color=red>PS: </font>** 如果你用到了`ExpandableListView` 需要重写BaseExpandableListAdapter那么上述的代码就不直接用了，但是ViewHolder还是可以通用的。所以如果项目中不止重写了BaseAdapter可以将ViewHolder提出来提高复用。
 
-###源码
+###0x03 源码
 ####完整SimpleBaseAdapter：
 
 ```java

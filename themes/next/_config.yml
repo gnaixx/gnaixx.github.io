@@ -1,17 +1,17 @@
 # when running hexo in a subdirectory (e.g. domain.tld/blog), remove leading slashes ( "/archives" -> "archives" )
 menu:
   home: /
-  categories: /categories
+  categories: /categories/
   #about: /about
-  archives: /archives
-  tags: /tags
-  #commonweal: /404.html
+  archives: /archives/
+  tags: /tags/
+  # commonweal: /404.html
 
 # Place your favicon.ico to /source directory.
 favicon: /images/favicon.ico
 
 # Set default keywords (Use a comma to separate)
-keywords: "gnaix,android"
+keywords: "gnaix,android,hook"
 
 # Set rss to false to disable feed link.
 # Leave rss as empty to use site's feed link.
@@ -30,8 +30,8 @@ icon_font: default
 # Available value: normal | night | night eighties | night blue | night bright
 # https://github.com/chriskempson/tomorrow-theme
 #highlight_theme: normal
-highlight_theme: night
-#highlight_theme: night eighties
+# highlight_theme: nitght
+highlight_theme: night eighties
 #highlight_theme: night blue
 #highlight_theme: night bright
 
