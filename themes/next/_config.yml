@@ -11,7 +11,7 @@ menu:
 favicon: /images/favicon.ico
 
 # Set default keywords (Use a comma to separate)
-keywords: "gnaix,android,hook"
+keywords: "gnaixx,android,hook"
 
 # Set rss to false to disable feed link.
 # Leave rss as empty to use site's feed link.
@@ -41,7 +41,9 @@ mathjax:
 
 
 # Schemes
+#scheme: Muse
 scheme: Mist
+#scheme: Pisces
 
 
 # Sidebar, available value:

@@ -68,6 +68,7 @@
             </span>
             {% endfor %}
           {% endif %}
+          <img class="site-wechat-image" src="{{ theme.avatar or url_for(theme.images) + '/default_wechat.jpg' }}"/>
         </div>
 
         {% set cc = {'by': 1, 'by-nc': 1, 'by-nc-nd': 1, 'by-nc-sa': 1, 'by-nd': 1, 'by-sa': 1, 'zero': 1} %}

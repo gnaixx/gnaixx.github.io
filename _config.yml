@@ -4,9 +4,9 @@
 
 # Site
 title: 凸一_一凸
-subtitle: gnaix
+subtitle: gnaixx
 description:
-author: gnaix
+author: 凸一_一凸
 language: zh-Hans
 timezone:
 
@@ -66,7 +66,8 @@ pagination_dir: page
 duoshuo_shortname: gnaix
 #社交连接
 social:
-	github: https://github.com/gnaix92
+	github: https://github.com/gnaixx
+  #wechat: XianG-ZI_
 
 # Extensions
 ## Plugins: http://hexo.io/plugins/
@@ -77,5 +78,5 @@ theme: next
 ## Docs: http://hexo.io/docs/deployment.html
 deploy:
   type: git
-  repository: git@github.com:gnaix92/gnaix92.github.io.git
+  repository: git@github.com:gnaixx/gnaixx.github.io.git
   branch: master
