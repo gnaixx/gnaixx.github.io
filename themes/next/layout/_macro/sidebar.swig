@@ -68,6 +68,9 @@
             </span>
             {% endfor %}
           {% endif %}
+          <br/>
+          <br/>
+          <br/>
           <img class="site-wechat-image" src="{{ theme.avatar or url_for(theme.images) + '/default_wechat.jpg' }}"/>
         </div>
 
