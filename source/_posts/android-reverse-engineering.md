@@ -86,7 +86,7 @@ description: 最近在看《Android软件安全与逆向分析》，所以把自
 
 ####编译生成APK
 执行效果:    
-<img width=250px height=400px src="https://gnaix92.github.io/blog_images/crackme/1.jpg"></img>
+<img width=250px height=400px src="https://gnaixx.github.io/blog_images/crackme/1.jpg"></img>
 
 ###0x01 破解APK
 　　通过apktool对APK包进行反编译，生成Smali文件。通过Smali代码找到程序的突破口进行修改，最后使用apktool重新编译并签名。
@@ -99,7 +99,7 @@ description: 最近在看《Android软件安全与逆向分析》，所以把自
 apktool d ***.apk -o output
 ```
 生成的反编译文件都在output目录下。  
-<img width=400px height=200px src="https://gnaix92.github.io/blog_images/crackme/2.png"></img>  
+<img width=400px height=200px src="https://gnaixx.github.io/blog_images/crackme/2.png"></img>  
 
 ####分析APK文件
 　　反编译apk文件成功后，会在当前的output目录下生成一系列目录与文件.其中smali目录下存放了程序所有的反编译代码。res目录是程序的所有资源文件，这些目录的子目录和文件与开发时的源码目录结构是一致的。   
@@ -222,7 +222,7 @@ Caused by: brut.common.BrutException: could not exec command: [/var/folders/vr/n
 ```shell
 apktool b output
 ```
-<img width=500px height=200px src="https://gnaix92.github.io/blog_images/crackme/3.png"></img>
+<img width=500px height=200px src="https://gnaixx.github.io/blog_images/crackme/3.png"></img>
 
 　　编译成功后会在output目录下生成dist目录，里面有编译成功的apk文件。
 
@@ -236,5 +236,5 @@ java -jar signapk.jar testkey.x509.pem testkey.pk8 **.apk signgapk.apk
 
 ####安装测试
 　　安装签名好后的apk，输入原来测试的用户名和注册码。可以发现程序注册成功，成功破解。    
-<img width=250px height=400px src="https://gnaix92.github.io/blog_images/crackme/4.png"></img>
+<img width=250px height=400px src="https://gnaixx.github.io/blog_images/crackme/4.png"></img>
 

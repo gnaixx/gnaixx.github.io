@@ -87,7 +87,7 @@ JNIEXPORT void JNICALL Java_com_example_gnaix_ndk_NativeMethod_invokeStaticField
 ```
 
 ####运行结果
-<img width=700px height=100px src="https://gnaix92.github.io/blog_images/ndk/9.png" style="display:inline-block"/>
+<img width=700px height=100px src="https://gnaixx.github.io/blog_images/ndk/9.png" style="display:inline-block"/>
 
 ####代码解析
 第一步：调用 `jclass FindClass(const char* name)` 参数为 Java 类的 classPath 只是把`.`换成`/`，获取jclass。  
@@ -101,7 +101,7 @@ JNIEXPORT void JNICALL Java_com_example_gnaix_ndk_NativeMethod_invokeStaticField
 - name: 变量名/方法名
 - sig: 变量名/方法名签名ID   
 
-签名获取的方法在上一篇有提到过:[NDK开发 - JNI数组数据处理](https://gnaix92.github.io/2016/04/07/NDK%E5%BC%80%E5%8F%91-JNI%E6%95%B0%E7%BB%84%E6%95%B0%E6%8D%AE%E5%A4%84%E7%90%86/)
+签名获取的方法在上一篇有提到过:[NDK开发 - JNI数组数据处理](https://gnaixx.github.io/2016/04/07/NDK%E5%BC%80%E5%8F%91-JNI%E6%95%B0%E7%BB%84%E6%95%B0%E6%8D%AE%E5%A4%84%E7%90%86/)
 
 第三步1：获取静态变量的值
 `jint GetStaticIntField(jclass clazz, jfieldID fieldID)`方法获取int类型静态变量的值，相同的函数还有 `GetStaticLongField`, `GetStaticFloatField`, `GetStaticDoubleField`等，引用类型都是用 `GetStaticObjectField`。   
@@ -222,7 +222,7 @@ JNIEXPORT void JNICALL Java_com_example_gnaix_ndk_NativeMethod_invokeJobject
 ```
 
 ####运行结果
-<img width=700px height=100px src="https://gnaix92.github.io/blog_images/ndk/10.png" style="display:inline-block"/>
+<img width=700px height=100px src="https://gnaixx.github.io/blog_images/ndk/10.png" style="display:inline-block"/>
 
 ####代码解析
 　　访问实例变量和方法没有很大区别多了一个实例化的步骤。每个类会生成一个默认的构造函数，调用的时候用 `<init>` ，签名ID是 `()V`。如果是自定义的构造函数需要用相应的签名ID。
@@ -377,7 +377,7 @@ JNIEXPORT void JNICALL Java_com_example_gnaix_ndk_NativeMethod_callSuperInstance
 ```
 
 ####运行结果
-<img width=700px height=100px src="https://gnaix92.github.io/blog_images/ndk/11.png" style="display:inline-block"/>
+<img width=700px height=100px src="https://gnaixx.github.io/blog_images/ndk/11.png" style="display:inline-block"/>
 
 ####代码解析
 

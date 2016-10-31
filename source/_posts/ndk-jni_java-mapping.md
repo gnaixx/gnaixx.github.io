@@ -30,4 +30,4 @@ description: 介绍完Android JNI的开发流程就要开始码代码了，不�
 　　所有的JNI引用类型全部是jobject类型，为了使用方便和类型安全，JNI 定义了一个引用类型集合，集合当中的所有类型都是 jobject 的子类，这些子类和 Java 中常用的引用类型相对应。例如：jstring 表示字符串、jclass 表示 class 字节码对象、jthrowable 表示异常、jarray 表示数组，另外 jarray 派生了 8 个子类，分别对应Java 中的 8 种基本数据类型（jintArray、jshortArray、jlongArray等）。
 
 引用类型对应关系：    
-![https://gnaix92.github.io/blog_images/ndk/3.png](https://gnaix92.github.io/blog_images/ndk/3.png)
+![https://gnaixx.github.io/blog_images/ndk/3.png](https://gnaixx.github.io/blog_images/ndk/3.png)

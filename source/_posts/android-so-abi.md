@@ -20,7 +20,7 @@ Android系统目前支持以下七种不同的CPU架构：ARMv5，ARMv7 (从2010
 例如，项目中使用RenderScript支持库，OpenCV，Unity，android-gif-drawable，SQLCipher等，你都已经在生成的APK文件中包含.so文件了，而你需要关注.so文件。
 
 Android应用支持的ABI取决于APK中位于lib/ABI目录中的.so文件，其中ABI可能是上面说过的七种ABI中的一种。    
-![1.png](https://gnaix92.github.io/blog_images/so-abi/1.png) 
+![1.png](https://gnaixx.github.io/blog_images/so-abi/1.png) 
 
 [Native Libs Monitor](https://play.google.com/store/apps/details?id=com.xh.nativelibsmonitor.app)这个应用可以帮助我们理解手机上安装的APK用到了哪些.so文件，以及.so文件来源于哪些函数库或者框架。
 

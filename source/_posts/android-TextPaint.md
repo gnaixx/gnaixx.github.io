@@ -47,8 +47,8 @@ FontMetris是Paint的内部类，作为"字体测量"。它定义了top、ascent
 ##0x01 变量含义
 
 下面两张图可以很好的说明这几个变量的含义  
-![textpaint](https://gnaix92.github.io/blog_images/textpaint/textpaint_1.png)
-![textpaint](https://gnaix92.github.io/blog_images/textpaint/textpaint_2.png)
+![textpaint](https://gnaixx.github.io/blog_images/textpaint/textpaint_1.png)
+![textpaint](https://gnaixx.github.io/blog_images/textpaint/textpaint_2.png)
    
 - Baseline：是基线，在Android中，文字的绘制都是从Baseline处开始的
 - Ascent：Baseline往上至字符“最高处”的距离我们称之为ascent
@@ -131,4 +131,4 @@ y坐标的的计算方式是（屏幕高度-文字高度）/2，这里的文字�
 
 **结果** 
 
-<img width=220px height=350px src="https://gnaix92.github.io/blog_images/textpaint/textpaint_3.png"><img>
+<img width=220px height=350px src="https://gnaixx.github.io/blog_images/textpaint/textpaint_3.png"><img>

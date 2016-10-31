@@ -101,7 +101,7 @@ public class NativeMethod {
 
 
 ###0x01 java代码编译
-　　在生成C／C++的头文件前需要把上面写的class编译成`.class`文件。Android Studio中编译很简单点一下右上角的<img width=40px height=35px src="https://gnaix92.github.io/blog_images/ndk/1.png" style="display:inline-block"/>按钮就可以了。生成的class文件在`app/build/intermediates/calsses/all/debug/xx.xx.xx/xx.class`。
+　　在生成C／C++的头文件前需要把上面写的class编译成`.class`文件。Android Studio中编译很简单点一下右上角的<img width=40px height=35px src="https://gnaixx.github.io/blog_images/ndk/1.png" style="display:inline-block"/>按钮就可以了。生成的class文件在`app/build/intermediates/calsses/all/debug/xx.xx.xx/xx.class`。
 
 
 ####C/C++头文件生成
@@ -223,7 +223,7 @@ JNIEXPORT jint JNICALL Java_com_example_gnaix_ndk_NativeMethod_getInt
 
 ###0x03运行编译SO
 　　经过上面的步骤，已经可以编译了，在NDK开发中除了自己apk需要，更多时候是作为第三方包提供给客户使用。Android Studio也为我们打包好了，可以在module目录下找到。   
-<img width=300px height=400px src="https://gnaix92.github.io/blog_images/ndk/2.png"/>
+<img width=300px height=400px src="https://gnaixx.github.io/blog_images/ndk/2.png"/>
 
 <font color=red>**PS:**</font>    
  

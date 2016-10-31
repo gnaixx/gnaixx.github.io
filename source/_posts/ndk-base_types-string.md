@@ -84,7 +84,7 @@ JNIEXPORT jstring JNICALL Java_com_example_gnaix_ndk_NativeMethod_getString
 }
 ```
 运行结果如下：
-<img width=700px height=100px src="https://gnaix92.github.io/blog_images/ndk/4.png" style="display:inline-block"/>
+<img width=700px height=100px src="https://gnaixx.github.io/blog_images/ndk/4.png" style="display:inline-block"/>
 
 ####访问字符串
 　　`getString` 函数接收一个 jstring 类型的参数 text，但是 jstring 类型是指向 JVM 内部的一个字符串，和 C/C++ 风格的字符串类型 char* 不同，所以在 JNI 中不能把 jstring 当做普通的 C/C++ 字符串一样来使用，必须使用 JNI 的函数来访问 JVM 内部的字符串数据结构。    

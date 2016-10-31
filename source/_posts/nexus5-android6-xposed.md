@@ -15,11 +15,11 @@ description: 这几天把手机弄坏了好几次，每次都需要重新刷一�
 
 ###具体步骤
 1. 解压下载的镜像，其中刷机脚本就是`flash-all.sh`   
-![1.png](https://gnaix92.github.io/blog_images/nexus/1.png) 
+![1.png](https://gnaixx.github.io/blog_images/nexus/1.png) 
 
 2. 关机，进入fastboot模式（关机状态下同时按住：音量下，电源键）
 3. 连接电脑，运行`flash-all.sh`脚本(需要一点时间)    
-![2.png](https://gnaix92.github.io/blog_images/nexus/2.png) 
+![2.png](https://gnaixx.github.io/blog_images/nexus/2.png) 
 
 ##0x01 一键Root
 使用CF-Auto-Root一键root 安卓6.0.1或（安卓n第一个预览版）。此办法的好处是无需很多技巧，但是坏处是包更新不及时，比如到了安卓6.1使用该包就会刷入老的内核版本。   
@@ -35,7 +35,7 @@ description: 这几天把手机弄坏了好几次，每次都需要重新刷一�
 ###具体步骤
 1. 关机，进入fastboot模式（关机状态下同时按住：音量下，电源键）
 2. .刷入twrp的img（使用fastboot flash recovery twrp.img）  
-![3.png](https://gnaix92.github.io/blog_images/nexus/3.png) 
+![3.png](https://gnaixx.github.io/blog_images/nexus/3.png) 
 3. 刷入成功后，可以在fastboot状态下，用音量键来选择"recovery mode"来进入twrp
 
 ##0x03 刷入Xposed框架
@@ -43,7 +43,7 @@ description: 这几天把手机弄坏了好几次，每次都需要重新刷一�
 我这里是下载最新的v86-sdk23版本。 
 ###具体步骤 
 1. 将压缩包复制到sdcard上：
-![4.png](https://gnaix92.github.io/blog_images/nexus/4.png) 
+![4.png](https://gnaixx.github.io/blog_images/nexus/4.png) 
 
 2. 点击twrp上的install，选择刚刚导入的压缩包，重启就OK了。
 

@@ -45,7 +45,7 @@ JNIEXPORT jbyteArray JNICALL Java_com_example_gnaix_ndk_NativeMethod_getByteArra
 }
 ```
 运行结果：
-<img width=700px height=100px src="https://gnaix92.github.io/blog_images/ndk/5.png" style="display:inline-block"/>
+<img width=700px height=100px src="https://gnaixx.github.io/blog_images/ndk/5.png" style="display:inline-block"/>
 
 　　示例中，从 Java 层中传进去了一个数组，参数类型是 byte[], 对应 JNI 中 jbyteArray 类型。利用 `GetByteArrayElements` 函数获取数组指针，第二个参数返回的数组指针是原始数组，还是拷贝原始数据到临时缓冲区的指针，如果是 JNI_TRUE：表示临时缓冲区数组指针，JNI_FALSE：表示临时原始数组指针。开发当中，我们并不关心它从哪里返回的数组指针，这个参数填 NULL 即可，但在获取到的指针必须做校验。
 类似的函数还有 `GetIntArrayElements` , `GetFloatArrayElements` , `GetDoubleArrayElements` 等。   
@@ -192,7 +192,7 @@ JNIEXPORT jobjectArray JNICALL Java_com_example_gnaix_ndk_NativeMethod_getPerson
 ```
 
 运行结果：
-<img width=700px height=100px src="https://gnaix92.github.io/blog_images/ndk/6.png" style="display:inline-block"/>
+<img width=700px height=100px src="https://gnaixx.github.io/blog_images/ndk/6.png" style="display:inline-block"/>
 
 　　Native 方法首先调用 JNI 函数 `FindClass` 获取 Person 类的引用，如果 Person 类加载失败的话， FindClass 会返回 NULL, 然后抛出一个 java.lang.NoClassDefFoundError 异常。    
 　　接下来通过 `GetMethodID` 获取了类的默认构造函数的ID（下一节会介绍）。并且通过 `GetFieldId` 获取了Person变量的ID，用于后面的赋值。    
@@ -211,7 +211,7 @@ JNIEXPORT jobjectArray JNICALL Java_com_example_gnaix_ndk_NativeMethod_getPerson
 - -s: 输出内部类型签名  
 - -p: 显示所有类和成员
 
-<img width=500px height=700px src="https://gnaix92.github.io/blog_images/ndk/7.png" style="display:inline-block"/> 
+<img width=500px height=700px src="https://gnaixx.github.io/blog_images/ndk/7.png" style="display:inline-block"/> 
 
 Java 基本类型与方法签名中参数类型和返回值类型的映射关系如下：
 
