@@ -42,8 +42,8 @@ mathjax:
 
 # Schemes
 #scheme: Muse
-scheme: Mist
-#scheme: Pisces
+#scheme: Mist
+scheme: Pisces
 
 
 # Sidebar, available value:
