@@ -91,7 +91,7 @@
 <meta property="og:site_name" content="凸一_一凸">
 <meta property="og:description" content="介绍完Android JNI的开发流程就要开始码代码了，不过在码代码前还是有必要了解下JNI数据类型与Java数据类型映射关系，直接开始写肯定会懵逼。">
 <meta property="og:image" content="https://gnaixx.github.io/blog_images/ndk/3.png">
-<meta property="og:updated_time" content="2016-11-05T07:57:27.000Z">
+<meta property="og:updated_time" content="2016-11-05T10:01:24.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="NDK开发 - JNI数据类型与Java数据类型映射关系">
 <meta name="twitter:description" content="介绍完Android JNI的开发流程就要开始码代码了，不过在码代码前还是有必要了解下JNI数据类型与Java数据类型映射关系，直接开始写肯定会懵逼。">
@@ -324,7 +324,7 @@
       
         <p>　　在调用 Java native 方法将实参传递给 C/C++ 函数的时候，会自动将 java 形参的数据类型自动转换成 C/C++ 相应的数据类型，所以我们在写 JNI 程序的时候，必须要明白它们之间数据类型的对应关系。</p>
 <p>　　在 Java 语言中数据类型分为基本数据类型和引用类型，同样JNI中也对应着基础数据类型和引用类型。</p>
-<p>###0x00 基本数据类型<br>　　Java 中基本数据类型包括：byte, char, short, int, long, float, double, boolean。对应JNI数据类型的：jbyte, jchar, jshort, jint, jfloat, jdoubule, jboolean。<br>下面是JNI规范文档中描述 Java 与 JNI数据类型的对应关系：</p>
+<h2 id="0x00-基本数据类型"><a href="#0x00-基本数据类型" class="headerlink" title="0x00 基本数据类型"></a>0x00 基本数据类型</h2><p>　　Java 中基本数据类型包括：byte, char, short, int, long, float, double, boolean。对应JNI数据类型的：jbyte, jchar, jshort, jint, jfloat, jdoubule, jboolean。<br>下面是JNI规范文档中描述 Java 与 JNI数据类型的对应关系：</p>
 <table>
 <thead>
 <tr>
@@ -376,7 +376,7 @@
 </tr>
 </tbody>
 </table>
-<p>###0x01 引用类型<br>　　Java语言中除了上述的8中基本数据类型外其他都是引用类型：Object，String, 数组等。<br>　　所有的JNI引用类型全部是jobject类型，为了使用方便和类型安全，JNI 定义了一个引用类型集合，集合当中的所有类型都是 jobject 的子类，这些子类和 Java 中常用的引用类型相对应。例如：jstring 表示字符串、jclass 表示 class 字节码对象、jthrowable 表示异常、jarray 表示数组，另外 jarray 派生了 8 个子类，分别对应Java 中的 8 种基本数据类型（jintArray、jshortArray、jlongArray等）。</p>
+<h2 id="0x01-引用类型"><a href="#0x01-引用类型" class="headerlink" title="0x01 引用类型"></a>0x01 引用类型</h2><p>　　Java语言中除了上述的8中基本数据类型外其他都是引用类型：Object，String, 数组等。<br>　　所有的JNI引用类型全部是jobject类型，为了使用方便和类型安全，JNI 定义了一个引用类型集合，集合当中的所有类型都是 jobject 的子类，这些子类和 Java 中常用的引用类型相对应。例如：jstring 表示字符串、jclass 表示 class 字节码对象、jthrowable 表示异常、jarray 表示数组，另外 jarray 派生了 8 个子类，分别对应Java 中的 8 种基本数据类型（jintArray、jshortArray、jlongArray等）。</p>
 <p>引用类型对应关系：<br><img src="https://gnaixx.github.io/blog_images/ndk/3.png" alt="https://gnaixx.github.io/blog_images/ndk/3.png"></p>
 
       
@@ -587,7 +587,7 @@
               
             
             
-              <p class="post-toc-empty">此文章未包含目录</p>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#0x00-基本数据类型"><span class="nav-number">1.</span> <span class="nav-text">0x00 基本数据类型</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#0x01-引用类型"><span class="nav-number">2.</span> <span class="nav-text">0x01 引用类型</span></a></li></ol></div>
             
           </div>
         </section>

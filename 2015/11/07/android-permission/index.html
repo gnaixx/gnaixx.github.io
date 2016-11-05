@@ -90,7 +90,7 @@
 <meta property="og:url" content="http://gnaixx.github.io/2015/11/07/android-permission/index.html">
 <meta property="og:site_name" content="凸一_一凸">
 <meta property="og:description" content="android中权限有分类成不同的等级，每个等级的权限调用方式都不一样。">
-<meta property="og:updated_time" content="2016-11-05T07:57:27.000Z">
+<meta property="og:updated_time" content="2016-11-05T09:51:54.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Android中Permission的分类">
 <meta name="twitter:description" content="android中权限有分类成不同的等级，每个等级的权限调用方式都不一样。">
@@ -323,7 +323,7 @@
         <blockquote>
 <p>android中权限有分类成不同的等级，每个等级的权限调用方式都不一样。</p>
 </blockquote>
-<p>###0x00 Protection Level<br>android中Permission主要分为四大类<strong>normal、dangerous、signature、signatureOrSystem</strong>,平常开发中normal、dangerous用到的比较多。</p>
+<h2 id="0x00-Protection-Level"><a href="#0x00-Protection-Level" class="headerlink" title="0x00 Protection Level"></a>0x00 Protection Level</h2><p>android中Permission主要分为四大类<strong>normal、dangerous、signature、signatureOrSystem</strong>,平常开发中normal、dangerous用到的比较多。</p>
 <ul>
 <li><p><strong>normal</strong> ：低风险权限，只要申请了就可以使用<br>The default value. A lower-risk permission that gives requesting applications access to isolated application-level features, with minimal risk to other applications, the system, or the user. The system automatically grants this type of permission to a requesting application at installation, without asking for the user’s explicit approval (though the user always has the option to review these permissions before installing).</p>
 </li>
@@ -334,7 +334,7 @@
 <li><p><strong>signatureOrSystem</strong> ：签名相同，或者申请权限的应用为系统应用（在system image中）<font color="red">ps:这个不是很理解</font><br>A permission that the system grants only to applications that are in the Android system image or that are signed with the same certificates as those in the system image. Please avoid using this option, as the signature protection level should be sufficient for most needs and works regardless of exactly where applications are installed. The “signatureOrSystem” permission is used for certain special situations where multiple vendors have applications built into a system image and need to share specific features explicitly because they are being built together.</p>
 </li>
 </ul>
-<p>###0x01 Protection normal:<br><strong>normal</strong>权限不需要特殊的处理，只要在AndroidManifest中注册就可以使用了    </p>
+<h2 id="0x01-Protection-normal"><a href="#0x01-Protection-normal" class="headerlink" title="0x01 Protection normal:"></a>0x01 Protection normal:</h2><p><strong>normal</strong>权限不需要特殊的处理，只要在AndroidManifest中注册就可以使用了    </p>
 <ul>
 <li>android.permission.ACCESS_LOCATION_EXTRA_COMMANDS</li>
 <li>android.permission.ACCESS_NETWORK_STATE</li>
@@ -374,10 +374,10 @@
 <li>com.android.launcher.permission.INSTALL_SHORTCUT</li>
 <li>com.android.launcher.permission.UNINSTALL_SHORTCUT</li>
 </ul>
-<p>###0x02 permission groups<br>权限组中只要申请获取了其中某一个权限，组内其他权限也是默认可用的</p>
+<h2 id="0x02-permission-groups"><a href="#0x02-permission-groups" class="headerlink" title="0x02 permission groups"></a>0x02 permission groups</h2><p>权限组中只要申请获取了其中某一个权限，组内其他权限也是默认可用的</p>
 <table style="color:#035707" class="table table-bordered table-striped table-condensed"><br><tr style="color:white"><br><td bgcolor="#878787">Permission Groups<br></td><td bgcolor="#878787">Permissions<br></td></tr><tr><br><td>android.permission-group.CALENDAR<br></td><td><br><li> android.permission.READ_CALENDAR<br></li><li> android.permission.WRITE_CALENDAR<br><tr><br><td>android.permission-group.CAMERA<br></td><td><li>android.permission.CAMERA<br><tr><br><td>android.permission-group.CONTACTS<br></td><td><br><li> android.permission.READ_CONTACTS<br></li><li> android.permission.WRITE_CONTACTS<br></li><li> android.permission.GET_ACCOUNTS<br><tr><br><td>android.permission-group.LOCATION<br></td><td><br><li> android.permission.ACCESS_FINE_LOCATION<br></li><li> android.permission.ACCESS_COARSE_LOCATION<br><tr><br><td>android.permission-group.MICROPHONE<br></td><td><li> android.permission.RECORD_AUDIO<br><tr><br><td>android.permission-group.PHONE<br></td><td><br><li> android.permission.READ_PHONE_STATE<br></li><li> android.permission.CALL_PHONE<br></li><li> android.permission.READ_CALL_LOG<br></li><li> android.permission.WRITE_CALL_LOG<br></li><li> com.android.voicemail.permission.ADD_VOICEMAIL<br></li><li> android.permission.USE_SIP<br></li><li> android.permission.PROCESS_OUTGOING_CALLS<br><tr><br><td>android.permission-group.SENSORS<br></td><td><li> android.permission.BODY_SENSORS<br><tr><br><td>android.permission-group.SMS<br></td><td><br><li> android.permission.SEND_SMS<br></li><li> android.permission.RECEIVE_SMS<br></li><li> android.permission.READ_SMS<br></li><li> android.permission.RECEIVE_WAP_PUSH<br></li><li> android.permission.RECEIVE_MMS<br></li><li> android.permission.READ_CELL_BROADCASTS<br><tr><br><td>android.permission-group.STORAGE<br></td><td><br><li> android.permission.READ_EXTERNAL_STORAGE<br></li><li> android.permission.WRITE_EXTERNAL_STORAGE<br></li></td></tr></li></td></tr></li></td></tr></li></td></tr></li></td></tr></li></td></tr></li></td></tr></li></td></tr></li></td></tr></table>
 
-<p>####<font color="red">PS:</font><br>在我们的项目开发过程中运用到了<code>android.permission.WRITE_SETTINGS</code>,该权限是属于<strong>signature</strong>级别的。按照我的理解是系统级别的应用（具有相同签名）才可以使用生效的。<br>但是在实际开发中发现Android6.0以前的版本都可以在应用中注册，并且调用</p>
+<h3 id="PS"><a href="#PS" class="headerlink" title="PS:"></a><font color="red">PS:</font></h3><p>在我们的项目开发过程中运用到了<code>android.permission.WRITE_SETTINGS</code>,该权限是属于<strong>signature</strong>级别的。按照我的理解是系统级别的应用（具有相同签名）才可以使用生效的。<br>但是在实际开发中发现Android6.0以前的版本都可以在应用中注册，并且调用</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">Settings.System.putString();  </div><div class="line">Settings.System.getString();</div></pre></td></tr></table></figure>
 <p>进行数据库读写。目前发现编译是设置<code>targetSdkVersion=23</code>并且运行Android6.0上无法使用该方法读写。（6.0针对该权限的使用也做了调整）</p>
 
@@ -587,7 +587,7 @@
               
             
             
-              <p class="post-toc-empty">此文章未包含目录</p>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#0x00-Protection-Level"><span class="nav-number">1.</span> <span class="nav-text">0x00 Protection Level</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#0x01-Protection-normal"><span class="nav-number">2.</span> <span class="nav-text">0x01 Protection normal:</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#0x02-permission-groups"><span class="nav-number">3.</span> <span class="nav-text">0x02 permission groups</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#PS"><span class="nav-number">3.1.</span> <span class="nav-text">PS:</span></a></li></ol></li></ol></div>
             
           </div>
         </section>

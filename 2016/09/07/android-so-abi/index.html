@@ -91,7 +91,7 @@
 <meta property="og:site_name" content="凸一_一凸">
 <meta property="og:description" content="现在很多第三方SDK都会提供 so, 关于 ndk开发的好处之前的文章也有做了介绍。但是在技术支持的过程中发现大多数的Android 开发其实并不知道怎么正确的集成so文件。一般技术都是把第三方提供的所有so都导入到工程中，这样做对应单个第三方so是没有问题的，但是如果集成了多个第三方问题就来了。">
 <meta property="og:image" content="https://gnaixx.github.io/blog_images/so-abi/1.png">
-<meta property="og:updated_time" content="2016-11-05T07:57:27.000Z">
+<meta property="og:updated_time" content="2016-11-05T09:55:19.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="关于Android so文件你所需要了解的">
 <meta name="twitter:description" content="现在很多第三方SDK都会提供 so, 关于 ndk开发的好处之前的文章也有做了介绍。但是在技术支持的过程中发现大多数的Android 开发其实并不知道怎么正确的集成so文件。一般技术都是把第三方提供的所有so都导入到工程中，这样做对应单个第三方so是没有问题的，但是如果集成了多个第三方问题就来了。">
@@ -322,15 +322,14 @@
       
 
       
-        <p>##0x00 前言<br>早期的Android系统几乎只支持ARMv5的CPU架构。你知道现在它支持多少种吗？7种！</p>
+        <h2 id="0x00-前言"><a href="#0x00-前言" class="headerlink" title="0x00 前言"></a>0x00 前言</h2><p>早期的Android系统几乎只支持ARMv5的CPU架构。你知道现在它支持多少种吗？7种！</p>
 <p>Android系统目前支持以下七种不同的CPU架构：ARMv5，ARMv7 (从2010年起)，x86 (从2011年起)，MIPS (从2012年起)，ARMv8，MIPS64和x86_64 (从2014年起)，每一种都关联着一个相应的ABI。</p>
 <p>应用程序二进制接口（Application Binary Interface）定义了二进制文件（尤其是.so文件）如何运行在相应的系统平台上，从使用的指令集，内存对齐到可用的系统函数库。在Android系统上，每一个CPU架构对应一个ABI：armeabi，armeabi-v7a，x86，mips，arm64-v8a，mips64，x86_64。</p>
-<p>##0x01 为什么你需要重点关注.so文件<br>如果项目中使用到了NDK，它将会生成.so文件，因此显然你已经在关注它了。如果只是使用Java语言进行编码，你可能在想不需要关注.so文件了，因为Java是跨平台的。但事实上，即使你在项目中只是使用Java语言，很多情况下，你可能并没有意识到项目中依赖的函数库或者引擎库里面已经嵌入了.so文件，并依赖于不同的ABI。</p>
+<h2 id="0x01-为什么你需要重点关注-so文件"><a href="#0x01-为什么你需要重点关注-so文件" class="headerlink" title="0x01 为什么你需要重点关注.so文件"></a>0x01 为什么你需要重点关注.so文件</h2><p>如果项目中使用到了NDK，它将会生成.so文件，因此显然你已经在关注它了。如果只是使用Java语言进行编码，你可能在想不需要关注.so文件了，因为Java是跨平台的。但事实上，即使你在项目中只是使用Java语言，很多情况下，你可能并没有意识到项目中依赖的函数库或者引擎库里面已经嵌入了.so文件，并依赖于不同的ABI。</p>
 <p>例如，项目中使用RenderScript支持库，OpenCV，Unity，android-gif-drawable，SQLCipher等，你都已经在生成的APK文件中包含.so文件了，而你需要关注.so文件。</p>
 <p>Android应用支持的ABI取决于APK中位于lib/ABI目录中的.so文件，其中ABI可能是上面说过的七种ABI中的一种。<br><img src="https://gnaixx.github.io/blog_images/so-abi/1.png" alt="1.png"> </p>
 <p><a href="https://play.google.com/store/apps/details?id=com.xh.nativelibsmonitor.app" target="_blank" rel="external">Native Libs Monitor</a>这个应用可以帮助我们理解手机上安装的APK用到了哪些.so文件，以及.so文件来源于哪些函数库或者框架。</p>
-<p>###ABI和CPU的关系</p>
-<p>很多设备都支持多于一种的ABI。例如ARM64和x86设备也可以同时运行armeabi-v7a和armeabi的二进制包。但最好是针对特定平台提供相应平台的二进制包，这种情况下运行时就少了一个模拟层（例如x86设备上模拟arm的虚拟层），从而得到更好的性能（归功于最近的架构更新，例如硬件fpu，更多的寄存器，更好的向量化等）。</p>
+<h3 id="ABI和CPU的关系"><a href="#ABI和CPU的关系" class="headerlink" title="ABI和CPU的关系"></a>ABI和CPU的关系</h3><p>很多设备都支持多于一种的ABI。例如ARM64和x86设备也可以同时运行armeabi-v7a和armeabi的二进制包。但最好是针对特定平台提供相应平台的二进制包，这种情况下运行时就少了一个模拟层（例如x86设备上模拟arm的虚拟层），从而得到更好的性能（归功于最近的架构更新，例如硬件fpu，更多的寄存器，更好的向量化等）。</p>
 <p>我们可以通过Build.SUPPORTED_ABIS得到根据偏好排序的设备支持的ABI列表。但你不应该从你的应用程序中读取它，因为Android包管理器安装APK时，会自动选择APK包中为对应系统ABI预编译好的.so文件，如果在对应的lib／ABI目录中存在.so文件的话。</p>
 <table>
 <thead>
@@ -425,21 +424,21 @@
 </tr>
 </tbody>
 </table>
-<p>##0x02 App中可能出错的地方<br>处理.so文件时有一条简单却并不知名的重要法则。</p>
+<h2 id="0x02-App中可能出错的地方"><a href="#0x02-App中可能出错的地方" class="headerlink" title="0x02 App中可能出错的地方"></a>0x02 App中可能出错的地方</h2><p>处理.so文件时有一条简单却并不知名的重要法则。</p>
 <p>你应该尽可能的提供专为每个ABI优化过的.so文件，但要么全部支持，要么都不支持：你不应该混合着使用。你应该为每个ABI目录提供对应的.so文件。</p>
 <p>当一个应用安装在设备上，只有该设备支持的CPU架构对应的.so文件会被安装。在x86设备上，libs/x86目录中如果存在.so文件的话，会被安装，如果不存在，则会选择armeabi-v7a中的.so文件，如果也不存在，则选择armeabi目录中的.so文件（因为x86设备也支持armeabi-v7a和armeabi）。</p>
-<p>##0x03 其他出错情况<br>当你引入一个.so文件时，不止影响到CPU架构。我从其他开发者那里可以看到一系列常见的错误，其中最多的是”UnsatisfiedLinkError”，”dlopen: failed”以及其他类型的crash或者低下的性能：</p>
-<p>##0x04 使用android-21平台版本编译的.so文件运行在android-15的设备上<br>使用NDK时，你可能会倾向于使用最新的编译平台，但事实上这是错误的，因为NDK平台不是后向兼容的，而是前向兼容的。推荐使用app的minSdkVersion对应的编译平台。</p>
+<h2 id="0x03-其他出错情况"><a href="#0x03-其他出错情况" class="headerlink" title="0x03 其他出错情况"></a>0x03 其他出错情况</h2><p>当你引入一个.so文件时，不止影响到CPU架构。我从其他开发者那里可以看到一系列常见的错误，其中最多的是”UnsatisfiedLinkError”，”dlopen: failed”以及其他类型的crash或者低下的性能：</p>
+<h2 id="0x04-使用android-21平台版本编译的-so文件运行在android-15的设备上"><a href="#0x04-使用android-21平台版本编译的-so文件运行在android-15的设备上" class="headerlink" title="0x04 使用android-21平台版本编译的.so文件运行在android-15的设备上"></a>0x04 使用android-21平台版本编译的.so文件运行在android-15的设备上</h2><p>使用NDK时，你可能会倾向于使用最新的编译平台，但事实上这是错误的，因为NDK平台不是后向兼容的，而是前向兼容的。推荐使用app的minSdkVersion对应的编译平台。</p>
 <p>这也意味着当你引入一个预编译好的.so文件时，你需要检查它被编译所用的平台版本。</p>
-<p>##0x05 混合使用不同C++运行时编译的.so文件<br>.so文件可以依赖于不同的C++运行时，静态编译或者动态加载。混合使用不同版本的C++运行时可能导致很多奇怪的crash，是应该避免的。作为一个经验法则，当只有一个.so文件时，静态编译C++运行时是没问题的，否则当存在多个.so文件时，应该让所有的.so文件都动态链接相同的C++运行时。</p>
+<h2 id="0x05-混合使用不同C-运行时编译的-so文件"><a href="#0x05-混合使用不同C-运行时编译的-so文件" class="headerlink" title="0x05 混合使用不同C++运行时编译的.so文件"></a>0x05 混合使用不同C++运行时编译的.so文件</h2><p>.so文件可以依赖于不同的C++运行时，静态编译或者动态加载。混合使用不同版本的C++运行时可能导致很多奇怪的crash，是应该避免的。作为一个经验法则，当只有一个.so文件时，静态编译C++运行时是没问题的，否则当存在多个.so文件时，应该让所有的.so文件都动态链接相同的C++运行时。</p>
 <p>这意味着当引入一个新的预编译.so文件，而且项目中还存在其他的.so文件时，我们需要首先确认新引入的.so文件使用的C++运行时是否和已经存在的.so文件一致。</p>
-<p>##0x06 没有为每个支持的CPU架构提供对应的.so文件<br>这一点在前文已经说到了，但你应该真的特别注意它，因为它可能发生在根本没有意识到的情况下。</p>
+<h2 id="0x06-没有为每个支持的CPU架构提供对应的-so文件"><a href="#0x06-没有为每个支持的CPU架构提供对应的-so文件" class="headerlink" title="0x06 没有为每个支持的CPU架构提供对应的.so文件"></a>0x06 没有为每个支持的CPU架构提供对应的.so文件</h2><p>这一点在前文已经说到了，但你应该真的特别注意它，因为它可能发生在根本没有意识到的情况下。</p>
 <p>例如：你的app支持armeabi-v7a和x86架构，然后使用Android Studio新增了一个函数库依赖，这个函数库包含.so文件并支持全部的CPU架构，例如新增android-gif-drawable函数库：</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">compile ‘pl.droidsonroids.gif:android-gif-drawable:1.1.+’</div></pre></td></tr></table></figure>
 <p>发布我们的app后，会发现它在某些设备上会发生Crash，例如Galaxy S6，最终可以发现只有64位目录下的.so文件被安装进手机。</p>
 <p>解决方案：重新编译我们的.so文件使其支持缺失的ABIs，或者设置 <code>ndk.abiFilters</code>显示指定支持的ABIs。</p>
 <p>最后一点：<strong>如果你是一个SDK提供者，但提供的函数库不支持所有的ABIs，那你将会搞砸你的用户，因为他们能支持的ABIs必将只能少于你提供的。</strong></p>
-<p>##0x07 将.so文件放在错误的地方<br>我们往往很容易对.so文件应该放在或者生成到哪里感到困惑，下面是一个总结：</p>
+<h2 id="0x07-将-so文件放在错误的地方"><a href="#0x07-将-so文件放在错误的地方" class="headerlink" title="0x07 将.so文件放在错误的地方"></a>0x07 将.so文件放在错误的地方</h2><p>我们往往很容易对.so文件应该放在或者生成到哪里感到困惑，下面是一个总结：</p>
 <ul>
 <li>Android Studio工程放在jniLibs/ABI目录中（当然也可以通过在build.gradle文件中的设置jniLibs.srcDir属性自己指定）</li>
 <li>Eclipse工程放在libs/ABI目录中（这也是ndk-build命令默认生成.so文件的目录）</li>
@@ -447,11 +446,11 @@
 <li>最终APK文件中的lib/ABI目录中</li>
 <li>通过PackageManager安装后，在小于Android 5.0的系统中，.so文件位于app的nativeLibraryPath目录中；在大于等于Android 5.0的系统中，.so文件位于app的nativeLibraryRootDir/CPU_ARCH目录中。</li>
 </ul>
-<p>##0x08 只提供armeabi架构的.so文件而忽略其他ABIs的<br>所有的x86/x86_64/armeabi-v7a/arm64-v8a设备都支持armeabi架构的.so文件，因此似乎移除其他ABIs的.so文件是一个减少APK大小的好技巧。但事实上并不是：这不只影响到函数库的性能和兼容性。</p>
+<h2 id="0x08-只提供armeabi架构的-so文件而忽略其他ABIs的"><a href="#0x08-只提供armeabi架构的-so文件而忽略其他ABIs的" class="headerlink" title="0x08 只提供armeabi架构的.so文件而忽略其他ABIs的"></a>0x08 只提供armeabi架构的.so文件而忽略其他ABIs的</h2><p>所有的x86/x86_64/armeabi-v7a/arm64-v8a设备都支持armeabi架构的.so文件，因此似乎移除其他ABIs的.so文件是一个减少APK大小的好技巧。但事实上并不是：这不只影响到函数库的性能和兼容性。</p>
 <p>x86设备能够很好的运行ARM类型函数库，但并不保证100%不发生crash，特别是对旧设备。64位设备（arm64-v8a, x86_64, mips64）能够运行32位的函数库，但是以32位模式运行，在64位平台上运行32位版本的ART和Android组件，将丢失专为64位优化过的性能（ART，webview，media等等）。</p>
 <p>以减少APK包大小为由是一个错误的借口，因为你也可以选择在应用市场上传指定ABI版本的APK，生成不同ABI版本的APK可以在build.gradle中如下配置：</p>
 <figure class="highlight gradle"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div></pre></td><td class="code"><pre><div class="line">android &#123;</div><div class="line">    ... </div><div class="line">    splits &#123;</div><div class="line">        abi &#123;</div><div class="line">            enable <span class="keyword">true</span></div><div class="line">            reset()</div><div class="line">            <span class="keyword">include</span> <span class="string">'x86'</span>, <span class="string">'x86_64'</span>, <span class="string">'armeabi-v7a'</span>, <span class="string">'arm64-v8a'</span> <span class="comment">//select ABIs to build APKs for</span></div><div class="line">            universalApk <span class="keyword">true</span> <span class="comment">//generate an additional APK that contains all the ABIs</span></div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="comment">// map for the version code</span></div><div class="line">    <span class="keyword">project</span>.ext.versionCodes = [<span class="string">'armeabi'</span>: <span class="number">1</span>, <span class="string">'armeabi-v7a'</span>: <span class="number">2</span>, <span class="string">'arm64-v8a'</span>: <span class="number">3</span>, <span class="string">'mips'</span>: <span class="number">5</span>, <span class="string">'mips64'</span>: <span class="number">6</span>, <span class="string">'x86'</span>: <span class="number">8</span>, <span class="string">'x86_64'</span>: <span class="number">9</span>]</div><div class="line"></div><div class="line">    android.applicationVariants.all &#123; variant -&gt;</div><div class="line">        <span class="comment">// assign different version code for each output</span></div><div class="line">        variant.outputs.<span class="keyword">each</span> &#123; output -&gt;</div><div class="line">            output.versionCodeOverride =</div><div class="line">                    <span class="keyword">project</span>.ext.versionCodes.get(output.getFilter(com.android.build.OutputFile.ABI), <span class="number">0</span>) * <span class="number">1000000</span> + android.defaultConfig.versionCode</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line"> &#125;</div></pre></td></tr></table></figure>
-<p>##0x09 使用系统私有库<br>尽量使用NDK提供的函数，其他第三方库可能不能正常在设备上运行，也可能导致异常奔溃。</p>
+<h2 id="0x09-使用系统私有库"><a href="#0x09-使用系统私有库" class="headerlink" title="0x09 使用系统私有库"></a>0x09 使用系统私有库</h2><p>尽量使用NDK提供的函数，其他第三方库可能不能正常在设备上运行，也可能导致异常奔溃。</p>
 <p>参考文献:<a href="http://ph0b.com/android-abis-and-so-files/" target="_blank" rel="external">What you should know about .so files</a>    </p>
 
       
@@ -664,7 +663,7 @@
               
             
             
-              <p class="post-toc-empty">此文章未包含目录</p>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#0x00-前言"><span class="nav-number">1.</span> <span class="nav-text">0x00 前言</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#0x01-为什么你需要重点关注-so文件"><span class="nav-number">2.</span> <span class="nav-text">0x01 为什么你需要重点关注.so文件</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#ABI和CPU的关系"><span class="nav-number">2.1.</span> <span class="nav-text">ABI和CPU的关系</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#0x02-App中可能出错的地方"><span class="nav-number">3.</span> <span class="nav-text">0x02 App中可能出错的地方</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#0x03-其他出错情况"><span class="nav-number">4.</span> <span class="nav-text">0x03 其他出错情况</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#0x04-使用android-21平台版本编译的-so文件运行在android-15的设备上"><span class="nav-number">5.</span> <span class="nav-text">0x04 使用android-21平台版本编译的.so文件运行在android-15的设备上</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#0x05-混合使用不同C-运行时编译的-so文件"><span class="nav-number">6.</span> <span class="nav-text">0x05 混合使用不同C++运行时编译的.so文件</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#0x06-没有为每个支持的CPU架构提供对应的-so文件"><span class="nav-number">7.</span> <span class="nav-text">0x06 没有为每个支持的CPU架构提供对应的.so文件</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#0x07-将-so文件放在错误的地方"><span class="nav-number">8.</span> <span class="nav-text">0x07 将.so文件放在错误的地方</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#0x08-只提供armeabi架构的-so文件而忽略其他ABIs的"><span class="nav-number">9.</span> <span class="nav-text">0x08 只提供armeabi架构的.so文件而忽略其他ABIs的</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#0x09-使用系统私有库"><span class="nav-number">10.</span> <span class="nav-text">0x09 使用系统私有库</span></a></li></ol></div>
             
           </div>
         </section>

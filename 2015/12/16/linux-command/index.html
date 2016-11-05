@@ -90,7 +90,7 @@
 <meta property="og:url" content="http://gnaixx.github.io/2015/12/16/linux-command/index.html">
 <meta property="og:site_name" content="凸一_一凸">
 <meta property="og:description" content="作为一个Java开发人员，有些常用的Linux命令必须掌握。即时平时开发过程中不使用Linux（Unix）或者mac系统，也需要熟练掌握Linux命令。因为很多服务器上都是Linux系统。所以，要和服务器机器交互，就要通过shell命令。">
-<meta property="og:updated_time" content="2016-11-05T07:57:27.000Z">
+<meta property="og:updated_time" content="2016-11-05T09:57:03.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="开发常用的linux命令">
 <meta name="twitter:description" content="作为一个Java开发人员，有些常用的Linux命令必须掌握。即时平时开发过程中不使用Linux（Unix）或者mac系统，也需要熟练掌握Linux命令。因为很多服务器上都是Linux系统。所以，要和服务器机器交互，就要通过shell命令。">
@@ -323,8 +323,7 @@
         <blockquote>
 <p>毕业后基本都是用mac开发了，渐渐的体会到shell命令的魅力，很多很复杂的操作只要端端的一行shell命令就能解决，大大提高了开发效率。下面给出一些常用的shell命令。</p>
 </blockquote>
-<p>###1.查找文件</p>
-<p><font color="red">find / -name filename.txt</font>　根据名称查找/目录下的filename.txt文件    </p>
+<h2 id="1-查找文件"><a href="#1-查找文件" class="headerlink" title="1.查找文件"></a>1.查找文件</h2><p><font color="red">find / -name filename.txt</font>　根据名称查找/目录下的filename.txt文件    </p>
 <p><font color="red">find . -name “*.xml” </font>　递归查找当前目录下所有的xml文件    </p>
 <p><font color="red">find . -name “*.xml” |xarg grep “hello world”</font>　 递归查找所有文件内容包含<code>hello world</code>的xml文件</p>
 <p><font color="red">grep -H “spring” *.xml</font>　 查找所有包含<code>spring</code>的xml文件</p>
@@ -333,60 +332,38 @@
 <p><font color="red">grep “test” d*</font>　 显示所有以d开头的文件中包含test的行</p>
 <p><font color="red">grep “test” aa bb cc</font>　 显示在aa bb cc文件中匹配的test的行</p>
 <p><font color="red">grep “[a-z]{5}“ aa</font>　 显示aa文件中至少包含五个连续小写字符的字符串的行</p>
-<p>###2.查看一个程序是否运行</p>
-<p><font color="red">ps -ef |grep tomcat</font>　 查看所有tomcat的进程</p>
-<p>###3.终止程序</p>
-<p><font color="red">kill -9 1292</font>　 终止线程号为1292的进程</p>
-<p>###4.查看文件，包含隐藏文件</p>
-<p><font color="red">ls -al</font>　</p>
-<p>###5.当前工作目录</p>
-<p><font color="red">pwd</font>　</p>
-<p>###6.复制文件</p>
-<p><font color="red">cp source dest</font>　 复制文件</p>
+<h2 id="2-查看一个程序是否运行"><a href="#2-查看一个程序是否运行" class="headerlink" title="2.查看一个程序是否运行"></a>2.查看一个程序是否运行</h2><p><font color="red">ps -ef |grep tomcat</font>　 查看所有tomcat的进程</p>
+<h2 id="3-终止程序"><a href="#3-终止程序" class="headerlink" title="3.终止程序"></a>3.终止程序</h2><p><font color="red">kill -9 1292</font>　 终止线程号为1292的进程</p>
+<h2 id="4-查看文件，包含隐藏文件"><a href="#4-查看文件，包含隐藏文件" class="headerlink" title="4.查看文件，包含隐藏文件"></a>4.查看文件，包含隐藏文件</h2><p><font color="red">ls -al</font>　</p>
+<h2 id="5-当前工作目录"><a href="#5-当前工作目录" class="headerlink" title="5.当前工作目录"></a>5.当前工作目录</h2><p><font color="red">pwd</font>　</p>
+<h2 id="6-复制文件"><a href="#6-复制文件" class="headerlink" title="6.复制文件"></a>6.复制文件</h2><p><font color="red">cp source dest</font>　 复制文件</p>
 <p><font color="red">cp -r sourceFolder targetFolder</font>　 递归复制整个文件夹</p>
 <p><font color="red">cp sourceFile remoteUserName@remoteIP:remoteAddr</font>　 远程拷贝</p>
-<p>###7.创建目录</p>
-<p><font color="red">mkdir newFolder</font>　</p>
-<p>###8.删除目录</p>
-<p><font color="red">rmdir deleteEmptyFolder</font>　 删除空目录</p>
+<h2 id="7-创建目录"><a href="#7-创建目录" class="headerlink" title="7.创建目录"></a>7.创建目录</h2><p><font color="red">mkdir newFolder</font>　</p>
+<h2 id="8-删除目录"><a href="#8-删除目录" class="headerlink" title="8.删除目录"></a>8.删除目录</h2><p><font color="red">rmdir deleteEmptyFolder</font>　 删除空目录</p>
 <p><font color="red">rm -rf deleteFolder</font>　 递归删除目录中所有内容</p>
-<p>###9.移动文件</p>
-<p><font color="red">mv /tmp/moveFile /targetFolder</font>　</p>
-<p>###10.重命名</p>
-<p><font color="red">mv oldFileName newFileName</font>　</p>
-<p>###11.切换用户</p>
-<p><font color="red">su -userName</font>　</p>
-<p>###12.修改文件权限</p>
-<p><font color="red">chmod 777 file</font>　 file的权限 -rwxrwxrwx, r表示读、w表示写、x表示可执行</p>
-<p>###13.压缩文件</p>
-<p><font color="red">tar -czf test.tar.gz /test1 /test2</font>　</p>
-<p>###14.列出压缩文件列表</p>
-<p><font color="red">tar -tzf test.tar.gz</font>　</p>
-<p>###15.解压文件</p>
-<p><font color="red">tar -xvzf test.tar.gz</font>　</p>
-<p>###16.查看文件</p>
-<p><font color="red">head -n 10 test.txt</font>　 查看文件头10行</p>
+<h2 id="9-移动文件"><a href="#9-移动文件" class="headerlink" title="9.移动文件"></a>9.移动文件</h2><p><font color="red">mv /tmp/moveFile /targetFolder</font>　</p>
+<h2 id="10-重命名"><a href="#10-重命名" class="headerlink" title="10.重命名"></a>10.重命名</h2><p><font color="red">mv oldFileName newFileName</font>　</p>
+<h2 id="11-切换用户"><a href="#11-切换用户" class="headerlink" title="11.切换用户"></a>11.切换用户</h2><p><font color="red">su -userName</font>　</p>
+<h2 id="12-修改文件权限"><a href="#12-修改文件权限" class="headerlink" title="12.修改文件权限"></a>12.修改文件权限</h2><p><font color="red">chmod 777 file</font>　 file的权限 -rwxrwxrwx, r表示读、w表示写、x表示可执行</p>
+<h2 id="13-压缩文件"><a href="#13-压缩文件" class="headerlink" title="13.压缩文件"></a>13.压缩文件</h2><p><font color="red">tar -czf test.tar.gz /test1 /test2</font>　</p>
+<h2 id="14-列出压缩文件列表"><a href="#14-列出压缩文件列表" class="headerlink" title="14.列出压缩文件列表"></a>14.列出压缩文件列表</h2><p><font color="red">tar -tzf test.tar.gz</font>　</p>
+<h2 id="15-解压文件"><a href="#15-解压文件" class="headerlink" title="15.解压文件"></a>15.解压文件</h2><p><font color="red">tar -xvzf test.tar.gz</font>　</p>
+<h2 id="16-查看文件"><a href="#16-查看文件" class="headerlink" title="16.查看文件"></a>16.查看文件</h2><p><font color="red">head -n 10 test.txt</font>　 查看文件头10行</p>
 <p><font color="red">tail -n 10 test.txt</font>　 查看文件尾10行</p>
 <p><font color="red">tail -f test.log</font>　 自动显示新增内容，屏幕显示10行，用于查看日志类型文件</p>
-<p>###17.查看端口占用情况</p>
-<p><font color="red">netstat -tln |grep 8080 </font>　</p>
-<p>####18.查看端口属于哪个程序</p>
-<p><font color="red">lsof -i :8080</font>　</p>
-<p>####19.以树状图列出目录内容</p>
-<p><font color="red">tree a</font>　</p>
+<h2 id="17-查看端口占用情况"><a href="#17-查看端口占用情况" class="headerlink" title="17.查看端口占用情况"></a>17.查看端口占用情况</h2><p><font color="red">netstat -tln |grep 8080 </font>　</p>
+<h2 id="18-查看端口属于哪个程序"><a href="#18-查看端口属于哪个程序" class="headerlink" title="#18.查看端口属于哪个程序"></a>#18.查看端口属于哪个程序</h2><p><font color="red">lsof -i :8080</font>　</p>
+<h2 id="19-以树状图列出目录内容"><a href="#19-以树状图列出目录内容" class="headerlink" title="#19.以树状图列出目录内容"></a>#19.以树状图列出目录内容</h2><p><font color="red">tree a</font>　</p>
 <p>在Mac系统是没有类似window中的tree命令，找到一条命令可以实现</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">find . print | sed -e &quot;s;[^/]*/;|____;g;s;____|; |;g&quot;</div></pre></td></tr></table></figure>
 <p>为了方便使用 写一个alias 到.base_profiel里；当然可以安装tree程序具体可以百度</p>
-<p>###20.文件下载</p>
-<p><font color="red">wget <a href="http://file.tgz" target="_blank" rel="external">http://file.tgz</a></font>　</p>
+<h2 id="20-文件下载"><a href="#20-文件下载" class="headerlink" title="20.文件下载"></a>20.文件下载</h2><p><font color="red">wget <a href="http://file.tgz" target="_blank" rel="external">http://file.tgz</a></font>　</p>
 <p><font color="red">curl <a href="http://file.tgz" target="_blank" rel="external">http://file.tgz</a></font>　</p>
-<p>###21.网络检测</p>
-<p><font color="red">ping www.baidu.com</font>　</p>
-<p>###22.远端登录</p>
-<p><font color="red">ssh userName:ip</font>　</p>
-<p>###23.打印信息</p>
-<p><font color="red">echo $JAVA_HOME</font>　</p>
-<p>###24.liunx命令学习网站<br><a href="http://explainshell.com" target="_blank" rel="external">http://explainshell.com</a></p>
+<h2 id="21-网络检测"><a href="#21-网络检测" class="headerlink" title="21.网络检测"></a>21.网络检测</h2><p><font color="red">ping www.baidu.com</font>　</p>
+<h2 id="22-远端登录"><a href="#22-远端登录" class="headerlink" title="22.远端登录"></a>22.远端登录</h2><p><font color="red">ssh userName:ip</font>　</p>
+<h2 id="23-打印信息"><a href="#23-打印信息" class="headerlink" title="23.打印信息"></a>23.打印信息</h2><p><font color="red">echo $JAVA_HOME</font>　</p>
+<h2 id="24-liunx命令学习网站"><a href="#24-liunx命令学习网站" class="headerlink" title="24.liunx命令学习网站"></a>24.liunx命令学习网站</h2><p><a href="http://explainshell.com" target="_blank" rel="external">http://explainshell.com</a></p>
 
       
     </div>
@@ -594,7 +571,7 @@
               
             
             
-              <p class="post-toc-empty">此文章未包含目录</p>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#1-查找文件"><span class="nav-number">1.</span> <span class="nav-text">1.查找文件</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-查看一个程序是否运行"><span class="nav-number">2.</span> <span class="nav-text">2.查看一个程序是否运行</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-终止程序"><span class="nav-number">3.</span> <span class="nav-text">3.终止程序</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#4-查看文件，包含隐藏文件"><span class="nav-number">4.</span> <span class="nav-text">4.查看文件，包含隐藏文件</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#5-当前工作目录"><span class="nav-number">5.</span> <span class="nav-text">5.当前工作目录</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#6-复制文件"><span class="nav-number">6.</span> <span class="nav-text">6.复制文件</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#7-创建目录"><span class="nav-number">7.</span> <span class="nav-text">7.创建目录</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#8-删除目录"><span class="nav-number">8.</span> <span class="nav-text">8.删除目录</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#9-移动文件"><span class="nav-number">9.</span> <span class="nav-text">9.移动文件</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#10-重命名"><span class="nav-number">10.</span> <span class="nav-text">10.重命名</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#11-切换用户"><span class="nav-number">11.</span> <span class="nav-text">11.切换用户</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#12-修改文件权限"><span class="nav-number">12.</span> <span class="nav-text">12.修改文件权限</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#13-压缩文件"><span class="nav-number">13.</span> <span class="nav-text">13.压缩文件</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#14-列出压缩文件列表"><span class="nav-number">14.</span> <span class="nav-text">14.列出压缩文件列表</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#15-解压文件"><span class="nav-number">15.</span> <span class="nav-text">15.解压文件</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#16-查看文件"><span class="nav-number">16.</span> <span class="nav-text">16.查看文件</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#17-查看端口占用情况"><span class="nav-number">17.</span> <span class="nav-text">17.查看端口占用情况</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#18-查看端口属于哪个程序"><span class="nav-number">18.</span> <span class="nav-text">#18.查看端口属于哪个程序</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#19-以树状图列出目录内容"><span class="nav-number">19.</span> <span class="nav-text">#19.以树状图列出目录内容</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#20-文件下载"><span class="nav-number">20.</span> <span class="nav-text">20.文件下载</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#21-网络检测"><span class="nav-number">21.</span> <span class="nav-text">21.网络检测</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#22-远端登录"><span class="nav-number">22.</span> <span class="nav-text">22.远端登录</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#23-打印信息"><span class="nav-number">23.</span> <span class="nav-text">23.打印信息</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#24-liunx命令学习网站"><span class="nav-number">24.</span> <span class="nav-text">24.liunx命令学习网站</span></a></li></ol></div>
             
           </div>
         </section>

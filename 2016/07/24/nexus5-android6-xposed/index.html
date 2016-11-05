@@ -94,7 +94,7 @@
 <meta property="og:image" content="https://gnaixx.github.io/blog_images/nexus/2.png">
 <meta property="og:image" content="https://gnaixx.github.io/blog_images/nexus/3.png">
 <meta property="og:image" content="https://gnaixx.github.io/blog_images/nexus/4.png">
-<meta property="og:updated_time" content="2016-11-05T07:57:27.000Z">
+<meta property="og:updated_time" content="2016-11-05T10:03:34.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="nexus5 刷 Android6.0+Xposed">
 <meta name="twitter:description" content="这几天把手机弄坏了好几次，每次都需要重新刷一遍。刷系统+root+刷recovery+安装xposed。">
@@ -328,28 +328,24 @@
         <blockquote>
 <p>不得不说现在的刷机工具都做的方便快捷，只需要简单的几天命令就解决了。以前用windows刷的时候还需要装一堆驱动软件啥的。</p>
 </blockquote>
-<p>##0x00 刷入Android6.0系统</p>
-<p>###下载镜像<br>官方的镜像刷机真是简单快捷，所有操作他都写好了脚本，你要做的就是运行它。当然前提是你已经安装好了ADB。下载的Android SDK里面就已经集成了，这里就不说了。<br><a href="https://developers.google.com/android/nexus/images" target="_blank" rel="external">官方镜像下载地址</a></p>
-<p>###具体步骤</p>
-<ol>
+<h2 id="0x00-刷入Android6-0系统"><a href="#0x00-刷入Android6-0系统" class="headerlink" title="0x00 刷入Android6.0系统"></a>0x00 刷入Android6.0系统</h2><h3 id="下载镜像"><a href="#下载镜像" class="headerlink" title="下载镜像"></a>下载镜像</h3><p>官方的镜像刷机真是简单快捷，所有操作他都写好了脚本，你要做的就是运行它。当然前提是你已经安装好了ADB。下载的Android SDK里面就已经集成了，这里就不说了。<br><a href="https://developers.google.com/android/nexus/images" target="_blank" rel="external">官方镜像下载地址</a></p>
+<h3 id="具体步骤"><a href="#具体步骤" class="headerlink" title="具体步骤"></a>具体步骤</h3><ol>
 <li><p>解压下载的镜像，其中刷机脚本就是<code>flash-all.sh</code><br><img src="https://gnaixx.github.io/blog_images/nexus/1.png" alt="1.png"> </p>
 </li>
 <li><p>关机，进入fastboot模式（关机状态下同时按住：音量下，电源键）</p>
 </li>
 <li>连接电脑，运行<code>flash-all.sh</code>脚本(需要一点时间)<br><img src="https://gnaixx.github.io/blog_images/nexus/2.png" alt="2.png"> </li>
 </ol>
-<p>##0x01 一键Root<br>使用CF-Auto-Root一键root 安卓6.0.1或（安卓n第一个预览版）。此办法的好处是无需很多技巧，但是坏处是包更新不及时，比如到了安卓6.1使用该包就会刷入老的内核版本。<br><a href="https://download.chainfire.eu/363/CF-Root/CF-Auto-Root/CF-Auto-Root-hammerhead-hammerhead-nexus5.zip" target="_blank" rel="external">root 工具包</a></p>
+<h2 id="0x01-一键Root"><a href="#0x01-一键Root" class="headerlink" title="0x01 一键Root"></a>0x01 一键Root</h2><p>使用CF-Auto-Root一键root 安卓6.0.1或（安卓n第一个预览版）。此办法的好处是无需很多技巧，但是坏处是包更新不及时，比如到了安卓6.1使用该包就会刷入老的内核版本。<br><a href="https://download.chainfire.eu/363/CF-Root/CF-Auto-Root/CF-Auto-Root-hammerhead-hammerhead-nexus5.zip" target="_blank" rel="external">root 工具包</a></p>
 <p>刷root的前记得开启usb调试模式。打开fastboot模式，操作也非常简单，运行<code>root-mac.sh</code>就好了。</p>
-<p>##0x02 刷入第三方recovery twrp<br>刷入第三方recovery有很多好处，最大的好处就是方便刷其他的rom，同时还可以通过其install功能来实现root和刷入一些模块等，同时twrp还提供了很多诸如备份啊，文件夹管理等功能，是玩机的必备工具之一。<br>找到适配您的nexus设备的twrp(您可以在<a href="https://twrp.me/Devices/" target="_blank" rel="external">https://twrp.me/Devices/</a> 输入相关设备名即可找到最新的)<br><a href="https://dl.twrp.me/hammerhead/twrp-2.8.7.1-hammerhead.img" target="_blank" rel="external">twrp for nexus 5</a></p>
-<p>###具体步骤</p>
-<ol>
+<h2 id="0x02-刷入第三方recovery-twrp"><a href="#0x02-刷入第三方recovery-twrp" class="headerlink" title="0x02 刷入第三方recovery twrp"></a>0x02 刷入第三方recovery twrp</h2><p>刷入第三方recovery有很多好处，最大的好处就是方便刷其他的rom，同时还可以通过其install功能来实现root和刷入一些模块等，同时twrp还提供了很多诸如备份啊，文件夹管理等功能，是玩机的必备工具之一。<br>找到适配您的nexus设备的twrp(您可以在<a href="https://twrp.me/Devices/" target="_blank" rel="external">https://twrp.me/Devices/</a> 输入相关设备名即可找到最新的)<br><a href="https://dl.twrp.me/hammerhead/twrp-2.8.7.1-hammerhead.img" target="_blank" rel="external">twrp for nexus 5</a></p>
+<h3 id="具体步骤-1"><a href="#具体步骤-1" class="headerlink" title="具体步骤"></a>具体步骤</h3><ol>
 <li>关机，进入fastboot模式（关机状态下同时按住：音量下，电源键）</li>
 <li>.刷入twrp的img（使用fastboot flash recovery twrp.img）<br><img src="https://gnaixx.github.io/blog_images/nexus/3.png" alt="3.png"> </li>
 <li>刷入成功后，可以在fastboot状态下，用音量键来选择”recovery mode”来进入twrp</li>
 </ol>
-<p>##0x03 刷入Xposed框架<br>下载Xposed框架：<a href="http://dl-xda.xposed.info/framework/sdk23/arm/" target="_blank" rel="external">http://dl-xda.xposed.info/framework/sdk23/arm/</a><br>我这里是下载最新的v86-sdk23版本。 </p>
-<p>###具体步骤 </p>
-<ol>
+<h2 id="0x03-刷入Xposed框架"><a href="#0x03-刷入Xposed框架" class="headerlink" title="0x03 刷入Xposed框架"></a>0x03 刷入Xposed框架</h2><p>下载Xposed框架：<a href="http://dl-xda.xposed.info/framework/sdk23/arm/" target="_blank" rel="external">http://dl-xda.xposed.info/framework/sdk23/arm/</a><br>我这里是下载最新的v86-sdk23版本。 </p>
+<h3 id="具体步骤-2"><a href="#具体步骤-2" class="headerlink" title="具体步骤"></a>具体步骤</h3><ol>
 <li><p>将压缩包复制到sdcard上：<br><img src="https://gnaixx.github.io/blog_images/nexus/4.png" alt="4.png"> </p>
 </li>
 <li><p>点击twrp上的install，选择刚刚导入的压缩包，重启就OK了。</p>
@@ -562,7 +558,7 @@
               
             
             
-              <p class="post-toc-empty">此文章未包含目录</p>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#0x00-刷入Android6-0系统"><span class="nav-number">1.</span> <span class="nav-text">0x00 刷入Android6.0系统</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#下载镜像"><span class="nav-number">1.1.</span> <span class="nav-text">下载镜像</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#具体步骤"><span class="nav-number">1.2.</span> <span class="nav-text">具体步骤</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#0x01-一键Root"><span class="nav-number">2.</span> <span class="nav-text">0x01 一键Root</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#0x02-刷入第三方recovery-twrp"><span class="nav-number">3.</span> <span class="nav-text">0x02 刷入第三方recovery twrp</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#具体步骤-1"><span class="nav-number">3.1.</span> <span class="nav-text">具体步骤</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#0x03-刷入Xposed框架"><span class="nav-number">4.</span> <span class="nav-text">0x03 刷入Xposed框架</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#具体步骤-2"><span class="nav-number">4.1.</span> <span class="nav-text">具体步骤</span></a></li></ol></li></ol></div>
             
           </div>
         </section>

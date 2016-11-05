@@ -90,7 +90,7 @@
 <meta property="og:url" content="http://gnaixx.github.io/2015/11/06/gson-string2unicode/index.html">
 <meta property="og:site_name" content="凸一_一凸">
 <meta property="og:description" content="今天在排查客户反馈的问题时候发现他们穿过来的数据有异常，因为我们获取的数据会添加一层Base64编码，而Base64会用`=`符号填充，但是我们发现`=`被转移为`\u003d`">
-<meta property="og:updated_time" content="2016-11-05T07:57:27.000Z">
+<meta property="og:updated_time" content="2016-11-05T09:55:44.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="避免Gson使用时将一些字符自动转换为Unicode转义字符">
 <meta name="twitter:description" content="今天在排查客户反馈的问题时候发现他们穿过来的数据有异常，因为我们获取的数据会添加一层Base64编码，而Base64会用`=`符号填充，但是我们发现`=`被转移为`\u003d`">
@@ -322,11 +322,10 @@
       
         <p>今天在排查客户反馈的问题时候发现他们穿过来的数据有异常，因为我们获取的数据会添加一层Base64编码，而Base64会用<code>=</code>符号填充，但是我们发现<code>=</code>被转移为<code>\u003d</code>。经过排查可能是客户端利用Gson产生字符串导致部分字符被自动转换为Unicode字符。</p>
 <hr>
-<p>####例如：<br><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">&#123;<span class="string">"s"</span>:<span class="string">"\u003c"</span>&#125;</div></pre></td></tr></table></figure></p>
+<h2 id="例如："><a href="#例如：" class="headerlink" title="例如："></a>例如：</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">&#123;<span class="string">"s"</span>:<span class="string">"\u003c"</span>&#125;</div></pre></td></tr></table></figure>
 <p>我只想简单的打印成这样</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">&#123;<span class="string">"s"</span>:<span class="string">"&lt;"</span>&#125;</div></pre></td></tr></table></figure>
-<p>####解决方案：</p>
-<p>我只需要 <font color="red"><code>disable HTML escaping</code></font>.</p>
+<h2 id="解决方案："><a href="#解决方案：" class="headerlink" title="解决方案："></a>解决方案：</h2><p>我只需要 <font color="red"><code>disable HTML escaping</code></font>.</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">Gson gson = <span class="keyword">new</span> GsonBuilder().disableHtmlEscaping().create();</div></pre></td></tr></table></figure>
       
     </div>
@@ -534,7 +533,7 @@
               
             
             
-              <p class="post-toc-empty">此文章未包含目录</p>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#例如："><span class="nav-number">1.</span> <span class="nav-text">例如：</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#解决方案："><span class="nav-number">2.</span> <span class="nav-text">解决方案：</span></a></li></ol></div>
             
           </div>
         </section>

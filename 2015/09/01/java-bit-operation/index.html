@@ -90,7 +90,7 @@
 <meta property="og:url" content="http://gnaixx.github.io/2015/09/01/java-bit-operation/index.html">
 <meta property="og:site_name" content="凸一_一凸">
 <meta property="og:description" content="编程中会遇到很多位运算符,简单讲下自己在实际编程中遇到的问题。">
-<meta property="og:updated_time" content="2016-11-05T07:57:27.000Z">
+<meta property="og:updated_time" content="2016-11-05T09:55:53.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="位运算符 >>, <<, >>>">
 <meta name="twitter:description" content="编程中会遇到很多位运算符,简单讲下自己在实际编程中遇到的问题。">
@@ -321,15 +321,14 @@
 
       
         <p>因为java比较容易被反编译，上周准备把加密算法通过JNI调用的方式用C/C++实现。在java代码中有一个位运算符”&gt;&gt;&gt;”,一开始不知道什么意思网上找了一些资料说是“忽略符号位右移运算”,看了也是一知半解就自己测试了一下。</p>
-<p>##0x00 二进制<br>要想了解位运算必须先清除数的二进制表示方法。<br>以整数为例正整数的二进制是以原码表示：<code>123456789</code> -&gt; <code>0111 0101 1011 1100 1101 0001 0101</code><br>负数整数则是以补码表示: <code>-2</code> -&gt; <code>1111 1111 1111 1111 1111 1111 1111 1101</code></p>
-<p>##0x01 左移<code>&lt;&lt;</code>、右移<code>&gt;&gt;</code>   </p>
-<ul>
+<h2 id="0x00-二进制"><a href="#0x00-二进制" class="headerlink" title="0x00 二进制"></a>0x00 二进制</h2><p>要想了解位运算必须先清除数的二进制表示方法。<br>以整数为例正整数的二进制是以原码表示：<code>123456789</code> -&gt; <code>0111 0101 1011 1100 1101 0001 0101</code><br>负数整数则是以补码表示: <code>-2</code> -&gt; <code>1111 1111 1111 1111 1111 1111 1111 1101</code></p>
+<h2 id="0x01-左移-lt-lt-、右移-gt-gt"><a href="#0x01-左移-lt-lt-、右移-gt-gt" class="headerlink" title="0x01 左移&lt;&lt;、右移&gt;&gt;"></a>0x01 左移<code>&lt;&lt;</code>、右移<code>&gt;&gt;</code></h2><ul>
 <li><p>左移<br>  左移是将二进制整体向左移动某个位数，如将<code>123456789 &lt;&lt; 4</code>得到的结果为:<code>0101 1011 1100 1101 0001 0101 0000</code>，右边空出来的位置会填充<code>0</code>。</p>
 </li>
 <li><p>右移<br>  在正整数的情况下右移和左移操作是一样的，只不过换了一个反向同样都是填充<code>0</code>,但是当负数的情况下填充的则是<code>1</code>了。所以<code>-2 &gt;&gt; 2</code>的到结果则是<code>1111 1111 1111 1111 1111 1111 1111 1111</code></p>
 </li>
 </ul>
-<p>##0x02 运算符<code>&gt;&gt;&gt;</code><br>上面说了右移操作要根据是正数还是负数来判断填充<code>0</code>or<code>1</code>，但是<code>&gt;&gt;&gt;</code>没有这个限制，无论是正数还是负数右移后填充的都是<code>0</code>。所以在正数的情况下<code>&gt;&gt;&gt;</code>和<code>&gt;&gt;</code>的效果是一样的。负数的情况下如<code>-2 &gt;&gt;&gt; 2</code>得到的则是 <code>00111 1111 1111 1111 1111 1111 1111 1111</code>。   </p>
+<h2 id="0x02-运算符-gt-gt-gt"><a href="#0x02-运算符-gt-gt-gt" class="headerlink" title="0x02 运算符&gt;&gt;&gt;"></a>0x02 运算符<code>&gt;&gt;&gt;</code></h2><p>上面说了右移操作要根据是正数还是负数来判断填充<code>0</code>or<code>1</code>，但是<code>&gt;&gt;&gt;</code>没有这个限制，无论是正数还是负数右移后填充的都是<code>0</code>。所以在正数的情况下<code>&gt;&gt;&gt;</code>和<code>&gt;&gt;</code>的效果是一样的。负数的情况下如<code>-2 &gt;&gt;&gt; 2</code>得到的则是 <code>00111 1111 1111 1111 1111 1111 1111 1111</code>。   </p>
 <p>因为<code>&gt;&gt;&gt;</code>这个运算符在C/C++中并没有，所以必须自己实现。其实也很简单举个列子<code>-12345&gt;&gt;&gt;5 == (-12345&gt;&gt;5) &amp; 0x07FFFFFF</code>这里是以int类型为例，具体要根据代码的实际情况来判断<code>&amp;</code>后的数。</p>
 
       
@@ -538,7 +537,7 @@
               
             
             
-              <p class="post-toc-empty">此文章未包含目录</p>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#0x00-二进制"><span class="nav-number">1.</span> <span class="nav-text">0x00 二进制</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#0x01-左移-lt-lt-、右移-gt-gt"><span class="nav-number">2.</span> <span class="nav-text">0x01 左移<<、右移>></span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#0x02-运算符-gt-gt-gt"><span class="nav-number">3.</span> <span class="nav-text">0x02 运算符>>></span></a></li></ol></div>
             
           </div>
         </section>

@@ -90,7 +90,7 @@
 <meta property="og:url" content="http://gnaixx.github.io/2015/11/25/java-modifier/index.html">
 <meta property="og:site_name" content="凸一_一凸">
 <meta property="og:description" content="受不了老是忘记public、protected、public的区别，必须写一篇记住他们">
-<meta property="og:updated_time" content="2016-11-05T07:57:27.000Z">
+<meta property="og:updated_time" content="2016-11-05T09:56:15.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Java中的private/protected/public/区别">
 <meta name="twitter:description" content="受不了老是忘记public、protected、public的区别，必须写一篇记住他们">
@@ -323,15 +323,13 @@
         <blockquote>
 <p>Java中的private、protected、public、default（friendly）区别</p>
 </blockquote>
-<p>###0x00 定义</p>
-<ol>
+<h2 id="0x00-定义"><a href="#0x00-定义" class="headerlink" title="0x00 定义"></a>0x00 定义</h2><ol>
 <li><strong>public</strong>: 具有最大的访问权限，可以访问任何一个在CLASSPATH下的类、接口、异常等。它往往用于对外的情况，也就是对象或类对外的一种接口的形式</li>
 <li><strong>protected</strong>: 主要作用用来保护子类，访问仅限于包含类或从包含类派生的类型,只有包含该成员的类以及继承的类可以存取。</li>
 <li><strong>default(friendly)</strong>: 它是针对本包访问而设计的，任何处于本包下的类、接口、异常等，都可以相互访问，即使是父类没有用protected修饰的成员也可以</li>
 <li><strong>private</strong>: 访问权限仅限于类的内部，是一种封装的体现，例如，大多数的成员变量都是修饰符为private的，它们不希望被其他任何外部的类访问</li>
 </ol>
-<p>###0x01 作用域  </p>
-<table>
+<h2 id="0x01-作用域"><a href="#0x01-作用域" class="headerlink" title="0x01 作用域"></a>0x01 作用域</h2><table>
 <thead>
 <tr>
 <th>修饰符</th>
@@ -372,7 +370,7 @@
 </tr>
 </tbody>
 </table>
-<p>###0x02 区别<br>（1）public：可以被所有其他类所访问。<br>（2）private：只能被自己访问和修改。<br>（3）protected：自身，子类及同一个包中类可以访问。<br>（4）default（默认）：同一包中的类可以访问，声明时没有加修饰符，认为是friendly。</p>
+<h2 id="0x02-区别"><a href="#0x02-区别" class="headerlink" title="0x02 区别"></a>0x02 区别</h2><p>（1）public：可以被所有其他类所访问。<br>（2）private：只能被自己访问和修改。<br>（3）protected：自身，子类及同一个包中类可以访问。<br>（4）default（默认）：同一包中的类可以访问，声明时没有加修饰符，认为是friendly。</p>
 
       
     </div>
@@ -578,7 +576,7 @@
               
             
             
-              <p class="post-toc-empty">此文章未包含目录</p>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#0x00-定义"><span class="nav-number">1.</span> <span class="nav-text">0x00 定义</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#0x01-作用域"><span class="nav-number">2.</span> <span class="nav-text">0x01 作用域</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#0x02-区别"><span class="nav-number">3.</span> <span class="nav-text">0x02 区别</span></a></li></ol></div>
             
           </div>
         </section>
