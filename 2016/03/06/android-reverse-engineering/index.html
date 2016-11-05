@@ -1,0 +1,740 @@
+<!doctype html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.4.0" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.0.2" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="android,crack," />
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/images/favicon.ico?v=5.0.2" />
+
+
+
+
+
+
+<meta name="description" content="最近在看《Android软件安全与逆向分析》，所以把自己的实践过程整理一下。实例选自书中的第二章节，一个最简单的破解案例。分析Android程序是开发Android程序的一个逆向过程。在分析前必须要了解Android开发的流程，程序结构，语句分支，解密原理。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Android程序逆向分析">
+<meta property="og:url" content="http://gnaixx.github.io/2016/03/06/android-reverse-engineering/index.html">
+<meta property="og:site_name" content="凸一_一凸">
+<meta property="og:description" content="最近在看《Android软件安全与逆向分析》，所以把自己的实践过程整理一下。实例选自书中的第二章节，一个最简单的破解案例。分析Android程序是开发Android程序的一个逆向过程。在分析前必须要了解Android开发的流程，程序结构，语句分支，解密原理。">
+<meta property="og:image" content="https://gnaixx.github.io/blog_images/crackme/1.jpg">
+<meta property="og:image" content="https://gnaixx.github.io/blog_images/crackme/2.png">
+<meta property="og:image" content="https://gnaixx.github.io/blog_images/crackme/3.png">
+<meta property="og:image" content="https://gnaixx.github.io/blog_images/crackme/4.png">
+<meta property="og:updated_time" content="2016-11-05T07:57:27.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Android程序逆向分析">
+<meta name="twitter:description" content="最近在看《Android软件安全与逆向分析》，所以把自己的实践过程整理一下。实例选自书中的第二章节，一个最简单的破解案例。分析Android程序是开发Android程序的一个逆向过程。在分析前必须要了解Android开发的流程，程序结构，语句分支，解密原理。">
+<meta name="twitter:image" content="https://gnaixx.github.io/blog_images/crackme/1.jpg">
+
+
+
+<script type="text/javascript" id="hexo.configuration">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    scheme: 'Mist',
+    sidebar: {"position":"left","display":"post"},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    }
+  };
+</script>
+
+
+
+
+  <link rel="canonical" href="http://gnaixx.github.io/2016/03/06/android-reverse-engineering/"/>
+
+
+  <title> Android程序逆向分析 | 凸一_一凸 </title>
+</head>
+
+<body itemscope itemtype="//schema.org/WebPage" lang="zh-Hans">
+
+  
+
+
+
+  <script type="text/javascript">
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "//hm.baidu.com/hm.js?bb104a561bbdd3b6666195d45e5581a9";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+
+
+
+
+  
+  
+    
+  
+
+  <div class="container one-collumn sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="//schema.org/WPHeader">
+      <div class="header-inner"><div class="site-meta ">
+  
+
+  <div class="custom-logo-site-title">
+    <a href="/"  class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <span class="site-title">凸一_一凸</span>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+  <p class="site-subtitle">gnaixx</p>
+</div>
+
+<div class="site-nav-toggle">
+  <button>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+  </button>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories" rel="section">
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+            标签
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="//schema.org/Article">
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                Android程序逆向分析
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            <span class="post-meta-item-icon">
+              <i class="fa fa-calendar-o"></i>
+            </span>
+            <span class="post-meta-item-text">发表于</span>
+            <time itemprop="dateCreated" datetime="2016-03-06T14:14:49+08:00" content="2016-03-06">
+              2016-03-06
+            </time>
+          </span>
+
+          
+            <span class="post-category" >
+              &nbsp; | &nbsp;
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+              
+                <span itemprop="about" itemscope itemtype="https://schema.org/Thing">
+                  <a href="/categories/android/" itemprop="url" rel="index">
+                    <span itemprop="name">android</span>
+                  </a>
+                </span>
+
+                
+                
+
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                &nbsp; | &nbsp;
+                <a href="/2016/03/06/android-reverse-engineering/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count ds-thread-count" data-thread-key="2016/03/06/android-reverse-engineering/" itemprop="commentsCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+
+          
+          
+
+          
+              &nbsp; | &nbsp;
+              <span class="page-pv"><i class="fa fa-file-o"></i>
+              <span class="busuanzi-value" id="busuanzi_value_page_pv" ></span>
+              </span>
+          
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>　　分析Android程序是开发Android程序的一个逆向过程。在分析前必须要了解Android开发的流程，程序结构，语句分支，解密原理。</p>
+<p>###0x00 编写一个Android程序<br>　　具体的编写过程就不做介绍了，源码已经上传github <a href="https://github.com/gnaix92/crack" target="_blank" rel="external">github.com/gnaix92/crack</a>可以下载实践(module crackme0201)。其中涉及的工具可以在根目录的tools文件夹中找到。<br>这里贴出关键代码：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div><div class="line">62</div><div class="line">63</div><div class="line">64</div><div class="line">65</div><div class="line">66</div><div class="line">67</div></pre></td><td class="code"><pre><div class="line"><span class="meta">@Override</span></div><div class="line"><span class="function"><span class="keyword">protected</span> <span class="keyword">void</span> <span class="title">onCreate</span><span class="params">(Bundle savedInstanceState)</span> </span>&#123;</div><div class="line">    <span class="keyword">super</span>.onCreate(savedInstanceState);</div><div class="line">    setContentView(R.layout.activity_main);</div><div class="line"></div><div class="line">    setTitle(R.string.unregister); <span class="comment">//未注册</span></div><div class="line">    edit_userName = (EditText) findViewById(R.id.edit_username);</div><div class="line">    edit_sn = (EditText) findViewById(R.id.edit_sn);</div><div class="line">    btn_register = (Button) findViewById(R.id.button_register);</div><div class="line"></div><div class="line">    btn_register.setOnClickListener(<span class="keyword">new</span> View.OnClickListener() &#123;</div><div class="line">        <span class="meta">@Override</span></div><div class="line">        <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">onClick</span><span class="params">(View v)</span> </span>&#123;</div><div class="line">            <span class="keyword">if</span> (!checkSN(edit_userName.getText().toString().trim(),</div><div class="line">                    edit_sn.getText().toString().trim())) &#123;</div><div class="line">                <span class="comment">//注册失败</span></div><div class="line">                Toast.makeText(MainActivity.<span class="keyword">this</span>,</div><div class="line">                        R.string.unsuccessed, Toast.LENGTH_SHORT).show();</div><div class="line">            &#125; <span class="keyword">else</span> &#123;</div><div class="line">                <span class="comment">//注册成功</span></div><div class="line">                Toast.makeText(MainActivity.<span class="keyword">this</span>,</div><div class="line">                        R.string.successed, Toast.LENGTH_SHORT).show();</div><div class="line">                btn_register.setEnabled(<span class="keyword">false</span>);</div><div class="line">                setTitle(R.string.registered);</div><div class="line">            &#125;</div><div class="line">        &#125;</div><div class="line">    &#125;);</div><div class="line"></div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="comment">/**</span></div><div class="line"> * 计算用户名和注册码是否匹配</div><div class="line"> * <span class="doctag">@param</span> userName</div><div class="line"> * <span class="doctag">@param</span> sn</div><div class="line"> * <span class="doctag">@return</span></div><div class="line"> */</div><div class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">boolean</span> <span class="title">checkSN</span><span class="params">(String userName, String sn)</span> </span>&#123;</div><div class="line">    <span class="keyword">try</span> &#123;</div><div class="line">        <span class="keyword">if</span> (userName == <span class="keyword">null</span> || userName.length() == <span class="number">0</span>) &#123;</div><div class="line">            <span class="keyword">return</span> <span class="keyword">false</span>;</div><div class="line">        &#125;</div><div class="line"></div><div class="line">        <span class="keyword">if</span> (sn == <span class="keyword">null</span> || sn.length() == <span class="number">0</span>) &#123;</div><div class="line">            <span class="keyword">return</span> <span class="keyword">false</span>;</div><div class="line">        &#125;</div><div class="line"></div><div class="line">        <span class="comment">//MD5对用户名进行hash 最后计算出SN</span></div><div class="line">        MessageDigest digest = MessageDigest.getInstance(<span class="string">"MD5"</span>);</div><div class="line">        digest.reset();</div><div class="line">        digest.update(userName.getBytes());</div><div class="line">        <span class="keyword">byte</span>[] bytes = digest.digest();</div><div class="line">        String hexstr = toHexString(bytes, <span class="string">""</span>);</div><div class="line">        StringBuilder sb = <span class="keyword">new</span> StringBuilder();</div><div class="line">        <span class="keyword">for</span>(<span class="keyword">int</span> i=<span class="number">0</span>; i&lt;hexstr.length(); i+=<span class="number">2</span>)&#123;</div><div class="line">            sb.append(hexstr.charAt(i));</div><div class="line">        &#125;</div><div class="line"></div><div class="line">        String userSN = sb.toString();</div><div class="line">        <span class="keyword">if</span>(!userSN.equalsIgnoreCase(sn))&#123; <span class="comment">//比对SN</span></div><div class="line">            <span class="keyword">return</span> <span class="keyword">false</span>;</div><div class="line">        &#125;</div><div class="line">    &#125; <span class="keyword">catch</span> (NoSuchAlgorithmException e) &#123;</div><div class="line">        e.printStackTrace();</div><div class="line">        <span class="keyword">return</span> <span class="keyword">false</span>;</div><div class="line">    &#125;</div><div class="line">    <span class="keyword">return</span> <span class="keyword">true</span>;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>　　通过比对用户输入的用户名和注册码判断是否注册成功，注册码根据用户名进行MD5后的字符串的下标偶数位组成。</p>
+<p>####编译生成APK<br>执行效果:<br><img width="250px" height="400px" src="https://gnaixx.github.io/blog_images/crackme/1.jpg"></p>
+<p>###0x01 破解APK<br>　　通过apktool对APK包进行反编译，生成Smali文件。通过Smali代码找到程序的突破口进行修改，最后使用apktool重新编译并签名。</p>
+<p>####反编译APK<br>　　我用了最新的apktool版本(2.0.3)进行反编译，工具可以项目的<a href="https://github.com/gnaix92/crack/tree/master/tools/apktool" target="_blank" rel="external">tools/apktool</a>目录中找到。<br>使用非常简单</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">apktool d ***.apk -o output</div></pre></td></tr></table></figure>
+<p>生成的反编译文件都在output目录下。<br><img width="400px" height="200px" src="https://gnaixx.github.io/blog_images/crackme/2.png">  </p>
+<p>####分析APK文件<br>　　反编译apk文件成功后，会在当前的output目录下生成一系列目录与文件.其中smali目录下存放了程序所有的反编译代码。res目录是程序的所有资源文件，这些目录的子目录和文件与开发时的源码目录结构是一致的。<br>　　如何寻找突破口是分析一个程序的关键。对于一般的Android来说，错误提示信息通常是指引关键代码的风向标，错误提示附件一般是核心验证代码。<br>错误提示是Android程序中的字符串资源，开发Android程序时，这些字符串可能硬编码到源码中，也可能引用自“res/values”目录下的<code>string.xml</code>文件，apk文件在打包的时候<code>string.xml</code>中的字符串被加密存储在<code>resources.arsc</code>文件保存打apk程序中，apk被反编译后这个文件也被解密出来。<br>　　在源码中当注册失败的时候会Toast提示“无效用户名或注册码”，根据这个线索我们可以打开<code>res/values/string.xml</code>文件，找到下面一行：</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"><span class="tag">&lt;<span class="name">string</span> <span class="attr">name</span>=<span class="string">"unsuccessed"</span>&gt;</span>无效用户名或注册码<span class="tag">&lt;/<span class="name">string</span>&gt;</span></div></pre></td></tr></table></figure>
+<p>　　开发Android程序时，<code>string.xml</code>文件中的所有字符串资源都在<code>gen/&lt;packagename&gt;/R.java</code>文件的<code>String</code>类中被标识，每个字符串都有唯一的int类型索引值，使用apktool反编译后，所有索引值保存在<code>string.xml</code>文件同目录下的<code>public.xml</code>文件中。<br>以<code>unsuccessed</code>为关键字在<code>public.xml</code>中搜索可以找到：</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"><span class="tag">&lt;<span class="name">public</span> <span class="attr">type</span>=<span class="string">"string"</span> <span class="attr">name</span>=<span class="string">"unsuccessed"</span> <span class="attr">id</span>=<span class="string">"0x7f06001f"</span> /&gt;</span></div></pre></td></tr></table></figure>
+<p><code>unsuccessed</code>的id值为<code>0x7f06001f</code>, 在smali目录下只有<code>MainActivity$1.smali</code>文件一处调用，代码如下:</p>
+<figure class="highlight smali"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div></pre></td><td class="code"><pre><div class="line"><span class="comment"># virtual methods</span></div><div class="line"><span class="keyword">.method</span><span class="keyword"> public</span> onClick(<span class="class">Landroid/view/View;</span>)V</div><div class="line"><span class="keyword">    .locals</span> 4</div><div class="line"><span class="keyword">    .param</span> p1, <span class="string">"v"</span>    <span class="comment"># Landroid/view/View;</span></div><div class="line"><span class="keyword">    .prologue</span></div><div class="line">   <span class="built_in"> const/4 </span>v3, 0x0</div><div class="line">	......</div><div class="line">    <span class="comment"># invokes: Lcom/example/gnaix/crackme0201/MainActivity;-&gt;checkSN(Ljava/lang/String;Ljava/lang/String;)Z</span></div><div class="line">   <span class="built_in"> invoke-static </span>&#123;v0, v1, v2&#125;, <span class="class">Lcom/example/gnaix/crackme0201/MainActivity;</span>-&gt;access$200(<span class="class">Lcom/example/gnaix/crackme0201/MainActivity;</span><span class="class">Ljava/lang/String;</span><span class="class">Ljava/lang/String;</span>)Z</div><div class="line">   <span class="built_in"> move-result </span>v0</div><div class="line">   <span class="built_in"> if-nez </span>v0,<span class="keyword"> :cond_0</span> <span class="comment">#如果结果不为0，就跳转到cond_0标号处</span></div><div class="line"><span class="keyword">    .line</span> 33</div><div class="line">   <span class="built_in"> iget-object </span>v0, p0, <span class="class">Lcom/example/gnaix/crackme0201/MainActivity$1;</span>-&gt;this$0:<span class="class">Lcom/example/gnaix/crackme0201/MainActivity;</span></div><div class="line">   <span class="built_in"> const </span>v1, 0x7f06001f <span class="comment">#unsuccessed字符串</span></div><div class="line">   <span class="built_in"> invoke-static </span>&#123;v0, v1, v3&#125;, <span class="class">Landroid/widget/Toast;</span>-&gt;makeText(<span class="class">Landroid/content/Context;</span>II)<span class="class">Landroid/widget/Toast;</span></div><div class="line">   <span class="built_in"> move-result-object </span>v0</div><div class="line">   <span class="built_in"> invoke-virtual </span>&#123;v0&#125;, <span class="class">Landroid/widget/Toast;</span>-&gt;show()V</div><div class="line"><span class="keyword">    .line</span> 41</div><div class="line">   <span class="keyword"> :goto_0</span></div><div class="line">   <span class="built_in"> return-void</span></div><div class="line"><span class="keyword">    .line</span> 36</div><div class="line">   <span class="keyword"> :cond_0</span></div><div class="line">   <span class="built_in"> iget-object </span>v0, p0, <span class="class">Lcom/example/gnaix/crackme0201/MainActivity$1;</span>-&gt;this$0:<span class="class">Lcom/example/gnaix/crackme0201/MainActivity;</span></div><div class="line">   <span class="built_in"> const </span>v1, 0x7f06001c  <span class="comment">#successed字符串</span></div><div class="line">   <span class="built_in"> invoke-static </span>&#123;v0, v1, v3&#125;, <span class="class">Landroid/widget/Toast;</span>-&gt;makeText(<span class="class">Landroid/content/Context;</span>II)<span class="class">Landroid/widget/Toast;</span></div><div class="line">   <span class="built_in"> move-result-object </span>v0</div><div class="line">   <span class="built_in"> invoke-virtual </span>&#123;v0&#125;, <span class="class">Landroid/widget/Toast;</span>-&gt;show()V</div><div class="line"><span class="keyword">    .line</span> 38</div><div class="line">   <span class="built_in"> iget-object </span>v0, p0, <span class="class">Lcom/example/gnaix/crackme0201/MainActivity$1;</span>-&gt;this$0:<span class="class">Lcom/example/gnaix/crackme0201/MainActivity;</span></div><div class="line">    <span class="comment"># getter for: Lcom/example/gnaix/crackme0201/MainActivity;-&gt;btn_register:Landroid/widget/Button;</span></div><div class="line">   <span class="built_in"> invoke-static </span>&#123;v0&#125;, <span class="class">Lcom/example/gnaix/crackme0201/MainActivity;</span>-&gt;access$300(<span class="class">Lcom/example/gnaix/crackme0201/MainActivity;</span>)<span class="class">Landroid/widget/Button;</span></div><div class="line">   <span class="built_in"> move-result-object </span>v0</div><div class="line">   <span class="built_in"> invoke-virtual </span>&#123;v0, v3&#125;, <span class="class">Landroid/widget/Button;</span>-&gt;setEnabled(Z)V</div><div class="line"><span class="keyword">    .line</span> 39</div><div class="line">   <span class="built_in"> iget-object </span>v0, p0, <span class="class">Lcom/example/gnaix/crackme0201/MainActivity$1;</span>-&gt;this$0:<span class="class">Lcom/example/gnaix/crackme0201/MainActivity;</span></div><div class="line">   <span class="built_in"> const </span>v1, 0x7f06001a</div><div class="line">   <span class="built_in"> invoke-virtual </span>&#123;v0, v1&#125;, <span class="class">Lcom/example/gnaix/crackme0201/MainActivity;</span>-&gt;setTitle(I)V</div><div class="line">   <span class="built_in"> goto </span>:goto_0<span class="keyword"></span></div><div class="line">.end method</div></pre></td></tr></table></figure>
+<p>　　smali代码中添加注释使用<code>#</code>开头在，代码 :</p>
+<figure class="highlight smali"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line"><span class="comment"># invokes: Lcom/example/gnaix/crackme0201/MainActivity;-&gt;checkSN(Ljava/lang/String;Ljava/lang/String;)Z</span></div><div class="line">   <span class="built_in"> invoke-static </span>&#123;v0, v1, v2&#125;, <span class="class">Lcom/example/gnaix/crackme0201/MainActivity;</span>-&gt;access$200(<span class="class">Lcom/example/gnaix/crackme0201/MainActivity;</span><span class="class">Ljava/lang/String;</span><span class="class">Ljava/lang/String;</span>)Z</div><div class="line">   <span class="built_in"> move-result </span>v0</div><div class="line">   <span class="built_in"> if-nez </span>v0,<span class="keyword"> :cond_0</span> <span class="comment">#如果结果不为0，就跳转到cond_0标号处</span></div></pre></td></tr></table></figure>
+<p>　　可以看到该处调用了<code>checkSN()</code>进行注册码验证，接下去的两行代码表示：第一行将函数的返回值放到<strong>v0</strong>寄存器中，第二行判断<strong>v0</strong>是否不为零，如果是跳转到<strong>cond_0</strong>标号处，反之顺序执行。<br>在顺序执行中我们可以发现包含了<code>unsuccessed</code>字符串:</p>
+<figure class="highlight smali"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">const v1, 0x7f06001f <span class="comment">#unsuccessed字符串</span></div></pre></td></tr></table></figure>
+<p>　　而在<code>cond_0</code>下包含了<code>successed</code>字符串:</p>
+<figure class="highlight smali"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">const v1, 0x7f06001c  <span class="comment">#successed字符串</span></div></pre></td></tr></table></figure>
+<p>　　不难判断当<code>if-nez v0, :cond_0</code>条件为真的时候则注册成功，反之注册失败。</p>
+<p>####修改Smali文件代码<br>　　<code>if-nez v0, :cond_0</code>作为程序破解的关键，我们只要将其修改成功能相反的指令即可。<code>if-nez</code>是Dalvik指令集中的一个条件跳转指令，类似的还有<code>if-eqz, if-gez, if-lez</code>等。与<code>if-nez</code>功能相反的是<code>if-eqz</code>。<br>所以我们可以将<code>if-nez v0, :cond_0</code>修改为<code>if-eqz v0, :cond_0</code>。</p>
+<p>###0x02 重新编译APK并签名<br>　　这里需要说一点，一开始我重新编译直接报错了,如下:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div></pre></td><td class="code"><pre><div class="line">I: Using Apktool 2.0.3</div><div class="line">I: Smaling smali folder into classes.dex...</div><div class="line">I: Building resources...</div><div class="line">/Users/xiangqing/Documents/workspace/android/crack/crackme0201/build/outputs/apk/output/res/values-v23/styles.xml:7: error: Error retrieving parent for item: No resource found that matches the given name &apos;@android:style/WindowTitle&apos;.</div><div class="line"></div><div class="line">/Users/xiangqing/Documents/workspace/android/crack/crackme0201/build/outputs/apk/output/res/values-v23/styles.xml:8: error: Error retrieving parent for item: No resource found that matches the given name &apos;@android:style/WindowTitleBackground&apos;.</div><div class="line"></div><div class="line">Exception in thread &quot;main&quot; brut.androlib.AndrolibException: brut.androlib.AndrolibException: brut.common.BrutException: could not exec command: [/var/folders/vr/nlnk4jrj0sz31n6pzdp1h23r0000gp/T/brut_util_Jar_1576083296434469541.tmp, p, --forced-package-id, 127, --min-sdk-version, 8, --target-sdk-version, 23, --version-code, 1, --version-name, 1.0, -F, /var/folders/vr/nlnk4jrj0sz31n6pzdp1h23r0000gp/T/APKTOOL5612206277771121028.tmp, -0, arsc, -0, arsc, -I, /Users/xiangqing/Library/apktool/framework/1.apk, -S, /Users/xiangqing/Documents/workspace/android/crack/crackme0201/build/outputs/apk/output/res, -M, /Users/xiangqing/Documents/workspace/android/crack/crackme0201/build/outputs/apk/output/AndroidManifest.xml]</div><div class="line">    at brut.androlib.Androlib.buildResourcesFull(Androlib.java:472)</div><div class="line">    at brut.androlib.Androlib.buildResources(Androlib.java:410)</div><div class="line">    at brut.androlib.Androlib.build(Androlib.java:298)</div><div class="line">    at brut.androlib.Androlib.build(Androlib.java:268)</div><div class="line">    at brut.apktool.Main.cmdBuild(Main.java:225)</div><div class="line">    at brut.apktool.Main.main(Main.java:84)</div><div class="line">Caused by: brut.androlib.AndrolibException: brut.common.BrutException: could not exec command: [/var/folders/vr/nlnk4jrj0sz31n6pzdp1h23r0000gp/T/brut_util_Jar_1576083296434469541.tmp, p, --forced-package-id, 127, --min-sdk-version, 8, --target-sdk-version, 23, --version-code, 1, --version-name, 1.0, -F, /var/folders/vr/nlnk4jrj0sz31n6pzdp1h23r0000gp/T/APKTOOL5612206277771121028.tmp, -0, arsc, -0, arsc, -I, /Users/xiangqing/Library/apktool/framework/1.apk, -S, /Users/xiangqing/Documents/workspace/android/crack/crackme0201/build/outputs/apk/output/res, -M, /Users/xiangqing/Documents/workspace/android/crack/crackme0201/build/outputs/apk/output/AndroidManifest.xml]</div><div class="line">    at brut.androlib.res.AndrolibResources.aaptPackage(AndrolibResources.java:425)</div><div class="line">    at brut.androlib.Androlib.buildResourcesFull(Androlib.java:458)</div><div class="line">    ... 5 more</div><div class="line">Caused by: brut.common.BrutException: could not exec command: [/var/folders/vr/nlnk4jrj0sz31n6pzdp1h23r0000gp/T/brut_util_Jar_1576083296434469541.tmp, p, --forced-package-id, 127, --min-sdk-version, 8, --target-sdk-version, 23, --version-code, 1, --version-name, 1.0, -F, /var/folders/vr/nlnk4jrj0sz31n6pzdp1h23r0000gp/T/APKTOOL5612206277771121028.tmp, -0, arsc, -0, arsc, -I, /Users/xiangqing/Library/apktool/framework/1.apk, -S, /Users/xiangqing/Documents/workspace/android/crack/crackme0201/build/outputs/apk/output/res, -M, /Users/xiangqing/Documents/workspace/android/crack/crackme0201/build/outputs/apk/output/AndroidManifest.xml]</div><div class="line">    at brut.util.OS.exec(OS.java:89)</div><div class="line">    at brut.androlib.res.AndrolibResources.aaptPackage(AndrolibResources.java:419)</div><div class="line">    ... 6 more</div></pre></td></tr></table></figure>
+<p>　　推测可能是因为apktool还不能破解sdk 23编译的apk。所以我把 <code>compileSdkVersion</code>和<code>targetSdkVersion</code>都改为22。同时把<code>appcompat-v7</code>改为22版本<code>compile &#39;com.android.support:appcompat-v7:22.2.0&#39;</code>，重新编译顺利通过。<br>　　不过后来验证只要将<code>appcompat-v7</code>改为23版本一下就可以了。具体原因还是不清楚，在作者的<a href="https://github.com/iBotPeaches/Apktool/issues/1171" target="_blank" rel="external">issue</a>反馈了。</p>
+<p>####重新编译APK<br>　　利用apktool重新编译很简单只需要一条简单的命令</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">apktool b output</div></pre></td></tr></table></figure>
+<p><img width="500px" height="200px" src="https://gnaixx.github.io/blog_images/crackme/3.png"></p>
+<p>　　编译成功后会在output目录下生成dist目录，里面有编译成功的apk文件。</p>
+<p>####签名<br>　　apktool编译的apk并没有签名不能直接安装需要添加签名，用<code>signapk.jar</code>工具对apk进行签名。除了<code>signapk.jar</code> 还需要<code>testkey.x509.pem testkey.pk8</code>两个文件。工具可以在<a href="https://github.com/gnaix92/crack/tree/master/tools/auto-sign" target="_blank" rel="external">/tools/auto-sign</a>中找到。运行命令：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">java -jar signapk.jar testkey.x509.pem testkey.pk8 **.apk signgapk.apk</div></pre></td></tr></table></figure>
+<p>　　签名成功后会在根目录下生成signapk.apk。</p>
+<p>####安装测试<br>　　安装签名好后的apk，输入原来测试的用户名和注册码。可以发现程序注册成功，成功破解。<br><img width="250px" height="400px" src="https://gnaixx.github.io/blog_images/crackme/4.png"></p>
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+  <div style="padding: 10px 0; margin: 20px auto; width: 90%; text-align: center;">
+    <div>赏一个呗！</div>
+    <button id="rewardButton" disable="enable" onclick="var qr = document.getElementById('QR'); if (qr.style.display === 'none') {qr.style.display='block';} else {qr.style.display='none'}">
+      <span>赏</span>
+    </button>
+    <div id="QR" style="display: none;">
+      
+        <div id="wechat" style="display: inline-block">
+          <img id="wechat_qr" src="/images/wechatpay.png" alt="凸一_一凸 WeChat Pay"/>
+          <p>微信打赏</p>
+        </div>
+      
+      
+        <div id="alipay" style="display: inline-block">
+          <img id="alipay_qr" src="/images/alipay.jpg" alt="凸一_一凸 Alipay"/>
+          <p>支付宝打赏</p>
+        </div>
+      
+    </div>
+  </div>
+
+
+      
+    </div>
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/android/" rel="tag">#android</a>
+          
+            <a href="/tags/crack/" rel="tag">#crack</a>
+          
+        </div>
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2015/12/16/linux-command/" rel="next" title="开发常用的linux命令">
+                <i class="fa fa-chevron-left"></i> 开发常用的linux命令
+              </a>
+            
+          </div>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2016/03/07/ndk-android_studio-dev-env/" rel="prev" title="NDK开发 - Android Studio环境搭建">
+                NDK开发 - Android Studio环境搭建 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+      <div class="ds-thread" data-thread-key="2016/03/06/android-reverse-engineering/"
+           data-title="Android程序逆向分析" data-url="http://gnaixx.github.io/2016/03/06/android-reverse-engineering/">
+      </div>
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel ">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="//schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="/images/custom_avatar.jpg"
+               alt="凸一_一凸" />
+          <p class="site-author-name" itemprop="name">凸一_一凸</p>
+          <p class="site-description motion-element" itemprop="description"></p>
+        </div>
+        <nav class="site-state motion-element">
+          <div class="site-state-item site-state-posts">
+            <a href="/archives">
+              <span class="site-state-item-count">36</span>
+              <span class="site-state-item-name">日志</span>
+            </a>
+          </div>
+
+          
+            <div class="site-state-item site-state-categories">
+              <a href="/categories">
+                <span class="site-state-item-count">5</span>
+                <span class="site-state-item-name">分类</span>
+              </a>
+            </div>
+          
+
+          
+            <div class="site-state-item site-state-tags">
+              <a href="/tags">
+                <span class="site-state-item-count">38</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+            
+              <span class="links-of-author-item">
+                <a href="https://github.com/gnaixx" target="_blank" title="GitHub">
+                  
+                    <i class="fa fa-fw fa-github"></i>
+                  
+                  GitHub
+                </a>
+              </span>
+            
+          
+        </div>
+
+        
+        
+
+        
+        
+          <div class="links-of-blogroll motion-element links-of-blogroll-block">
+            <div class="links-of-blogroll-title">
+              <i class="fa  fa-fw fa-globe"></i>
+              友情链接
+            </div>
+            <ul class="links-of-blogroll-list">
+              
+                <li class="links-of-blogroll-item">
+                  <a href="https://waynecz.github.io/" title="wayne" target="_blank">wayne</a>
+                </li>
+              
+            </ul>
+          </div>
+        
+
+      </section>
+
+      
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+            
+              
+            
+            
+              <p class="post-toc-empty">此文章未包含目录</p>
+            
+          </div>
+        </section>
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy;  2014 - 
+  <span itemprop="copyrightYear">2016</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">凸一_一凸</span>
+</div>
+
+<div class="powered-by">
+  由 <a class="theme-link" href="https://hexo.io">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Mist
+  </a>
+</div>
+
+        
+
+<div class="busuanzi-count">
+
+  <script async src="https://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+  
+    <span class="site-uv"><i class="fa fa-user"></i><span class="busuanzi-value" id="busuanzi_value_site_uv"></span></span>
+  
+
+  
+    <span class="site-pv"><i class="fa fa-eye"></i><span class="busuanzi-value" id="busuanzi_value_site_pv"></span></span>
+  
+  
+</div>
+
+
+
+        
+      </div>
+    </footer>
+
+    <div class="back-to-top">
+      <i class="fa fa-arrow-up"></i>
+    </div>
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.0.2"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.0.2"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.0.2"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.0.2"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.0.2"></script>
+
+
+
+  
+
+  
+    
+  
+
+  <script type="text/javascript">
+    var duoshuoQuery = {short_name:"gnaix"};
+    (function() {
+      var ds = document.createElement('script');
+      ds.type = 'text/javascript';ds.async = true;
+      ds.id = 'duoshuo-script';
+      ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+      ds.charset = 'UTF-8';
+      (document.getElementsByTagName('head')[0]
+      || document.getElementsByTagName('body')[0]).appendChild(ds);
+    })();
+  </script>
+
+  
+    
+    <script src="/lib/ua-parser-js/dist/ua-parser.min.js?v=0.7.9"></script>
+    <script src="/js/src/hook-duoshuo.js"></script>
+  
+
+
+
+
+
+
+  
+  
+
+  
+
+  
+
+  
+
+  
+
+
+</body>
+</html>

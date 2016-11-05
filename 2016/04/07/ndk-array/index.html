@@ -1,0 +1,776 @@
+<!doctype html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.4.0" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.0.2" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="ndk,android,jni," />
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/images/favicon.ico?v=5.0.2" />
+
+
+
+
+
+
+<meta name="description" content="很多时候利用 NDK 开发都是为了对数据进行加密操作，因为单纯的 Java 太容易被反编译了，加密算法也就很容易被破解，而利用 C/C++ 开发可以加大破解难度。文件的数据加密就需要通过 byte 数组传给 JNI。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="NDK开发 - JNI数组数据处理">
+<meta property="og:url" content="http://gnaixx.github.io/2016/04/07/ndk-array/index.html">
+<meta property="og:site_name" content="凸一_一凸">
+<meta property="og:description" content="很多时候利用 NDK 开发都是为了对数据进行加密操作，因为单纯的 Java 太容易被反编译了，加密算法也就很容易被破解，而利用 C/C++ 开发可以加大破解难度。文件的数据加密就需要通过 byte 数组传给 JNI。">
+<meta property="og:image" content="https://gnaixx.github.io/blog_images/ndk/5.png">
+<meta property="og:image" content="https://gnaixx.github.io/blog_images/ndk/6.png">
+<meta property="og:image" content="https://gnaixx.github.io/blog_images/ndk/7.png">
+<meta property="og:updated_time" content="2016-11-05T07:57:27.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="NDK开发 - JNI数组数据处理">
+<meta name="twitter:description" content="很多时候利用 NDK 开发都是为了对数据进行加密操作，因为单纯的 Java 太容易被反编译了，加密算法也就很容易被破解，而利用 C/C++ 开发可以加大破解难度。文件的数据加密就需要通过 byte 数组传给 JNI。">
+<meta name="twitter:image" content="https://gnaixx.github.io/blog_images/ndk/5.png">
+
+
+
+<script type="text/javascript" id="hexo.configuration">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    scheme: 'Mist',
+    sidebar: {"position":"left","display":"post"},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    }
+  };
+</script>
+
+
+
+
+  <link rel="canonical" href="http://gnaixx.github.io/2016/04/07/ndk-array/"/>
+
+
+  <title> NDK开发 - JNI数组数据处理 | 凸一_一凸 </title>
+</head>
+
+<body itemscope itemtype="//schema.org/WebPage" lang="zh-Hans">
+
+  
+
+
+
+  <script type="text/javascript">
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "//hm.baidu.com/hm.js?bb104a561bbdd3b6666195d45e5581a9";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+
+
+
+
+  
+  
+    
+  
+
+  <div class="container one-collumn sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="//schema.org/WPHeader">
+      <div class="header-inner"><div class="site-meta ">
+  
+
+  <div class="custom-logo-site-title">
+    <a href="/"  class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <span class="site-title">凸一_一凸</span>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+  <p class="site-subtitle">gnaixx</p>
+</div>
+
+<div class="site-nav-toggle">
+  <button>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+  </button>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories" rel="section">
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+            标签
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="//schema.org/Article">
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                NDK开发 - JNI数组数据处理
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            <span class="post-meta-item-icon">
+              <i class="fa fa-calendar-o"></i>
+            </span>
+            <span class="post-meta-item-text">发表于</span>
+            <time itemprop="dateCreated" datetime="2016-04-07T14:46:34+08:00" content="2016-04-07">
+              2016-04-07
+            </time>
+          </span>
+
+          
+            <span class="post-category" >
+              &nbsp; | &nbsp;
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+              
+                <span itemprop="about" itemscope itemtype="https://schema.org/Thing">
+                  <a href="/categories/android/" itemprop="url" rel="index">
+                    <span itemprop="name">android</span>
+                  </a>
+                </span>
+
+                
+                
+
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                &nbsp; | &nbsp;
+                <a href="/2016/04/07/ndk-array/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count ds-thread-count" data-thread-key="2016/04/07/ndk-array/" itemprop="commentsCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+
+          
+          
+
+          
+              &nbsp; | &nbsp;
+              <span class="page-pv"><i class="fa fa-file-o"></i>
+              <span class="busuanzi-value" id="busuanzi_value_page_pv" ></span>
+              </span>
+          
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>　　JNI 中的数组分为基本类型数组和对象数组，它们的处理方式是不一样的，基本类型数组中的所有元素都是 JNI 的基本数据类型，可以直接访问。而对象数组中的所有元素是一个类的实例或其它数组的引用，和字符串操作一样，不能直接访问 Java 传递给 JNI 层的数组，必须选择合适的 JNI 函数来访问和设置 Java 层的数组对象。</p>
+<p>###0x00 访问基本类型数组<br>Java 代码：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line"><span class="comment">//调用数组</span></div><div class="line"><span class="keyword">byte</span> array[] = &#123;<span class="string">'A'</span>, <span class="string">'B'</span>, <span class="string">'C'</span>, <span class="string">'D'</span>, <span class="string">'E'</span>&#125;;</div><div class="line"><span class="keyword">byte</span>[] resutl = NativeMethod.getByteArray(array);</div><div class="line"><span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; array.length; i++) &#123;</div><div class="line">    Log.d(TAG, <span class="string">"ARRAY : "</span> + array[i] + <span class="string">"-&gt;"</span> + resutl[i]);</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>native 代码：</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div></pre></td><td class="code"><pre><div class="line"><span class="function">JNIEXPORT jbyteArray JNICALL <span class="title">Java_com_example_gnaix_ndk_NativeMethod_getByteArray</span></span></div><div class="line">        <span class="params">(JNIEnv *env, jclass object, jbyteArray j_array)</span>&#123;</div><div class="line">    <span class="comment">//1. 获取数组指针和长度</span></div><div class="line">    jbyte *c_array = env-&gt;GetByteArrayElements(j_array, <span class="number">0</span>);</div><div class="line">    <span class="keyword">int</span> len_arr = env-&gt;GetArrayLength(j_array);</div><div class="line"></div><div class="line">    <span class="comment">//2. 具体处理</span></div><div class="line">    jbyteArray c_result = env-&gt;NewByteArray(len_arr);</div><div class="line">    jbyte buf[len_arr];</div><div class="line">    <span class="keyword">for</span>(<span class="keyword">int</span> i=<span class="number">0</span>; i&lt;len_arr; i++)&#123;</div><div class="line">        buf[i] = c_array[i] + <span class="number">1</span>;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="comment">//3. 释放内存</span></div><div class="line">    env-&gt;ReleaseByteArrayElements(j_array, c_array, <span class="number">0</span>);</div><div class="line"></div><div class="line">    <span class="comment">//4. 赋值</span></div><div class="line">    env-&gt;SetByteArrayRegion(c_result, <span class="number">0</span>, len_arr, buf);</div><div class="line">    <span class="keyword">return</span> c_result;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>运行结果：<br><img width="700px" height="100px" src="https://gnaixx.github.io/blog_images/ndk/5.png" style="display:inline-block"></p>
+<p>　　示例中，从 Java 层中传进去了一个数组，参数类型是 byte[], 对应 JNI 中 jbyteArray 类型。利用 <code>GetByteArrayElements</code> 函数获取数组指针，第二个参数返回的数组指针是原始数组，还是拷贝原始数据到临时缓冲区的指针，如果是 JNI_TRUE：表示临时缓冲区数组指针，JNI_FALSE：表示临时原始数组指针。开发当中，我们并不关心它从哪里返回的数组指针，这个参数填 NULL 即可，但在获取到的指针必须做校验。<br>类似的函数还有 <code>GetIntArrayElements</code> , <code>GetFloatArrayElements</code> , <code>GetDoubleArrayElements</code> 等。<br>　　然后对数据进行了处理，并且释放了数组内存。<code>ReleaseByteArrayElements</code> 是与 <code>GetByteArrayElements</code> 对应使用的。</p>
+<p>　　除了上述方法还可以用 JNI 中的 <code>GetXXArrayRegion</code> 函数进行实现数据操作, 对应的 <code>SetXXArrayRegion</code> 上述也有提到过。</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div></pre></td><td class="code"><pre><div class="line"><span class="function">JNIEXPORT jint JNICALL <span class="title">Java_com_example_gnaix_ndk_NativeMethod_getByteArray</span></span></div><div class="line">        <span class="params">(JNIEnv *env, jclass object, jbyteArray j_array)</span>&#123;</div><div class="line">	jbyte *c_array;</div><div class="line">    jint len_arr;</div><div class="line"></div><div class="line">    <span class="comment">//1. 获取数组长度</span></div><div class="line">    len_arr = env-&gt;GetArrayLength(j_array);</div><div class="line"></div><div class="line">    <span class="comment">//2. 申请缓冲区</span></div><div class="line">    c_array = (jbyte *) <span class="built_in">malloc</span>(<span class="keyword">sizeof</span>(jbyte) * len_arr);</div><div class="line"></div><div class="line">    <span class="comment">//3. 初始化缓冲区</span></div><div class="line">    <span class="built_in">memset</span>(c_array, <span class="number">0</span>, <span class="keyword">sizeof</span>(jbyte)*len_arr);</div><div class="line"></div><div class="line">    <span class="comment">//4. 拷贝java数组数据</span></div><div class="line">    env-&gt;GetByteArrayRegion(j_array, <span class="number">0</span>, len_arr, c_array);</div><div class="line"></div><div class="line">    <span class="comment">//5. 计算总和</span></div><div class="line">    <span class="keyword">int</span> sum = <span class="number">0</span>;</div><div class="line">    <span class="keyword">for</span>(<span class="keyword">int</span> i=<span class="number">0</span>; i&lt;len_arr; i++)&#123;</div><div class="line">        sum += c_array[i];</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="comment">//6. 释放缓冲区</span></div><div class="line">    <span class="built_in">free</span>(c_array);</div><div class="line">    <span class="keyword">return</span> sum;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>###0x01 访问引用类型数组<br>　　JNI 提供了两个函数来访问对象数组，GetObjectArrayElement 返回数组中指定位置的元素，SetObjectArrayElement 修改数组中指定位置的元素。与基本类型不同的是，我们不能一次得到数据中的所有对象元素或者一次复制多个对象元素到缓冲区。因为字符串和数组都是引用类型，只能通过 Get/SetObjectArrayElement 这样的 JNI 函数来访问字符串数组或者数组中的数组元素。<br>　　下面的例子同调用 Native 方法 创建一个对象数组，返回后打印这个数组内容：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line"><span class="comment">//返回对象数组</span></div><div class="line">Person persons[] =  NativeMethod.getPersons();</div><div class="line"><span class="keyword">for</span>(Person person : persons)&#123;</div><div class="line">    person.toString();</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>Person 类：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div></pre></td><td class="code"><pre><div class="line"><span class="comment">/**</span></div><div class="line"> * 名称: Person</div><div class="line"> * 描述:</div><div class="line"> *</div><div class="line"> * <span class="doctag">@author</span> xiangqing.xue</div><div class="line"> * <span class="doctag">@date</span> 16/3/10</div><div class="line"> */</div><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Person</span> </span>&#123;</div><div class="line">    <span class="keyword">private</span> String TAG = <span class="string">"Person"</span>;</div><div class="line"></div><div class="line">    <span class="keyword">public</span> String name;</div><div class="line">    <span class="keyword">public</span> <span class="keyword">int</span> age;</div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">public</span> String <span class="title">getName</span><span class="params">()</span> </span>&#123;</div><div class="line">        <span class="keyword">return</span> name;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">setName</span><span class="params">(String name)</span> </span>&#123;</div><div class="line">        <span class="keyword">this</span>.name = name;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">int</span> <span class="title">getAge</span><span class="params">()</span> </span>&#123;</div><div class="line">        <span class="keyword">return</span> age;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">setAge</span><span class="params">(<span class="keyword">int</span> age)</span> </span>&#123;</div><div class="line">        <span class="keyword">this</span>.age = age;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">public</span> String <span class="title">toString</span><span class="params">()</span></span>&#123;</div><div class="line">        String result =  <span class="string">"Name: "</span> + name + <span class="string">", age: "</span> + age;</div><div class="line">        Log.d(TAG, result);</div><div class="line">        <span class="keyword">return</span> result;</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>Native 方法：</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div></pre></td><td class="code"><pre><div class="line"><span class="function">JNIEXPORT jobjectArray JNICALL <span class="title">Java_com_example_gnaix_ndk_NativeMethod_getPersons</span></span></div><div class="line">        <span class="params">(JNIEnv *env, jclass object)</span>&#123;</div><div class="line">    jclass clazz = <span class="literal">NULL</span>;</div><div class="line">    jobject jobj = <span class="literal">NULL</span>;</div><div class="line">    jmethodID mid_construct = <span class="literal">NULL</span>;</div><div class="line">    jfieldID fid_age = <span class="literal">NULL</span>;</div><div class="line">    jfieldID fid_name = <span class="literal">NULL</span>;</div><div class="line">    jstring j_name;</div><div class="line"></div><div class="line">    <span class="comment">//1. 获取Person类的Class引用</span></div><div class="line">    clazz = env-&gt;FindClass(<span class="string">"com/example/gnaix/ndk/Person"</span>);</div><div class="line">    <span class="keyword">if</span>(clazz == <span class="literal">NULL</span>)&#123;</div><div class="line">        LOGD(<span class="string">"clazz null"</span>);</div><div class="line">        <span class="keyword">return</span> <span class="literal">NULL</span>;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="comment">//2. 获取类的默认构造函数ID</span></div><div class="line">    mid_construct = env-&gt;GetMethodID(clazz, <span class="string">"&lt;init&gt;"</span>, <span class="string">"()V"</span>);</div><div class="line">    <span class="keyword">if</span>(mid_construct == <span class="literal">NULL</span>)&#123;</div><div class="line">        LOGD(<span class="string">"construct null"</span>);</div><div class="line">        <span class="keyword">return</span> <span class="literal">NULL</span>;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="comment">//3. 获取实例方法ID和变量ID</span></div><div class="line">    fid_name = env-&gt;GetFieldID(clazz, <span class="string">"name"</span>, <span class="string">"Ljava/lang/String;"</span>);</div><div class="line">    fid_age = env-&gt;GetFieldID(clazz, <span class="string">"age"</span>, <span class="string">"I"</span>);</div><div class="line">    <span class="keyword">if</span>(fid_age==<span class="literal">NULL</span> || fid_name==<span class="literal">NULL</span>)&#123;</div><div class="line">        LOGD(<span class="string">"age|name null"</span>);</div><div class="line">        <span class="keyword">return</span> <span class="literal">NULL</span>;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="comment">//4. 处理单个对象并添加到数组</span></div><div class="line">    <span class="keyword">int</span> size = <span class="number">5</span>;</div><div class="line">    jobjectArray obj_array = env-&gt;NewObjectArray(size, clazz, <span class="number">0</span>);</div><div class="line">    <span class="keyword">for</span>(<span class="keyword">int</span> i=<span class="number">0</span>; i&lt;size; i++)&#123;</div><div class="line">        jobj = env-&gt;NewObject(clazz, mid_construct);</div><div class="line">        <span class="keyword">if</span>(jobj == <span class="literal">NULL</span>)&#123;</div><div class="line">            LOGD(<span class="string">"jobject null"</span>);</div><div class="line">            <span class="keyword">return</span> <span class="literal">NULL</span>;</div><div class="line">        &#125;</div><div class="line">        env-&gt;SetIntField(jobj, fid_age, <span class="number">23</span> + i);</div><div class="line">        j_name = env-&gt;NewStringUTF(<span class="string">"gnaix"</span>);</div><div class="line">        env-&gt;SetObjectField(jobj, fid_name, j_name);</div><div class="line">        env-&gt;SetObjectArrayElement(obj_array, i, jobj);</div><div class="line">    &#125;</div><div class="line"></div><div class="line"></div><div class="line">    <span class="comment">//5. 释放局部变量</span></div><div class="line">    env-&gt;DeleteLocalRef(clazz);</div><div class="line">    env-&gt;DeleteLocalRef(jobj);</div><div class="line">    <span class="keyword">return</span> obj_array;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>运行结果：<br><img width="700px" height="100px" src="https://gnaixx.github.io/blog_images/ndk/6.png" style="display:inline-block"></p>
+<p>　　Native 方法首先调用 JNI 函数 <code>FindClass</code> 获取 Person 类的引用，如果 Person 类加载失败的话， FindClass 会返回 NULL, 然后抛出一个 java.lang.NoClassDefFoundError 异常。<br>　　接下来通过 <code>GetMethodID</code> 获取了类的默认构造函数的ID（下一节会介绍）。并且通过 <code>GetFieldId</code> 获取了Person变量的ID，用于后面的赋值。<br>　　调用 <code>NewObjectArray</code> 创建一个数组，在for循环中 <code>NewObject</code> 实例化 Person类，并通过 <code>SetXXField</code> 函数给实例变量赋值。<code>SetObjectArrayElement</code> 将实例化对象插入数组。<br>　　最后调用 <code>DeleteLocalRef</code> 方法释放局部变量。 <code>DeleteLocalRef</code> 将新创建的 引用从引用表中移除。在 JNI 中，只有 jobject 以及子类属于引用变量，会占用引用表的空间，jint，jfloat，jboolean 等都是基本类型变量，不会占用引用表空间，即不需要释放。引用表最大空间为 512 个，如果超出这个范围，JVM 就会挂掉。</p>
+<p>###0x02 方法签名<br>　　在上面的的例子中，在调用实例变量或者方法，都必须传入一个 jmethodID 的参数。因为在 Java 中存在方法重载（方法名相同，参数列表不同），所以要明确告诉 JVM 调用的是类或实例中的哪一个方法。调用 JNI 的 GetMethodID 函数获取一个 jmethodID 时，需要传入一个方法名称和方法签名，方法名称就是在 Java 中定义的方法名，方法签名的格式为：(形参参数类型列表)返回值。形参参数列表中，引用类型以 L 开头，后面紧跟类的全路径名（需将.全部替换成/），<font color="red">以分号结尾</font>。<br>　　可以通过 <code>javap</code> 命令获取类的签名，以 Person 为例：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">javap -s -p app.build.intermediates.classes.all.debug.com.example.gnaix.ndk.Person</div></pre></td></tr></table></figure>
+<p>参数说明:    </p>
+<ul>
+<li>-s: 输出内部类型签名  </li>
+<li>-p: 显示所有类和成员</li>
+</ul>
+<p><img width="500px" height="700px" src="https://gnaixx.github.io/blog_images/ndk/7.png" style="display:inline-block"> </p>
+<p>Java 基本类型与方法签名中参数类型和返回值类型的映射关系如下：</p>
+<table>
+<thead>
+<tr>
+<th>Field Descriptor</th>
+<th>Java Language Type</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Z</td>
+<td>boolean</td>
+</tr>
+<tr>
+<td>B</td>
+<td>byte</td>
+</tr>
+<tr>
+<td>C</td>
+<td>char</td>
+</tr>
+<tr>
+<td>S</td>
+<td>short</td>
+</tr>
+<tr>
+<td>I</td>
+<td>int</td>
+</tr>
+<tr>
+<td>J</td>
+<td>long</td>
+</tr>
+<tr>
+<td>F</td>
+<td>float</td>
+</tr>
+<tr>
+<td>D</td>
+<td>double</td>
+</tr>
+</tbody>
+</table>
+<p>　　比如，<code>String fun(int a, float b, boolean c, String d)</code> 对应的 JNI 方法签名为：<code>(IFZLjava/lang/String;)Ljava/lang/String;</code>。</p>
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+  <div style="padding: 10px 0; margin: 20px auto; width: 90%; text-align: center;">
+    <div>赏一个呗！</div>
+    <button id="rewardButton" disable="enable" onclick="var qr = document.getElementById('QR'); if (qr.style.display === 'none') {qr.style.display='block';} else {qr.style.display='none'}">
+      <span>赏</span>
+    </button>
+    <div id="QR" style="display: none;">
+      
+        <div id="wechat" style="display: inline-block">
+          <img id="wechat_qr" src="/images/wechatpay.png" alt="凸一_一凸 WeChat Pay"/>
+          <p>微信打赏</p>
+        </div>
+      
+      
+        <div id="alipay" style="display: inline-block">
+          <img id="alipay_qr" src="/images/alipay.jpg" alt="凸一_一凸 Alipay"/>
+          <p>支付宝打赏</p>
+        </div>
+      
+    </div>
+  </div>
+
+
+      
+    </div>
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/ndk/" rel="tag">#ndk</a>
+          
+            <a href="/tags/android/" rel="tag">#android</a>
+          
+            <a href="/tags/jni/" rel="tag">#jni</a>
+          
+        </div>
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2016/04/06/ndk-base_types-string/" rel="next" title="NDK开发 - JNI基本数据和字符串处理">
+                <i class="fa fa-chevron-left"></i> NDK开发 - JNI基本数据和字符串处理
+              </a>
+            
+          </div>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2016/04/08/ndk-invoke-java-method_field/" rel="prev" title="NDK开发 - C/C++ 访问 Java 变量和方法">
+                NDK开发 - C/C++ 访问 Java 变量和方法 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+      <div class="ds-thread" data-thread-key="2016/04/07/ndk-array/"
+           data-title="NDK开发 - JNI数组数据处理" data-url="http://gnaixx.github.io/2016/04/07/ndk-array/">
+      </div>
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel ">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="//schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="/images/custom_avatar.jpg"
+               alt="凸一_一凸" />
+          <p class="site-author-name" itemprop="name">凸一_一凸</p>
+          <p class="site-description motion-element" itemprop="description"></p>
+        </div>
+        <nav class="site-state motion-element">
+          <div class="site-state-item site-state-posts">
+            <a href="/archives">
+              <span class="site-state-item-count">36</span>
+              <span class="site-state-item-name">日志</span>
+            </a>
+          </div>
+
+          
+            <div class="site-state-item site-state-categories">
+              <a href="/categories">
+                <span class="site-state-item-count">5</span>
+                <span class="site-state-item-name">分类</span>
+              </a>
+            </div>
+          
+
+          
+            <div class="site-state-item site-state-tags">
+              <a href="/tags">
+                <span class="site-state-item-count">38</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+            
+              <span class="links-of-author-item">
+                <a href="https://github.com/gnaixx" target="_blank" title="GitHub">
+                  
+                    <i class="fa fa-fw fa-github"></i>
+                  
+                  GitHub
+                </a>
+              </span>
+            
+          
+        </div>
+
+        
+        
+
+        
+        
+          <div class="links-of-blogroll motion-element links-of-blogroll-block">
+            <div class="links-of-blogroll-title">
+              <i class="fa  fa-fw fa-globe"></i>
+              友情链接
+            </div>
+            <ul class="links-of-blogroll-list">
+              
+                <li class="links-of-blogroll-item">
+                  <a href="https://waynecz.github.io/" title="wayne" target="_blank">wayne</a>
+                </li>
+              
+            </ul>
+          </div>
+        
+
+      </section>
+
+      
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+            
+              
+            
+            
+              <p class="post-toc-empty">此文章未包含目录</p>
+            
+          </div>
+        </section>
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy;  2014 - 
+  <span itemprop="copyrightYear">2016</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">凸一_一凸</span>
+</div>
+
+<div class="powered-by">
+  由 <a class="theme-link" href="https://hexo.io">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Mist
+  </a>
+</div>
+
+        
+
+<div class="busuanzi-count">
+
+  <script async src="https://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+  
+    <span class="site-uv"><i class="fa fa-user"></i><span class="busuanzi-value" id="busuanzi_value_site_uv"></span></span>
+  
+
+  
+    <span class="site-pv"><i class="fa fa-eye"></i><span class="busuanzi-value" id="busuanzi_value_site_pv"></span></span>
+  
+  
+</div>
+
+
+
+        
+      </div>
+    </footer>
+
+    <div class="back-to-top">
+      <i class="fa fa-arrow-up"></i>
+    </div>
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.0.2"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.0.2"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.0.2"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.0.2"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.0.2"></script>
+
+
+
+  
+
+  
+    
+  
+
+  <script type="text/javascript">
+    var duoshuoQuery = {short_name:"gnaix"};
+    (function() {
+      var ds = document.createElement('script');
+      ds.type = 'text/javascript';ds.async = true;
+      ds.id = 'duoshuo-script';
+      ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+      ds.charset = 'UTF-8';
+      (document.getElementsByTagName('head')[0]
+      || document.getElementsByTagName('body')[0]).appendChild(ds);
+    })();
+  </script>
+
+  
+    
+    <script src="/lib/ua-parser-js/dist/ua-parser.min.js?v=0.7.9"></script>
+    <script src="/js/src/hook-duoshuo.js"></script>
+  
+
+
+
+
+
+
+  
+  
+
+  
+
+  
+
+  
+
+  
+
+
+</body>
+</html>

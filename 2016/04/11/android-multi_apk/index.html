@@ -1,0 +1,768 @@
+<!doctype html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.4.0" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.0.2" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="android,crack," />
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/images/favicon.ico?v=5.0.2" />
+
+
+
+
+
+
+<meta name="description" content="去年给运营同事解释了最简单的多开原理，最简单的方式通过修改包名达到多开的目的。很多 APK 现在已经不能通过这个方式达到多开了，虽然 LOW ,但是对了解多开原理还是有点用的。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="APK多开原理">
+<meta property="og:url" content="http://gnaixx.github.io/2016/04/11/android-multi_apk/index.html">
+<meta property="og:site_name" content="凸一_一凸">
+<meta property="og:description" content="去年给运营同事解释了最简单的多开原理，最简单的方式通过修改包名达到多开的目的。很多 APK 现在已经不能通过这个方式达到多开了，虽然 LOW ,但是对了解多开原理还是有点用的。">
+<meta property="og:image" content="https://gnaixx.github.io/blog_images/multi/1.png">
+<meta property="og:image" content="https://gnaixx.github.io/blog_images/multi/2.png">
+<meta property="og:image" content="https://gnaixx.github.io/blog_images/multi/3.png">
+<meta property="og:image" content="https://gnaixx.github.io/blog_images/multi/4.png">
+<meta property="og:image" content="https://gnaixx.github.io/blog_images/multi/5.png">
+<meta property="og:image" content="https://gnaixx.github.io/blog_images/multi/6.png">
+<meta property="og:image" content="https://gnaixx.github.io/blog_images/multi/7.png">
+<meta property="og:image" content="https://gnaixx.github.io/blog_images/multi/8.png">
+<meta property="og:image" content="https://gnaixx.github.io/blog_images/multi/9.png">
+<meta property="og:image" content="https://gnaixx.github.io/blog_images/multi/10.png">
+<meta property="og:image" content="https://gnaixx.github.io/blog_images/multi/11.png">
+<meta property="og:image" content="https://gnaixx.github.io/blog_images/multi/12.png">
+<meta property="og:image" content="https://gnaixx.github.io/blog_images/multi/13.png">
+<meta property="og:image" content="https://gnaixx.github.io/blog_images/multi/14.png">
+<meta property="og:image" content="https://gnaixx.github.io/blog_images/multi/15.png">
+<meta property="og:image" content="https://gnaixx.github.io/blog_images/multi/16.png">
+<meta property="og:image" content="https://gnaixx.github.io/blog_images/multi/17.png">
+<meta property="og:image" content="https://gnaixx.github.io/blog_images/multi/18.png">
+<meta property="og:image" content="https://gnaixx.github.io/blog_images/multi/19.png">
+<meta property="og:image" content="https://gnaixx.github.io/blog_images/multi/20.png">
+<meta property="og:updated_time" content="2016-11-05T07:57:27.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="APK多开原理">
+<meta name="twitter:description" content="去年给运营同事解释了最简单的多开原理，最简单的方式通过修改包名达到多开的目的。很多 APK 现在已经不能通过这个方式达到多开了，虽然 LOW ,但是对了解多开原理还是有点用的。">
+<meta name="twitter:image" content="https://gnaixx.github.io/blog_images/multi/1.png">
+
+
+
+<script type="text/javascript" id="hexo.configuration">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    scheme: 'Mist',
+    sidebar: {"position":"left","display":"post"},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    }
+  };
+</script>
+
+
+
+
+  <link rel="canonical" href="http://gnaixx.github.io/2016/04/11/android-multi_apk/"/>
+
+
+  <title> APK多开原理 | 凸一_一凸 </title>
+</head>
+
+<body itemscope itemtype="//schema.org/WebPage" lang="zh-Hans">
+
+  
+
+
+
+  <script type="text/javascript">
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "//hm.baidu.com/hm.js?bb104a561bbdd3b6666195d45e5581a9";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+
+
+
+
+  
+  
+    
+  
+
+  <div class="container one-collumn sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="//schema.org/WPHeader">
+      <div class="header-inner"><div class="site-meta ">
+  
+
+  <div class="custom-logo-site-title">
+    <a href="/"  class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <span class="site-title">凸一_一凸</span>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+  <p class="site-subtitle">gnaixx</p>
+</div>
+
+<div class="site-nav-toggle">
+  <button>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+  </button>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories" rel="section">
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+            标签
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="//schema.org/Article">
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                APK多开原理
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            <span class="post-meta-item-icon">
+              <i class="fa fa-calendar-o"></i>
+            </span>
+            <span class="post-meta-item-text">发表于</span>
+            <time itemprop="dateCreated" datetime="2016-04-11T14:06:09+08:00" content="2016-04-11">
+              2016-04-11
+            </time>
+          </span>
+
+          
+            <span class="post-category" >
+              &nbsp; | &nbsp;
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+              
+                <span itemprop="about" itemscope itemtype="https://schema.org/Thing">
+                  <a href="/categories/android/" itemprop="url" rel="index">
+                    <span itemprop="name">android</span>
+                  </a>
+                </span>
+
+                
+                
+
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                &nbsp; | &nbsp;
+                <a href="/2016/04/11/android-multi_apk/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count ds-thread-count" data-thread-key="2016/04/11/android-multi_apk/" itemprop="commentsCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+
+          
+          
+
+          
+              &nbsp; | &nbsp;
+              <span class="page-pv"><i class="fa fa-file-o"></i>
+              <span class="busuanzi-value" id="busuanzi_value_page_pv" ></span>
+              </span>
+          
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>　　所有的 Android 应用程序都有一个包名。包名是设备上的这个应用程序的唯一标识，也是在谷歌Play商店上的唯一标识。所以多开也就是基于这个原理来实现。在这之前需要了解下<code>ApplicationId</code> 和 <code>PackageName</code> 的区别。这里有一份官方文档: <a href="http://tools.android.com/tech-docs/new-build-system/applicationid-vs-packagename" target="_blank" rel="external">http://tools.android.com/tech-docs/new-build-system/applicationid-vs-packagename</a></p>
+<p>###0x00 Application 和 PackageName</p>
+<p>　　在旧版本的 Android Gradle 和 Eclipse Ant 构建系统中，应用程序的包名是由 AndroidManifest 文件的根元素的 package 属性决定的：   </p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line"><span class="tag">&lt;<span class="name">manifest</span> <span class="attr">xmlns:android</span>=<span class="string">"http://schemas.android.com/apk/res/android"</span></span></div><div class="line">    <span class="attr">package</span>=<span class="string">"com.example.my.app"</span></div><div class="line">    <span class="attr">android:versionCode</span>=<span class="string">"1"</span></div><div class="line">    <span class="attr">android:versionName</span>=<span class="string">"1.0"</span> &gt;</div></pre></td></tr></table></figure>
+<p>但其实这里的 package 有两种含义：</p>
+<ul>
+<li>应用程序包名</li>
+<li>资源类的包名（以及解析任何相关的Activity的类名）</li>
+</ul>
+<p>　　Android 开发者应该都知道 R.java, 每个资源文件都会在 R 类中生成唯一的16进制编号。上面例子中将会生成 <strong>com.example.my.app.R</strong>, 如果需要在代码中引入资源，就需要导入 <strong>com.example.my.app.R</strong>。</p>
+<p>　　在新版本的 Android Gradle 构建系统可以通过 flavors 构建不同版本的的应用程序；比如我们可以同时打包 “free” 版本和 “pro” 版本，并且这两个版本在不同的应用商店上有不同的包名，所以他们可以被同时安装在同一个机器上面。</p>
+<p>　　因此新版本构建工具多了一个 <code>ApplicationId</code>。新增的 <code>ApplicationId</code> 表示应用程序的包名，而 <code>package</code> 用于在源代码中来引用您的R类的，并且是解析任何相关的Activity/Service 注册的包。    </p>
+<p>在项目的 <code>app/build.gradle</code>中指定 <code>ApplicationId</code>:   </p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div></pre></td><td class="code"><pre><div class="line">apply plugin: <span class="string">'com.android.application'</span></div><div class="line"></div><div class="line">android &#123;</div><div class="line">    compileSdkVersion <span class="number">19</span></div><div class="line">    buildToolsVersion <span class="string">"19.1"</span></div><div class="line"></div><div class="line">    defaultConfig &#123;</div><div class="line">        applicationId <span class="string">"com.example.my.app"</span></div><div class="line">        minSdkVersion <span class="number">15</span></div><div class="line">        targetSdkVersion <span class="number">19</span></div><div class="line">        versionCode <span class="number">1</span></div><div class="line">        versionName <span class="string">"1.0"</span></div><div class="line">    &#125;</div><div class="line">    ...</div></pre></td></tr></table></figure>
+<p><code>package</code> 依旧在 AndroidManifest.xml 中定义。</p>
+<p>　　packageName 在代码中使用，通常在 AndroidManifest.xml中指定，applicationId 则只是用于程序的标识，通常在 build.gradle 中指定。这样有一个好处，假如你想发布一个免费版，一个收费版，你只需要在 build.gradle 中把applicationId 后面加上免费版的后缀包名（如”.free”），收费版加上收费版的后缀即可，而不需要修改你的其他代码。<br>　　你可以通过使用以下的 Gradle DSL 方法，为不同的flavors和构建类型修改你的应用程序的 ApplicationId：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div></pre></td><td class="code"><pre><div class="line">productFlavors &#123;</div><div class="line">       pro &#123;</div><div class="line">           applicationId = <span class="string">"com.example.my.pkg.pro"</span></div><div class="line">       &#125;</div><div class="line">       free &#123;</div><div class="line">           applicationId = <span class="string">"com.example.my.pkg.free"</span></div><div class="line">       &#125;</div><div class="line">   &#125;</div><div class="line"></div><div class="line">   buildTypes &#123;</div><div class="line">       debug &#123;</div><div class="line">           applicationIdSuffix <span class="string">".debug"</span></div><div class="line">       &#125;</div><div class="line">   &#125;</div><div class="line">   ....</div></pre></td></tr></table></figure>
+<p><font color="red"><strong>PS:</strong></font> 出于兼容性原因，如果您没有在您的 build.gradle 文件中定义 applicationId，这个applicationId 将默认为 AndroidManifest.xml 中所指定的相同的值。</p>
+<p>###0x01 Android Studio 项目多开分析</p>
+<p>####修改 app/build.gradle 文件中的 applicationId<br><img width="700px" height="300px" src="https://gnaixx.github.io/blog_images/multi/1.png" style="display:inline-block"></p>
+<p>####同时安装<br><img width="700px" height="200px" src="https://gnaixx.github.io/blog_images/multi/2.png" style="display:inline-block"></p>
+<p><strong>查看/data/data目录</strong><br>可以看到这时候已经有两个安装包了。<br><img width="700px" height="200px" src="https://gnaixx.github.io/blog_images/multi/3.png" style="display:inline-block"></p>
+<p><strong>打开应用获取包名（“^^”后面为版本号）</strong><br><img width="700px" height="150px" src="https://gnaixx.github.io/blog_images/multi/4.png" style="display:inline-block"><br><img width="700px" height="150px" src="https://gnaixx.github.io/blog_images/multi/5.png" style="display:inline-block"></p>
+<p>####利用 apktool 反编译查看 AndroidManifest.xml 文件<br><img width="700px" height="150px" src="https://gnaixx.github.io/blog_images/multi/6.png" style="display:inline-block"><br><img width="700px" height="150px" src="https://gnaixx.github.io/blog_images/multi/7.png" style="display:inline-block"><br>可以看到编译生成的 package 属性已经变成了 applicationId 设定的值</p>
+<p>####利用 dex2jar 反编译 classes.dex 代码<br><img width="700px" height="200px" src="https://gnaixx.github.io/blog_images/multi/8.png" style="display:inline-block"><br>两个 APK 的 classse.dex 代码是一样的，没有变化。</p>
+<p>###0x02 Eclipse 项目分析</p>
+<p>####修改 AndroidManifest.xml 中的 package 属性<br>　　因为 Eclipse 构建项目是 package 属性是表示包名的同时也是资源文件的包名，所以改动后 R 文件包名也会变化。<br><img width="400px" height="300px" src="https://gnaixx.github.io/blog_images/multi/9.png" style="display:inline-block"></p>
+<p><img width="700px" height="300px" src="https://gnaixx.github.io/blog_images/multi/10.png" style="display:inline-block"></p>
+<p><img width="700px" height="300px" src="https://gnaixx.github.io/blog_images/multi/11.png" style="display:inline-block"></p>
+<p>####同时安装<br><img width="700px" height="300px" src="https://gnaixx.github.io/blog_images/multi/12.png" style="display:inline-block"></p>
+<p><strong>查看/data/data目录</strong><br>可以看到这时候已经有两个安装包了。<br><img width="700px" height="150px" src="https://gnaixx.github.io/blog_images/multi/13.png" style="display:inline-block"></p>
+<p><strong>打开应用获取包名（“^^”后面为版本号）</strong><br><img width="700px" height="150px" src="https://gnaixx.github.io/blog_images/multi/14.png" style="display:inline-block"><br><img width="700px" height="150px" src="https://gnaixx.github.io/blog_images/multi/15.png" style="display:inline-block"></p>
+<p>####利用 apktool 反编译查看 AndroidManifest.xml 文件<br><img width="700px" height="150px" src="https://gnaixx.github.io/blog_images/multi/16.png" style="display:inline-block"><br><img width="700px" height="150px" src="https://gnaixx.github.io/blog_images/multi/17.png" style="display:inline-block"></p>
+<p>####利用 dex2jar 反编译 classes.dex 代码<br><img width="700px" height="250px" src="https://gnaixx.github.io/blog_images/multi/18.png" style="display:inline-block"><br><img width="700px" height="250px" src="https://gnaixx.github.io/blog_images/multi/19.png" style="display:inline-block"></p>
+<p>###0x03 APK多开制作流程<br>　　上面主要是介绍了多开的原理，制作的过程是基于拿到源码的情况下。但是通过了解我们其实可以通过一些工具很容易（其实很没这么简单）的破解市场上的 APK。</p>
+<p>####利用 apktool 反编译</p>
+<p>　　利用 apktool 对 APK 进行反编译，这里以上面的 Eclipse 项目为例：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">apktool d multi_demo.apk -o output</div></pre></td></tr></table></figure>
+<p>apktool 工具在之前的一篇有提到过，里面有提供下载地址：<br><a href="https://gnaixx.github.io/2016/03/06/android-reverse-engineering/">Android程序逆向分析</a></p>
+<p>####修改 AndroidManifest.xml<br>　　将 package 属性从 <code>com.example.multi_demo</code> 改为 <code>com.example.multi_demo_2</code><br>因为 Activity 的包名也是 <code>com.example.multi_demo</code> 所以必须也要把 Activity 的 <code>android:name</code> 属性改为: <code>com.example.multi_demo.MainActivity</code> 不然会造成找不到该 Activity。<br><img width="700px" height="250px" src="https://gnaixx.github.io/blog_images/multi/20.png" style="display:inline-block"></p>
+<p>####重新编译<br>　　修改后就可以重新编译 APK 了，还是用 apktool：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">apktool b output -o multi-demo_2.apk</div></pre></td></tr></table></figure>
+<p>####签名<br>　　apktool编译的apk并没有签名不能直接安装需要添加签名，用signapk.jar工具对apk进行签名。除了signapk.jar 还需要testkey.x509.pem testkey.pk8两个文件。工具可以在<a href="https://github.com/gnaix92/crack/tree/master/tools/auto-sign" target="_blank" rel="external">/tools/auto-sign</a>中找到。运行命令：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">java -jar signapk.jar testkey.x509.pem testkey.pk8 multi-demo_2.apk sign.apk</div></pre></td></tr></table></figure>
+<p>　　签名后生成的sign.apk 就可以与原来的 multi-demo.apk 安装在同一台机子下了。</p>
+<p><font color="red">PS: </font><br>　　这种方式只能对部分没有做过加固处理和没有进行反二次打包处理的APK，还是很水的。<br>　　另外 LBE 有个双开应用叫<strong>平行空间</strong>，基本可以实现所有应用的双开操作。不同于上面的修改包名操作，他们更像是为 APK 套了一层外壳，可以试着去获取被双开的应用包名，会发现与原来包名是一致的。<br>　　但是其实也可以识别的，你去获取应用的绝对路径就知道了。</p>
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+  <div style="padding: 10px 0; margin: 20px auto; width: 90%; text-align: center;">
+    <div>赏一个呗！</div>
+    <button id="rewardButton" disable="enable" onclick="var qr = document.getElementById('QR'); if (qr.style.display === 'none') {qr.style.display='block';} else {qr.style.display='none'}">
+      <span>赏</span>
+    </button>
+    <div id="QR" style="display: none;">
+      
+        <div id="wechat" style="display: inline-block">
+          <img id="wechat_qr" src="/images/wechatpay.png" alt="凸一_一凸 WeChat Pay"/>
+          <p>微信打赏</p>
+        </div>
+      
+      
+        <div id="alipay" style="display: inline-block">
+          <img id="alipay_qr" src="/images/alipay.jpg" alt="凸一_一凸 Alipay"/>
+          <p>支付宝打赏</p>
+        </div>
+      
+    </div>
+  </div>
+
+
+      
+    </div>
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/android/" rel="tag">#android</a>
+          
+            <a href="/tags/crack/" rel="tag">#crack</a>
+          
+        </div>
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2016/04/08/ndk-local_global_weak-reference/" rel="next" title="NDK开发-JNI 局部引用、全局引用和弱全局引用">
+                <i class="fa fa-chevron-left"></i> NDK开发-JNI 局部引用、全局引用和弱全局引用
+              </a>
+            
+          </div>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2016/04/12/android-protect-unreadable_code/" rel="prev" title="APK自我保护 - 代码乱序">
+                APK自我保护 - 代码乱序 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+      <div class="ds-thread" data-thread-key="2016/04/11/android-multi_apk/"
+           data-title="APK多开原理" data-url="http://gnaixx.github.io/2016/04/11/android-multi_apk/">
+      </div>
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel ">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="//schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="/images/custom_avatar.jpg"
+               alt="凸一_一凸" />
+          <p class="site-author-name" itemprop="name">凸一_一凸</p>
+          <p class="site-description motion-element" itemprop="description"></p>
+        </div>
+        <nav class="site-state motion-element">
+          <div class="site-state-item site-state-posts">
+            <a href="/archives">
+              <span class="site-state-item-count">36</span>
+              <span class="site-state-item-name">日志</span>
+            </a>
+          </div>
+
+          
+            <div class="site-state-item site-state-categories">
+              <a href="/categories">
+                <span class="site-state-item-count">5</span>
+                <span class="site-state-item-name">分类</span>
+              </a>
+            </div>
+          
+
+          
+            <div class="site-state-item site-state-tags">
+              <a href="/tags">
+                <span class="site-state-item-count">38</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+            
+              <span class="links-of-author-item">
+                <a href="https://github.com/gnaixx" target="_blank" title="GitHub">
+                  
+                    <i class="fa fa-fw fa-github"></i>
+                  
+                  GitHub
+                </a>
+              </span>
+            
+          
+        </div>
+
+        
+        
+
+        
+        
+          <div class="links-of-blogroll motion-element links-of-blogroll-block">
+            <div class="links-of-blogroll-title">
+              <i class="fa  fa-fw fa-globe"></i>
+              友情链接
+            </div>
+            <ul class="links-of-blogroll-list">
+              
+                <li class="links-of-blogroll-item">
+                  <a href="https://waynecz.github.io/" title="wayne" target="_blank">wayne</a>
+                </li>
+              
+            </ul>
+          </div>
+        
+
+      </section>
+
+      
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+            
+              
+            
+            
+              <p class="post-toc-empty">此文章未包含目录</p>
+            
+          </div>
+        </section>
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy;  2014 - 
+  <span itemprop="copyrightYear">2016</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">凸一_一凸</span>
+</div>
+
+<div class="powered-by">
+  由 <a class="theme-link" href="https://hexo.io">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Mist
+  </a>
+</div>
+
+        
+
+<div class="busuanzi-count">
+
+  <script async src="https://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+  
+    <span class="site-uv"><i class="fa fa-user"></i><span class="busuanzi-value" id="busuanzi_value_site_uv"></span></span>
+  
+
+  
+    <span class="site-pv"><i class="fa fa-eye"></i><span class="busuanzi-value" id="busuanzi_value_site_pv"></span></span>
+  
+  
+</div>
+
+
+
+        
+      </div>
+    </footer>
+
+    <div class="back-to-top">
+      <i class="fa fa-arrow-up"></i>
+    </div>
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.0.2"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.0.2"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.0.2"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.0.2"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.0.2"></script>
+
+
+
+  
+
+  
+    
+  
+
+  <script type="text/javascript">
+    var duoshuoQuery = {short_name:"gnaix"};
+    (function() {
+      var ds = document.createElement('script');
+      ds.type = 'text/javascript';ds.async = true;
+      ds.id = 'duoshuo-script';
+      ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+      ds.charset = 'UTF-8';
+      (document.getElementsByTagName('head')[0]
+      || document.getElementsByTagName('body')[0]).appendChild(ds);
+    })();
+  </script>
+
+  
+    
+    <script src="/lib/ua-parser-js/dist/ua-parser.min.js?v=0.7.9"></script>
+    <script src="/js/src/hook-duoshuo.js"></script>
+  
+
+
+
+
+
+
+  
+  
+
+  
+
+  
+
+  
+
+  
+
+
+</body>
+</html>

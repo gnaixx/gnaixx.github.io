@@ -1,0 +1,889 @@
+<!doctype html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.4.0" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.0.2" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="ndk,android,so,elf," />
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/images/favicon.ico?v=5.0.2" />
+
+
+
+
+
+
+<meta name="description" content="NDK开发最后生成的so文件是基于ELF文件格式。而so是共享目标文件，所以要想对so文件进行加密就必须了解ELF文件格式。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="ELF文件格式分析">
+<meta property="og:url" content="http://gnaixx.github.io/2016/09/30/20160930_elf-file/index.html">
+<meta property="og:site_name" content="凸一_一凸">
+<meta property="og:description" content="NDK开发最后生成的so文件是基于ELF文件格式。而so是共享目标文件，所以要想对so文件进行加密就必须了解ELF文件格式。">
+<meta property="og:image" content="http://gnaixx.cc/blog_images/elf/1.png">
+<meta property="og:image" content="http://gnaixx.cc/blog_images/elf/2.png">
+<meta property="og:image" content="http://gnaixx.cc/blog_images/elf/3.png">
+<meta property="og:image" content="http://gnaixx.cc/blog_images/elf/4.png">
+<meta property="og:image" content="http://gnaixx.cc/blog_images/elf/5.png">
+<meta property="og:image" content="http://gnaixx.cc/blog_images/elf/6.png">
+<meta property="og:image" content="http://gnaixx.cc/blog_images/elf/7.png">
+<meta property="og:image" content="http://gnaixx.cc/blog_images/elf/8.png">
+<meta property="og:image" content="http://gnaixx.cc/blog_images/elf/9.png">
+<meta property="og:image" content="http://gnaixx.cc/blog_images/elf/10.png">
+<meta property="og:image" content="http://gnaixx.cc/blog_images/elf/11.png">
+<meta property="og:image" content="http://gnaixx.cc/blog_images/elf/12.png">
+<meta property="og:image" content="http://gnaixx.cc/blog_images/elf/13.png">
+<meta property="og:image" content="http://gnaixx.cc/blog_images/elf/14.png">
+<meta property="og:image" content="http://gnaixx.cc/blog_images/elf/15.png">
+<meta property="og:image" content="http://gnaixx.cc/blog_images/elf/16.png">
+<meta property="og:image" content="http://gnaixx.cc/blog_images/elf/17.png">
+<meta property="og:image" content="http://gnaixx.cc/blog_images/elf/18.png">
+<meta property="og:image" content="http://gnaixx.cc/blog_images/elf/19.png">
+<meta property="og:image" content="http://gnaixx.cc/blog_images/elf/20.png">
+<meta property="og:updated_time" content="2016-11-05T07:57:27.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="ELF文件格式分析">
+<meta name="twitter:description" content="NDK开发最后生成的so文件是基于ELF文件格式。而so是共享目标文件，所以要想对so文件进行加密就必须了解ELF文件格式。">
+<meta name="twitter:image" content="http://gnaixx.cc/blog_images/elf/1.png">
+
+
+
+<script type="text/javascript" id="hexo.configuration">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    scheme: 'Mist',
+    sidebar: {"position":"left","display":"post"},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    }
+  };
+</script>
+
+
+
+
+  <link rel="canonical" href="http://gnaixx.github.io/2016/09/30/20160930_elf-file/"/>
+
+
+  <title> ELF文件格式分析 | 凸一_一凸 </title>
+</head>
+
+<body itemscope itemtype="//schema.org/WebPage" lang="zh-Hans">
+
+  
+
+
+
+  <script type="text/javascript">
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "//hm.baidu.com/hm.js?bb104a561bbdd3b6666195d45e5581a9";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+
+
+
+
+  
+  
+    
+  
+
+  <div class="container one-collumn sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="//schema.org/WPHeader">
+      <div class="header-inner"><div class="site-meta ">
+  
+
+  <div class="custom-logo-site-title">
+    <a href="/"  class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <span class="site-title">凸一_一凸</span>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+  <p class="site-subtitle">gnaixx</p>
+</div>
+
+<div class="site-nav-toggle">
+  <button>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+  </button>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories" rel="section">
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+            标签
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="//schema.org/Article">
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                ELF文件格式分析
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            <span class="post-meta-item-icon">
+              <i class="fa fa-calendar-o"></i>
+            </span>
+            <span class="post-meta-item-text">发表于</span>
+            <time itemprop="dateCreated" datetime="2016-09-30T14:47:17+08:00" content="2016-09-30">
+              2016-09-30
+            </time>
+          </span>
+
+          
+            <span class="post-category" >
+              &nbsp; | &nbsp;
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+              
+                <span itemprop="about" itemscope itemtype="https://schema.org/Thing">
+                  <a href="/categories/linux/" itemprop="url" rel="index">
+                    <span itemprop="name">linux</span>
+                  </a>
+                </span>
+
+                
+                
+
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                &nbsp; | &nbsp;
+                <a href="/2016/09/30/20160930_elf-file/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count ds-thread-count" data-thread-key="2016/09/30/20160930_elf-file/" itemprop="commentsCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+
+          
+          
+
+          
+              &nbsp; | &nbsp;
+              <span class="page-pv"><i class="fa fa-file-o"></i>
+              <span class="busuanzi-value" id="busuanzi_value_page_pv" ></span>
+              </span>
+          
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>##0x00 简介<br>可执行链接格式(Executable and Linking Format)最初是由 UNIX 系统实验室(UNIX System Laboratories，USL)开发并发布的，作为应用程序二进制接口(Application Binary Interface，ABI)的一部分。工具接口标准(Tool Interface Standards，TIS)委员会将还 在发展的 ELF 标准选作为一种可移植的目标文件格式，可以在 32 位 Intel 体系结构上的 很多操作系统中使用。</p>
+<p>目标文件有三种类型:</p>
+<ul>
+<li>可重定位文件(Relocatable File) .o)包含适合于与其他目标文件链接来创建可执行文件或者共享目标文件的代码和数据。</li>
+<li>可执行文件(Executable File) .exe) 包含适合于执行的一个程序，此文件规定了exec() 如何创建一个程序的进程映像。</li>
+<li>共享目标文件(Shared Object File) .so) 包含可在两种上下文中链接的代码和数据。首先链接编辑器可以将它和其它可重定位文件和共享目标文件一起处理， 生成另外一个目标文件。其次动态链接器(Dynamic Linker)可能将它与某 个可执行文件以及其它共享目标一起组合，创建进程映像。</li>
+</ul>
+<p>目标文件全部是程序的二进制表示，目的是直接在某种处理器上直接执行。</p>
+<p>##0x01 ELF文件格式</p>
+<p>###目标文件格式<br>目标文件既要参与程序链接又要参与程序执行。出于方便性和效率考虑，目标文件<br>格式提供了两种并行视图，分别反映了这些活动的不同需求。   </p>
+<img src="http://gnaixx.cc/blog_images/elf/1.png" class="center" width="400" height="400" title="目标文件格式">
+<p>文件开始处是一个 ELF 头部(ELF Header)，用来描述整个文件的组织。节区部 分包含链接视图的大量信息:指令、数据、符号表、重定位信息等等。   </p>
+<p>程序头部表(Program Header Table)，如果存在的话，告诉系统如何创建进程映像。 用来构造进程映像的目标文件必须具有程序头部表，可重定位文件不需要这个表。</p>
+<p>节区头部表(Section Heade Table)包含了描述文件节区的信息，每个节区在表中 都有一项，每一项给出诸如节区名称、节区大小这类信息。用于链接的目标文件必须包 含节区头部表，其他目标文件可以有，也可以没有这个表。</p>
+<p><strong>注意：</strong> 尽管图中显示的各个组成部分是有顺序的，实际上除了 ELF 头部表以外， 其他节区和段都没有规定的顺序</p>
+<p>###目标文件中数据表示<br>目标文件格式支持 8 位字节/32 位体系结构。不过这种格式是可以扩展的，比如现在的64位机器，目标文件因此以某些机器独立的格式表达某些控制数据，使得能够以一种公共的方式来识别和解释其内容。目标文件中的其它数据使用目标处理器的编码结构，而不管文件在何种机器上创建。</p>
+<img src="http://gnaixx.cc/blog_images/elf/2.png" class="center" width="500" height="500" title="ELF中常用数据格式">
+<p>目标文件中的所有数据结构都遵从“自然”大小和对齐规则。如果必要，数据结构可 以包含显式的补齐，例如为了确保 4 字节对象按 4 字节边界对齐。数据对齐同样适用于文件内部。</p>
+<p>###ELF Hearder部分<br>文件的最开始几个字节给出如何解释文件的提示信息。这些信息独立于处理器，也<br>独立于文件中的其余内容。ELF Header 部分可以用以下的数据结构表示:</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div></pre></td><td class="code"><pre><div class="line"><span class="comment">/* ELF Header */</span></div><div class="line"><span class="keyword">typedef</span> <span class="keyword">struct</span> elfhdr &#123;</div><div class="line">	<span class="keyword">unsigned</span> <span class="keyword">char</span>	e_ident[EI_NIDENT]; <span class="comment">/* ELF Identification */</span></div><div class="line">	Elf32_Half	e_type;		<span class="comment">/* object file type */</span></div><div class="line">	Elf32_Half	e_machine;	<span class="comment">/* machine */</span></div><div class="line">	Elf32_Word	e_version;	<span class="comment">/* object file version */</span></div><div class="line">	Elf32_Addr	e_entry;	<span class="comment">/* virtual entry point */</span></div><div class="line">	Elf32_Off	e_phoff;	<span class="comment">/* program header table offset */</span></div><div class="line">	Elf32_Off	e_shoff;	<span class="comment">/* section header table offset */</span></div><div class="line">	Elf32_Word	e_flags;	<span class="comment">/* processor-specific flags */</span></div><div class="line">	Elf32_Half	e_ehsize;	<span class="comment">/* ELF header size */</span></div><div class="line">	Elf32_Half	e_phentsize;	<span class="comment">/* program header entry size */</span></div><div class="line">	Elf32_Half	e_phnum;	<span class="comment">/* number of program header entries */</span></div><div class="line">	Elf32_Half	e_shentsize;	<span class="comment">/* section header entry size */</span></div><div class="line">	Elf32_Half	e_shnum;	<span class="comment">/* number of section header entries */</span></div><div class="line">	Elf32_Half	e_shstrndx;	<span class="comment">/* section header table's "section </span></div><div class="line">					   header string table" entry offset */</div><div class="line">&#125; Elf32_Ehdr;</div><div class="line"></div><div class="line"><span class="keyword">typedef</span> <span class="keyword">struct</span> &#123;</div><div class="line">	<span class="keyword">unsigned</span> <span class="keyword">char</span>	e_ident[EI_NIDENT];	<span class="comment">/* Id bytes */</span></div><div class="line">	Elf64_Quarter	e_type;			<span class="comment">/* file type */</span></div><div class="line">	Elf64_Quarter	e_machine;		<span class="comment">/* machine type */</span></div><div class="line">	Elf64_Half	e_version;		<span class="comment">/* version number */</span></div><div class="line">	Elf64_Addr	e_entry;		<span class="comment">/* entry point */</span></div><div class="line">	Elf64_Off	e_phoff;		<span class="comment">/* Program hdr offset */</span></div><div class="line">	Elf64_Off	e_shoff;		<span class="comment">/* Section hdr offset */</span></div><div class="line">	Elf64_Half	e_flags;		<span class="comment">/* Processor flags */</span></div><div class="line">	Elf64_Quarter	e_ehsize;		<span class="comment">/* sizeof ehdr */</span></div><div class="line">	Elf64_Quarter	e_phentsize;		<span class="comment">/* Program header entry size */</span></div><div class="line">	Elf64_Quarter	e_phnum;		<span class="comment">/* Number of program headers */</span></div><div class="line">	Elf64_Quarter	e_shentsize;		<span class="comment">/* Section header entry size */</span></div><div class="line">	Elf64_Quarter	e_shnum;		<span class="comment">/* Number of section headers */</span></div><div class="line">	Elf64_Quarter	e_shstrndx;		<span class="comment">/* String table index */</span></div><div class="line">&#125; Elf64_Ehdr;</div></pre></td></tr></table></figure>
+<p>其中，e_ident 数组给出了 ELF 的一些标识信息，这个数组中不同下标的含义如表所示:   </p>
+<img src="http://gnaixx.cc/blog_images/elf/3.png" class="center" width="500" height="500" title="e_ident[]标识索引">  
+<p>这些索引访问包含以下数值的字节:</p>
+<p><img src="http://gnaixx.cc/blog_images/elf/4.png" alt="e_ident[]的内容说明"></p>
+<p>e_ident[EI_MAG0]~e_ident[EI_MAG3]即e_ident[0]~e_ident[3]被称为魔数（Magic Number）,其值一般为0x7f,’E’,’L’,’F’。<br>e_ident[EI_CLASS]（即e_ident[4]）识别目标文件运行在目标机器的类别，取值可为三种值：ELFCLASSNONE（0）非法类别；ELFCLASS32（1）32位目标；ELFCLASS64（2）64位目标。<br>e_ident[EI_DATA]（即e_ident[5]）：给出处理器特定数据的数据编码方式。即大端还是小端方式。取值可为3种：ELFDATANONE（0）非法数据编码；ELFDATA2LSB（1）高位在前；ELFDATA2MSB（2）低位在前。</p>
+<p>ELF Header 中各个字段的说明如表：</p>
+<p><img src="http://gnaixx.cc/blog_images/elf/5.png" alt="ELF Header中各个字段的含义"></p>
+<p>一个实际可执行文件的头文件头部形式如下：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div></pre></td><td class="code"><pre><div class="line"><span class="variable">$greadelf</span> -h hello.so</div><div class="line">ELF 头：</div><div class="line">  Magic：  7f 45 4c 46 01 01 01 00 00 00 00 00 00 00 00 00</div><div class="line">  类别:                             ELF32</div><div class="line">  数据:                             2 补码，小端序 (little endian)</div><div class="line">  版本:                             1 (current)</div><div class="line">  OS/ABI:                           UNIX - System V</div><div class="line">  ABI 版本:                         0</div><div class="line">  类型:                             DYN (共享目标文件)</div><div class="line">  系统架构:                          ARM</div><div class="line">  版本:                             0x1</div><div class="line">  入口点地址：                       0x0</div><div class="line">  程序头起点：                       52 (bytes into file)</div><div class="line">  Start of section headers:        61816 (bytes into file)</div><div class="line">  标志：                            0x5000000, Version5 EABI</div><div class="line">  本头的大小：                       52 (字节)</div><div class="line">  程序头大小：                       32 (字节)</div><div class="line">  Number of program headers:       9</div><div class="line">  节头大小：                        40 (字节)</div><div class="line">  节头数量：                        24</div><div class="line">  字符串表索引节头：                 23</div></pre></td></tr></table></figure>
+<p><strong>注：</strong>linux环境下可以利用命令readelf,mac需要安装binutils。用brew安装很方便，命令：<code>brew update &amp;&amp; brew install binutils</code></p>
+<p>###程序头部（Program Header）<br>可执行文件或者共享目标文件的程序头部是一个结构数组，每个结构描述了一个段 或者系统准备程序执行所必需的其它信息。目标文件的“段”包含一个或者多个“节区”， 也就是“段内容(Segment Contents)”。程序头部仅对于可执行文件和共享目标文件 有意义。<br>可执行目标文件在 ELF 头部的 e_phentsize 和 e_phnum 成员中给出其自身程序头部 的大小。程序头部的数据结构:</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div></pre></td><td class="code"><pre><div class="line"><span class="comment">/* Program Header */</span></div><div class="line"><span class="keyword">typedef</span> <span class="keyword">struct</span> &#123;</div><div class="line">	Elf32_Word	p_type;		<span class="comment">/* segment type */</span></div><div class="line">	Elf32_Off	p_offset;	<span class="comment">/* segment offset */</span></div><div class="line">	Elf32_Addr	p_vaddr;	<span class="comment">/* virtual address of segment */</span></div><div class="line">	Elf32_Addr	p_paddr;	<span class="comment">/* physical address - ignored? */</span></div><div class="line">	Elf32_Word	p_filesz;	<span class="comment">/* number of bytes in file for seg. */</span></div><div class="line">	Elf32_Word	p_memsz;	<span class="comment">/* number of bytes in mem. for seg. */</span></div><div class="line">	Elf32_Word	p_flags;	<span class="comment">/* flags */</span></div><div class="line">	Elf32_Word	p_align;	<span class="comment">/* memory alignment */</span></div><div class="line">&#125; Elf32_Phdr;</div><div class="line"></div><div class="line"><span class="keyword">typedef</span> <span class="keyword">struct</span> &#123;</div><div class="line">	Elf64_Half	p_type;		<span class="comment">/* entry type */</span></div><div class="line">	Elf64_Half	p_flags;	<span class="comment">/* flags */</span></div><div class="line">	Elf64_Off	p_offset;	<span class="comment">/* offset */</span></div><div class="line">	Elf64_Addr	p_vaddr;	<span class="comment">/* virtual address */</span></div><div class="line">	Elf64_Addr	p_paddr;	<span class="comment">/* physical address */</span></div><div class="line">	Elf64_Xword	p_filesz;	<span class="comment">/* file size */</span></div><div class="line">	Elf64_Xword	p_memsz;	<span class="comment">/* memory size */</span></div><div class="line">	Elf64_Xword	p_align;	<span class="comment">/* memory &amp; file alignment */</span></div><div class="line">&#125; Elf64_Phdr;</div></pre></td></tr></table></figure>
+<p>其中各个字段说明：</p>
+<ul>
+<li>p_type 此数组元素描述的段的类型，或者如何解释此数组元素的信息。具体如下图。</li>
+<li>p_offset 此成员给出从文件头到该段第一个字节的偏移。</li>
+<li>p_vaddr 此成员给出段的第一个字节将被放到内存中的虚拟地址。</li>
+<li>p_paddr 此成员仅用于与物理地址相关的系统中。因为 System V 忽略所有应用程序的物理地址信息，此字段对与可执行文件和共享目标文件而言具体内容是指定的。</li>
+<li>p_filesz 此成员给出段在文件映像中所占的字节数。可以为 0。</li>
+<li>p_memsz 此成员给出段在内存映像中占用的字节数。可以为 0。</li>
+<li>p_flags 此成员给出与段相关的标志。</li>
+<li>p_align 可加载的进程段的 p_vaddr 和 p_offset 取值必须合适，相对于对页面大小的取模而言。此成员给出段在文件中和内存中如何 对齐。数值 0 和 1 表示不需要对齐。否则 p_align 应该是个正整数，并且是 2 的幂次数，p_vaddr 和 p_offset 对 p_align 取模后应该相等。</li>
+</ul>
+<p>可执行 ELF 目标文件中的段类型：</p>
+<p><img src="http://gnaixx.cc/blog_images/elf/6.png" alt="段类型"></p>
+<p>###节区（Sections）</p>
+<p>节区中包含目标文件中的所有信息，除了:ELF 头部、程序头部表格、节区头部<br>表格。节区满足以下条件:</p>
+<ol>
+<li>目标文件中的每个节区都有对应的节区头部描述它，反过来，有节区头部不意 味着有节区。</li>
+<li>每个节区占用文件中一个连续字节区域(这个区域可能长度为 0)。</li>
+<li>文件中的节区不能重叠，不允许一个字节存在于两个节区中的情况发生。 </li>
+<li>目标文件中可能包含非活动空间(INACTIVE SPACE)。这些区域不属于任何头部和节区，其内容指定。</li>
+</ol>
+<p>####节区头部表格</p>
+<p>ELF 头部中，e_shoff 成员给出从文件头到节区头部表格的偏移字节数;e_shnum 给出表格中条目数目;e_shentsize 给出每个项目的字节数。从这些信息中可以确切地定 位节区的具体位置、长度。</p>
+<p>每个节区头部数据结构描述:</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div></pre></td><td class="code"><pre><div class="line"><span class="comment">/* Section Header */</span></div><div class="line"><span class="keyword">typedef</span> <span class="keyword">struct</span> &#123;</div><div class="line">	Elf32_Word	sh_name;	<span class="comment">/* name - index into section header</span></div><div class="line">					   string table section */</div><div class="line">	Elf32_Word	sh_type;	<span class="comment">/* type */</span></div><div class="line">	Elf32_Word	sh_flags;	<span class="comment">/* flags */</span></div><div class="line">	Elf32_Addr	sh_addr;	<span class="comment">/* address */</span></div><div class="line">	Elf32_Off	sh_offset;	<span class="comment">/* file offset */</span></div><div class="line">	Elf32_Word	sh_size;	<span class="comment">/* section size */</span></div><div class="line">	Elf32_Word	sh_link;	<span class="comment">/* section header table index link */</span></div><div class="line">	Elf32_Word	sh_info;	<span class="comment">/* extra information */</span></div><div class="line">	Elf32_Word	sh_addralign;	<span class="comment">/* address alignment */</span></div><div class="line">	Elf32_Word	sh_entsize;	<span class="comment">/* section entry size */</span></div><div class="line">&#125; Elf32_Shdr;</div><div class="line"></div><div class="line"><span class="keyword">typedef</span> <span class="keyword">struct</span> &#123;</div><div class="line">	Elf64_Half	sh_name;	<span class="comment">/* section name */</span></div><div class="line">	Elf64_Half	sh_type;	<span class="comment">/* section type */</span></div><div class="line">	Elf64_Xword	sh_flags;	<span class="comment">/* section flags */</span></div><div class="line">	Elf64_Addr	sh_addr;	<span class="comment">/* virtual address */</span></div><div class="line">	Elf64_Off	sh_offset;	<span class="comment">/* file offset */</span></div><div class="line">	Elf64_Xword	sh_size;	<span class="comment">/* section size */</span></div><div class="line">	Elf64_Half	sh_link;	<span class="comment">/* link to another */</span></div><div class="line">	Elf64_Half	sh_info;	<span class="comment">/* misc info */</span></div><div class="line">	Elf64_Xword	sh_addralign;	<span class="comment">/* memory alignment */</span></div><div class="line">	Elf64_Xword	sh_entsize;	<span class="comment">/* table entry size */</span></div><div class="line">&#125; Elf64_Shdr;</div></pre></td></tr></table></figure>
+<p>对其中各个字段的解释如下：</p>
+<p><img src="http://gnaixx.cc/blog_images/elf/7.png" alt="节区头部字段说明"></p>
+<p>索引为零（SHN_UNDEF）的节区头部是存在的，尽管此索引标记的是未定义的节区应用。这个节区固定为：</p>
+<p><img src="http://gnaixx.cc/blog_images/elf/8.png" alt="SHN_UNDEF(0)节区内容"></p>
+<h5 id="sh-type-字段"><a href="#sh-type-字段" class="headerlink" title="sh_type 字段"></a>sh_type 字段</h5><p>节区类型定义：</p>
+<p><img src="http://gnaixx.cc/blog_images/elf/9.png" alt="节区类型定义"></p>
+<p>其他的节区类型是保留的。</p>
+<h5 id="sh-flags-字段"><a href="#sh-flags-字段" class="headerlink" title="sh_flags 字段"></a>sh_flags 字段</h5><p>sh_flags 字段定义了一个节区中包含的内容是否可以修改、是否可以执行等信息。 如果一个标志位被设置，则该位取值为 1。 定义的各位都设置为 0。</p>
+<img src="http://gnaixx.cc/blog_images/elf/10.png" class="center" width="500" height="500" title="sh_flags 字段取值">  
+<p>其中已经定义了的各位含义如下:</p>
+<ul>
+<li>SHF_WRITE: 节区包含进程执行过程中将可写的数据。</li>
+<li>SHF_ALLOC: 此节区在进程执行过程中占用内存。某些控制节区并不出现于目标<br>文件的内存映像中，对于那些节区，此位应设置为 0。</li>
+<li>SHF_EXECINSTR: 节区包含可执行的机器指令。</li>
+<li>SHF_MASKPROC: 所有包含于此掩码中的四位都用于处理器专用的语义。</li>
+</ul>
+<h5 id="sh-link-和-sh-info-字段"><a href="#sh-link-和-sh-info-字段" class="headerlink" title="sh_link 和 sh_info 字段"></a>sh_link 和 sh_info 字段</h5><p>根据节区类型的不同，sh_link 和 sh_info 的具体含义也有所不同:<br><img src="http://gnaixx.cc/blog_images/elf/11.png" alt="sh_link 和 sh_info 字段解释"></p>
+<h4 id="特殊节区"><a href="#特殊节区" class="headerlink" title="特殊节区"></a>特殊节区</h4><p>很多节区中包含了程序和控制信息。下面的表中给出了系统使用的节区，以及它们 的类型和属性。</p>
+<p><img src="http://gnaixx.cc/blog_images/elf/12.png" alt="常见特殊节区"></p>
+<p>在分析这些节区的时候，需要注意如下事项:</p>
+<ul>
+<li>以“.”开头的节区名称是系统保留的。应用程序可以使用没有前缀的节区名称，以避 免与系统节区冲突。</li>
+<li>目标文件格式允许人们定义不在上述列表中的节区。</li>
+<li>目标文件中也可以包含多个名字相同的节区。</li>
+<li>保留给处理器体系结构的节区名称一般构成为:处理器体系结构名称简写 + 节区<br>名称。</li>
+<li>处理器名称应该与 e_machine 中使用的名称相同。例如 .FOO.psect 街区是由<br>FOO 体系结构定义的 psect 节区。</li>
+</ul>
+<p>另外，有些编译器对如上节区进行了扩展，这些已存在的扩展都使用约定俗成的名<br>称，如:</p>
+<ul>
+<li>.sdata   </li>
+<li>.tdesc   </li>
+<li>.sbss</li>
+<li>.lit4</li>
+<li>.lit8</li>
+<li>.reginfo   </li>
+<li>.gptab   </li>
+<li>.liblist   </li>
+<li>.conflict  </li>
+<li>…</li>
+</ul>
+<h3 id="字符串表（String-Table）"><a href="#字符串表（String-Table）" class="headerlink" title="字符串表（String Table）"></a>字符串表（String Table）</h3><p>字符串表节区包含以 NULL(ASCII 码 0)结尾的字符序列，通常称为字符串。ELF 目标文件通常使用字符串来表示符号和节区名称。对字符串的引用通常以字符串在字符 串表中的下标给出。</p>
+<p>一般，第一个字节(索引为 0)定义为一个空字符串。类似的，字符串表的最后一 个字节也定义为 NULL，以确保所有的字符串都以 NULL 结尾。索引为 0 的字符串在 不同的上下文中可以表示无名或者名字为 NULL 的字符串。</p>
+<p>允许存在空的字符串表节区，其节区头部的 sh_size 成员应该为 0。对空的字符串 表而言，非 0 的索引值是非法的。</p>
+<p>例如:对于各个节区而言，节区头部的 sh_name 成员包含其对应的节区头部字符串 表节区的索引，此节区由 ELF 头的 e_shstrndx 成员给出。下图给出了包含 25 个字节 的一个字符串表，以及与不同索引相关的字符串。</p>
+<p><img src="http://gnaixx.cc/blog_images/elf/13.png" alt="字符串表示例"></p>
+<p>上图中包含的字符串如下：<br><img src="http://gnaixx.cc/blog_images/elf/14.png" class="center" width="400" height="400">  </p>
+<p>在使用、分析字符串表时，要注意以下几点:</p>
+<ul>
+<li>字符串表索引可以引用节区中任意字节。   </li>
+<li>字符串可以出现多次</li>
+<li>可以存在对子字符串的引用</li>
+<li>同一个字符串可以被引用多次。</li>
+<li>字符串表中也可以存在未引用的字符串。</li>
+</ul>
+<h3 id="符号表（Symbol-Table）"><a href="#符号表（Symbol-Table）" class="headerlink" title="符号表（Symbol Table）"></a>符号表（Symbol Table）</h3><p>目标文件的符号表中包含用来定位、重定位程序中符号定义和引用的信息。符号表 索引是对此数组的索引。索引 0 表示表中的第一表项，同时也作为 定义符号的索引。  </p>
+<p>符号表项的格式如下:</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div></pre></td><td class="code"><pre><div class="line"><span class="comment">/* Symbol Table Entry */</span></div><div class="line"><span class="keyword">typedef</span> <span class="keyword">struct</span> elf32_sym &#123;</div><div class="line">	Elf32_Word	st_name;	<span class="comment">/* name - index into string table */</span></div><div class="line">	Elf32_Addr	st_value;	<span class="comment">/* symbol value */</span></div><div class="line">	Elf32_Word	st_size;	<span class="comment">/* symbol size */</span></div><div class="line">	<span class="keyword">unsigned</span> <span class="keyword">char</span>	st_info;	<span class="comment">/* type and binding */</span></div><div class="line">	<span class="keyword">unsigned</span> <span class="keyword">char</span>	st_other;	<span class="comment">/* 0 - no defined meaning */</span></div><div class="line">	Elf32_Half	st_shndx;	<span class="comment">/* section header index */</span></div><div class="line">&#125; Elf32_Sym;</div><div class="line"></div><div class="line"><span class="keyword">typedef</span> <span class="keyword">struct</span> &#123;</div><div class="line">	Elf64_Half	st_name;	<span class="comment">/* Symbol name index in str table */</span></div><div class="line">	Elf_Byte	st_info;	<span class="comment">/* type / binding attrs */</span></div><div class="line">	Elf_Byte	st_other;	<span class="comment">/* unused */</span></div><div class="line">	Elf64_Quarter	st_shndx;	<span class="comment">/* section index of symbol */</span></div><div class="line">	Elf64_Xword	st_value;	<span class="comment">/* value of symbol */</span></div><div class="line">	Elf64_Xword	st_size;	<span class="comment">/* size of symbol */</span></div><div class="line">&#125; Elf64_Sym;</div></pre></td></tr></table></figure>
+<p>其中各个字段的含义说明:<br><img src="http://gnaixx.cc/blog_images/elf/15.png" alt="符号表项字段"></p>
+<h4 id="st-info-说明"><a href="#st-info-说明" class="headerlink" title="st_info 说明"></a>st_info 说明</h4><p>st_info 中包含符号类型和绑定信息，操纵方式如:</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"><span class="meta">#<span class="meta-keyword">define</span> ELF32_ST_BIND(i)    ((i)&gt;&gt;4)</span><span class="meta">#<span class="meta-keyword">define</span> ELF32_ST_TYPE(i)    ((i)&amp;0xf)</span><span class="meta">#<span class="meta-keyword">define</span> ELF32_ST_INFO(b, t) (((b)<span class="meta-string">&lt;&lt;4) + ((t)&amp;0xf))</span></span></div></pre></td></tr></table></figure>
+<p>从中可以看出，st_info 的低四位表示符号绑定，用于确定链接可见性和行为。具体的绑定类型如:<br><img src="http://gnaixx.cc/blog_images/elf/16.png" alt="符号的绑定类型"></p>
+<p>全局符号与弱符号之间的区别主要有两点:</p>
+<p>(1). 当链接编辑器组合若干可重定位的目标文件时，不允许对同名的 STB_GLOBAL 符号给出多个定义。 另一方面如果一个已定义的全局符号已经存在，出现一个同名的弱符号并 不会产生错误。链接编辑器尽关心全局符号，忽略弱符号。 类似地，如果一个公共符号(符号的 st_shndx 中包含 SHN_COMMON)，那 么具有相同名称的弱符号出现也不会导致错误。链接编辑器会采纳公共定 义，而忽略弱定义。   </p>
+<p>(2). 当链接编辑器搜索归档库(archive libraries)时，会提取那些包含 定 义全局符号的档案成员。成员的定义可以是全局符号，也可以是弱符号。 连接编辑器不会提取档案成员来满足 定义的弱符号。  能解析的弱符号取值为 0。    </p>
+<p>在每个符号表中，所有具有 STB_LOCAL 绑定的符号都优先于弱符号和全局符 号。符号表节区中的 sh_info 头部成员包含第一个非局部符号的符号表索引。</p>
+<h4 id="st-type-字段"><a href="#st-type-字段" class="headerlink" title="st_type 字段"></a>st_type 字段</h4><p>符号类型(ELF32_ST_TYPE)定义如下:   </p>
+<p><img src="http://gnaixx.cc/blog_images/elf/17.png" alt="符号类型"></p>
+<p>在共享目标文件中的函数符号(类型为 STT_FUNC)具有特别的重要性。当其他 目标文件引用了来自某个共享目标中的函数时，链接编辑器自动为所引用的符号创建过 程链接表项。类型不是 STT_FUNC 的共享目标符号不会自动通过过程链接表进行引用。    </p>
+<p>如果一个符号的取值引用了某个节区中的特定位置，那么它的节区索引成员 (st_shndx)包含了其在节区头部表中的索引。当节区在重定位过程中被移动时，符号 的取值也会随之变化，对符号的引用始终会“指向”程序中的相同位置。</p>
+<h4 id="特殊的节区索引"><a href="#特殊的节区索引" class="headerlink" title="特殊的节区索引"></a>特殊的节区索引</h4><p>某些特殊的节区索引具有不同的语义: </p>
+<ul>
+<li>SHN_ABS: 符号具有绝对取值，不会因为重定位而发 生变化。</li>
+<li>SHN_COMMON: 符号标注了一个尚 分配的公共 块。符号的取值给出了对齐约束，与节区的 sh_addralign 成员类似。就是说，链接编辑器将为符号分配存储空间， 地址位于 st_value 的倍数处。符号的大小给出了所需要<br>的字节数。</li>
+<li>SHN_UNDEF: 此节区表索引值意味着符号没有定义。<br>当链接编辑器将此目标文件与其他定义了该符号的目标 文件进行组合时，此文件中对该符号的引用将被链接到实 际定义的位置。</li>
+</ul>
+<h4 id="STN-UNDEF-符号"><a href="#STN-UNDEF-符号" class="headerlink" title="STN_UNDEF 符号"></a>STN_UNDEF 符号</h4><p>如上所述，符号表中下标为 0(STN_UNDEF)的表项被保留。其中包含如下数值:    </p>
+<img src="http://gnaixx.cc/blog_images/elf/18.png" class="center" width="500" height="500" title="STN_UNDEF 符号">  
+<h4 id="st-value-字段"><a href="#st-value-字段" class="headerlink" title="st_value 字段"></a>st_value 字段</h4><p>不同的目标文件类型中符号表项对 st_value 成员具有不同的解释:    </p>
+<p>(1). 在可重定位文件中，st_value 中遵从了节区索引为 SHN_COMMON 的符号的对齐约束。   </p>
+<p>(2). 在可重定位的文件中，st_value 中包含已定义符号的节区偏移。就是说，st_value 是从 st_shndx 所标识的节区头部开始计算，到符号位置的偏移。     </p>
+<p>(3). 在可执行和共享目标文件中，st_value 包含一个虚地址。为了使得这些 文件的符号对动态链接器更有用，节区偏移(针对文 件的解释)让位于 虚拟地址(针对内存的解释)，因为这时与节区号无关。   </p>
+<p>尽管符号表取值在不同的目标文件中具有相似的含义，适当的程序可以采取高效的数据访问方式。</p>
+<h3 id="重定位信息"><a href="#重定位信息" class="headerlink" title="重定位信息"></a>重定位信息</h3><p>重定位是将符号引用与符号定义进行连接的过程。例如，当程序调用了一个函数时，<br>相关的调用指令必须把控制传输到适当的目标执行地址。</p>
+<h4 id="重定位表项"><a href="#重定位表项" class="headerlink" title="重定位表项"></a>重定位表项</h4><p>可重定位文件必须包含如何修改其节区内容的信息，从而允许可执行文件和共享目 标文件保存进程的程序映像的正确信息。重定位表项就是这样一些数据。</p>
+<p>重定位表项的格式：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div></pre></td><td class="code"><pre><div class="line"><span class="comment">/* Relocation entry with implicit addend */</span></div><div class="line"><span class="keyword">typedef</span> <span class="keyword">struct</span> &#123;</div><div class="line">	Elf32_Addr	r_offset;	<span class="comment">/* offset of relocation */</span></div><div class="line">	Elf32_Word	r_info;		<span class="comment">/* symbol table index and type */</span></div><div class="line">&#125; Elf32_Rel;</div><div class="line"></div><div class="line"><span class="comment">/* Relocation entry with explicit addend */</span></div><div class="line"><span class="keyword">typedef</span> <span class="keyword">struct</span> &#123;</div><div class="line">	Elf32_Addr	r_offset;	<span class="comment">/* offset of relocation */</span></div><div class="line">	Elf32_Word	r_info;		<span class="comment">/* symbol table index and type */</span></div><div class="line">	Elf32_Sword	r_addend;</div><div class="line">&#125; Elf32_Rela;</div><div class="line"></div><div class="line"><span class="keyword">typedef</span> <span class="keyword">struct</span> &#123;</div><div class="line">	Elf64_Xword	r_offset;	<span class="comment">/* where to do it */</span></div><div class="line">	Elf64_Xword	r_info;		<span class="comment">/* index &amp; type of relocation */</span></div><div class="line">&#125; Elf64_Rel;</div><div class="line"></div><div class="line"><span class="keyword">typedef</span> <span class="keyword">struct</span> &#123;</div><div class="line">	Elf64_Xword	r_offset;	<span class="comment">/* where to do it */</span></div><div class="line">	Elf64_Xword	r_info;		<span class="comment">/* index &amp; type of relocation */</span></div><div class="line">	Elf64_Sxword	r_addend;	<span class="comment">/* adjustment value */</span></div><div class="line">&#125; Elf64_Rela;</div></pre></td></tr></table></figure>
+<p>其中，各个字段的说明如下:<br><img src="http://gnaixx.cc/blog_images/elf/19.png" alt="重定位表项"></p>
+<p>如上所述，只有 Elf32_Rela 项目可以明确包含补齐信息。类型为 Elf32_Rel 的表 项在将被修改的位置保存隐式的补齐信息。 依赖于处理器体系结构，各种形式都可能 存在，甚至是必需的。因此，对特定机器的实现可以仅使用一种形式，也可以根据上下 文使用不同的形式。   </p>
+<p>重定位节区会引用两个其它节区:符号表、要修改的节区。节区头部的 sh_info 和 sh_link 成员给出这些关系。不同目标文件的重定位表项对 r_offset 成员具有略微不 同的解释。   </p>
+<p>(1). 在可重定位文件中，r_offset 中包含节区偏移。就是说重定位节区自身 描述了如何修改文件中的其他节区;重定位偏移 指定了被修改节区中的 一个存储单元。    </p>
+<p>(2). 在可执行文件和共享的目标文件中，r_offset 中包含一个虚拟地址。为 了使得这些文件的重定位表项对动态链接器更为有用，节区偏移(针对文 件的解释)让位于虚地址(针对内存的解释)。    </p>
+<p>尽管对 r_offset 的解释会有少许不同，重定位类型的含义始终不变。</p>
+<h4 id="重定位类型"><a href="#重定位类型" class="headerlink" title="重定位类型"></a>重定位类型</h4><p>重定位表项描述如何修改后面的指令和数据字段。一般，共享目标文件在创建时， 其基 虚拟地址是 0，不过执行地址将随着动态加载而发生变化。    </p>
+<p>重定位的过程，按照如下标记:   </p>
+<ul>
+<li>A 用来计算可重定位字段的取值的补齐。</li>
+<li>B 共享目标在执行过程中被加载到内存中的位置(基地址)。</li>
+<li>G 在执行过程中，重定位项的符号的地址所处的位置 —— 全局偏移<br>表的索引。</li>
+<li>GOT 全局偏移表(GOT)的地址。</li>
+<li>L 某个符号的过程链接表项的位置(节区偏移/地址)。过程链接表项<br>把函数调用重定位到正确的目标位置。链接编辑器构造初始的过程链接表，动态链接器在执行过程中修改这些项目。</li>
+<li>P 存储单位被重定位(用 r_offset 计算)到的位置(节区偏移或者地<br>址)。</li>
+<li>S 其索引位于重定位项中的符号的取值。</li>
+</ul>
+<p>重定位项的 r_offset 取值给定受影响的存储单位的第一个字节的偏移或者虚拟地 址。重定位类型给出那些位需要修改以及如何计算它们的取值。</p>
+<p>SYSTEM V仅使用Elf32_Rel重定位表项，在被重定位的字段中包含补齐量。补<br>齐量和计算结果始终采用相同的字节顺序。</p>
+<p>X86 体系结构下常见的重定位类型:<br><img src="http://gnaixx.cc/blog_images/elf/20.png" alt="重定位类型"></p>
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+  <div style="padding: 10px 0; margin: 20px auto; width: 90%; text-align: center;">
+    <div>赏一个呗！</div>
+    <button id="rewardButton" disable="enable" onclick="var qr = document.getElementById('QR'); if (qr.style.display === 'none') {qr.style.display='block';} else {qr.style.display='none'}">
+      <span>赏</span>
+    </button>
+    <div id="QR" style="display: none;">
+      
+        <div id="wechat" style="display: inline-block">
+          <img id="wechat_qr" src="/images/wechatpay.png" alt="凸一_一凸 WeChat Pay"/>
+          <p>微信打赏</p>
+        </div>
+      
+      
+        <div id="alipay" style="display: inline-block">
+          <img id="alipay_qr" src="/images/alipay.jpg" alt="凸一_一凸 Alipay"/>
+          <p>支付宝打赏</p>
+        </div>
+      
+    </div>
+  </div>
+
+
+      
+    </div>
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/ndk/" rel="tag">#ndk</a>
+          
+            <a href="/tags/android/" rel="tag">#android</a>
+          
+            <a href="/tags/so/" rel="tag">#so</a>
+          
+            <a href="/tags/elf/" rel="tag">#elf</a>
+          
+        </div>
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2016/09/07/android-so-abi/" rel="next" title="关于Android so文件你所需要了解的">
+                <i class="fa fa-chevron-left"></i> 关于Android so文件你所需要了解的
+              </a>
+            
+          </div>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2016/10/09/20161009_detect-debug/" rel="prev" title="APK反逆向之一：监控debug">
+                APK反逆向之一：监控debug <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+      <div class="ds-thread" data-thread-key="2016/09/30/20160930_elf-file/"
+           data-title="ELF文件格式分析" data-url="http://gnaixx.github.io/2016/09/30/20160930_elf-file/">
+      </div>
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel ">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="//schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="/images/custom_avatar.jpg"
+               alt="凸一_一凸" />
+          <p class="site-author-name" itemprop="name">凸一_一凸</p>
+          <p class="site-description motion-element" itemprop="description"></p>
+        </div>
+        <nav class="site-state motion-element">
+          <div class="site-state-item site-state-posts">
+            <a href="/archives">
+              <span class="site-state-item-count">36</span>
+              <span class="site-state-item-name">日志</span>
+            </a>
+          </div>
+
+          
+            <div class="site-state-item site-state-categories">
+              <a href="/categories">
+                <span class="site-state-item-count">5</span>
+                <span class="site-state-item-name">分类</span>
+              </a>
+            </div>
+          
+
+          
+            <div class="site-state-item site-state-tags">
+              <a href="/tags">
+                <span class="site-state-item-count">38</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+            
+              <span class="links-of-author-item">
+                <a href="https://github.com/gnaixx" target="_blank" title="GitHub">
+                  
+                    <i class="fa fa-fw fa-github"></i>
+                  
+                  GitHub
+                </a>
+              </span>
+            
+          
+        </div>
+
+        
+        
+
+        
+        
+          <div class="links-of-blogroll motion-element links-of-blogroll-block">
+            <div class="links-of-blogroll-title">
+              <i class="fa  fa-fw fa-globe"></i>
+              友情链接
+            </div>
+            <ul class="links-of-blogroll-list">
+              
+                <li class="links-of-blogroll-item">
+                  <a href="https://waynecz.github.io/" title="wayne" target="_blank">wayne</a>
+                </li>
+              
+            </ul>
+          </div>
+        
+
+      </section>
+
+      
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+            
+              
+            
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-5"><a class="nav-link" href="#sh-type-字段"><span class="nav-number">1.</span> <span class="nav-text">sh_type 字段</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#sh-flags-字段"><span class="nav-number">2.</span> <span class="nav-text">sh_flags 字段</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#sh-link-和-sh-info-字段"><span class="nav-number">3.</span> <span class="nav-text">sh_link 和 sh_info 字段</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#特殊节区"><span class="nav-number"></span> <span class="nav-text">特殊节区</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#字符串表（String-Table）"><span class="nav-number"></span> <span class="nav-text">字符串表（String Table）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#符号表（Symbol-Table）"><span class="nav-number"></span> <span class="nav-text">符号表（Symbol Table）</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#st-info-说明"><span class="nav-number"></span> <span class="nav-text">st_info 说明</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#st-type-字段"><span class="nav-number"></span> <span class="nav-text">st_type 字段</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#特殊的节区索引"><span class="nav-number"></span> <span class="nav-text">特殊的节区索引</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#STN-UNDEF-符号"><span class="nav-number"></span> <span class="nav-text">STN_UNDEF 符号</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#st-value-字段"><span class="nav-number"></span> <span class="nav-text">st_value 字段</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#重定位信息"><span class="nav-number"></span> <span class="nav-text">重定位信息</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#重定位表项"><span class="nav-number"></span> <span class="nav-text">重定位表项</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#重定位类型"><span class="nav-number"></span> <span class="nav-text">重定位类型</span></a></div>
+            
+          </div>
+        </section>
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy;  2014 - 
+  <span itemprop="copyrightYear">2016</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">凸一_一凸</span>
+</div>
+
+<div class="powered-by">
+  由 <a class="theme-link" href="https://hexo.io">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Mist
+  </a>
+</div>
+
+        
+
+<div class="busuanzi-count">
+
+  <script async src="https://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+  
+    <span class="site-uv"><i class="fa fa-user"></i><span class="busuanzi-value" id="busuanzi_value_site_uv"></span></span>
+  
+
+  
+    <span class="site-pv"><i class="fa fa-eye"></i><span class="busuanzi-value" id="busuanzi_value_site_pv"></span></span>
+  
+  
+</div>
+
+
+
+        
+      </div>
+    </footer>
+
+    <div class="back-to-top">
+      <i class="fa fa-arrow-up"></i>
+    </div>
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.0.2"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.0.2"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.0.2"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.0.2"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.0.2"></script>
+
+
+
+  
+
+  
+    
+  
+
+  <script type="text/javascript">
+    var duoshuoQuery = {short_name:"gnaix"};
+    (function() {
+      var ds = document.createElement('script');
+      ds.type = 'text/javascript';ds.async = true;
+      ds.id = 'duoshuo-script';
+      ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+      ds.charset = 'UTF-8';
+      (document.getElementsByTagName('head')[0]
+      || document.getElementsByTagName('body')[0]).appendChild(ds);
+    })();
+  </script>
+
+  
+    
+    <script src="/lib/ua-parser-js/dist/ua-parser.min.js?v=0.7.9"></script>
+    <script src="/js/src/hook-duoshuo.js"></script>
+  
+
+
+
+
+
+
+  
+  
+
+  
+
+  
+
+  
+
+  
+
+
+</body>
+</html>

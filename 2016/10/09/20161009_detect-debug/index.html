@@ -1,0 +1,744 @@
+<!doctype html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.4.0" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.0.2" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="reserve,ndk,inotify,debug," />
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/images/favicon.ico?v=5.0.2" />
+
+
+
+
+
+
+<meta name="description" content="在开发和逆向过程中很多时候都需要动态调试，开发时候可以用开发 android 的 IDE进行调试，native层也可用调试，Android Studio早就可以进行 native 的debug调试了。但是在 release 后的 apk 如果还检测到了 debug 调试，那么说明该 apk 正被破解。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="APK反逆向之一：监控debug">
+<meta property="og:url" content="http://gnaixx.github.io/2016/10/09/20161009_detect-debug/index.html">
+<meta property="og:site_name" content="凸一_一凸">
+<meta property="og:description" content="在开发和逆向过程中很多时候都需要动态调试，开发时候可以用开发 android 的 IDE进行调试，native层也可用调试，Android Studio早就可以进行 native 的debug调试了。但是在 release 后的 apk 如果还检测到了 debug 调试，那么说明该 apk 正被破解。">
+<meta property="og:updated_time" content="2016-11-05T07:57:27.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="APK反逆向之一：监控debug">
+<meta name="twitter:description" content="在开发和逆向过程中很多时候都需要动态调试，开发时候可以用开发 android 的 IDE进行调试，native层也可用调试，Android Studio早就可以进行 native 的debug调试了。但是在 release 后的 apk 如果还检测到了 debug 调试，那么说明该 apk 正被破解。">
+
+
+
+<script type="text/javascript" id="hexo.configuration">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    scheme: 'Mist',
+    sidebar: {"position":"left","display":"post"},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    }
+  };
+</script>
+
+
+
+
+  <link rel="canonical" href="http://gnaixx.github.io/2016/10/09/20161009_detect-debug/"/>
+
+
+  <title> APK反逆向之一：监控debug | 凸一_一凸 </title>
+</head>
+
+<body itemscope itemtype="//schema.org/WebPage" lang="zh-Hans">
+
+  
+
+
+
+  <script type="text/javascript">
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "//hm.baidu.com/hm.js?bb104a561bbdd3b6666195d45e5581a9";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+
+
+
+
+  
+  
+    
+  
+
+  <div class="container one-collumn sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="//schema.org/WPHeader">
+      <div class="header-inner"><div class="site-meta ">
+  
+
+  <div class="custom-logo-site-title">
+    <a href="/"  class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <span class="site-title">凸一_一凸</span>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+  <p class="site-subtitle">gnaixx</p>
+</div>
+
+<div class="site-nav-toggle">
+  <button>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+  </button>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories" rel="section">
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+            标签
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="//schema.org/Article">
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                APK反逆向之一：监控debug
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            <span class="post-meta-item-icon">
+              <i class="fa fa-calendar-o"></i>
+            </span>
+            <span class="post-meta-item-text">发表于</span>
+            <time itemprop="dateCreated" datetime="2016-10-09T15:56:03+08:00" content="2016-10-09">
+              2016-10-09
+            </time>
+          </span>
+
+          
+            <span class="post-category" >
+              &nbsp; | &nbsp;
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+              
+                <span itemprop="about" itemscope itemtype="https://schema.org/Thing">
+                  <a href="/categories/android/" itemprop="url" rel="index">
+                    <span itemprop="name">android</span>
+                  </a>
+                </span>
+
+                
+                
+
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                &nbsp; | &nbsp;
+                <a href="/2016/10/09/20161009_detect-debug/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count ds-thread-count" data-thread-key="2016/10/09/20161009_detect-debug/" itemprop="commentsCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+
+          
+          
+
+          
+              &nbsp; | &nbsp;
+              <span class="page-pv"><i class="fa fa-file-o"></i>
+              <span class="busuanzi-value" id="busuanzi_value_page_pv" ></span>
+              </span>
+          
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>##0x00 简介<br>在 apk 被调试的时候，有很多特征可以检测到，比如 hook so的时候需要分析 maps文件确定内存加载的位置，还有调试器很 android 设备进行接口通讯需要开启端口映射。这些特征都可以被作为检测 debug 的一种手段。 </p>
+<p>下面介绍了几种检测 debug 的方式，有些案例只是介绍思路，具体的实现方式需要进行更改，例如监控 tcp 端口，需要改成 service 形式在后台运行。    </p>
+<p>检测 debug 是为了防止应用被逆向动态分析，所以检测的方法也都是采用 native 开发提高被逆向的成本。</p>
+<p>源码地址：<a href="https://github.com/gnaixx/anti-reverse" target="_blank" rel="external">anti-reverse</a></p>
+<p>##0x01 debug开关<br>debug 开关默认在编译 release 版本的时候自己会关闭，但是你还是可以通过显示的设置把他打开。但是如果你这么干了，估计你老板要打死你。</p>
+<p>release 版本开启 debug 调试，修改项目 build.gradle中 的 buildTypes 参数：<code>debuggable true</code></p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line">android &#123;</div><div class="line">	buildTypes &#123;</div><div class="line">        release &#123;</div><div class="line">            debuggable <span class="literal">true</span></div><div class="line">            minifyEnabled <span class="literal">false</span></div><div class="line">            proguardFiles.add(file(<span class="string">"proguard-rules.pro"</span>))</div><div class="line">            signingConfig = $(<span class="string">"android.signingConfigs.myConfig"</span>)</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>获取 debuggable 的值也很简单通过API接口就可以：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">void</span> <span class="title">detectOsDebug</span><span class="params">()</span></span>&#123;</div><div class="line">    <span class="keyword">boolean</span> connected = android.os.Debug.isDebuggerConnected();</div><div class="line">    Log.d(TAG, <span class="string">"debugger connect status:"</span> + connected);</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>这种方式获取的值其实意义不大，发布的 release 版本基本没有会开启的除非失误。</p>
+<p>##0x02 单步检测<br>单步调试的原理很简单：检测某段代码执行的时间，动态调试的时候肯定会在一些地方下断点，如果一段代码执行时间超过2秒（这里需要排除耗时的io读写等操作），则可以认为 apk 可能被动态分析。</p>
+<p>示例代码：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div></pre></td><td class="code"><pre><div class="line"><span class="function">JNIEXPORT <span class="keyword">void</span> <span class="title">single_step</span><span class="params">()</span></span>&#123;</div><div class="line">    time(&amp;start_time);</div><div class="line">    <span class="comment">//实际需要监控的代码</span></div><div class="line">    sleep(<span class="number">4</span>);</div><div class="line">    <span class="comment">//---------------</span></div><div class="line">    time(&amp;end_time);</div><div class="line"></div><div class="line">    LOGD(<span class="string">"start time:%d, end time:%d"</span>, start_time, end_time);</div><div class="line">    <span class="keyword">if</span>(end_time - start_time &gt; <span class="number">2</span>)&#123;</div><div class="line">        LOGD(<span class="string">"fit single_step"</span>);</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>这里的时间间隔可以根据实际情况作调整。</p>
+<p>##0x03 监控TarcePid<br>在 apk 被附加进程的时候在<code>/proc/{pid}/status</code>,<code>/proc/{pid}/task/{pid}/status</code>文件中会保存附件进程的 pid ：<code>TarcePid : 1212</code>。只需要读取这两个文件中的 TarcePid 是不是为0，如果不为0则可能被附加了进程。</p>
+<p>示例代码：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">void</span> <span class="title">tarce_pid</span><span class="params">(<span class="keyword">char</span>* path)</span></span>&#123;</div><div class="line">    <span class="keyword">char</span> buf[BUFF_LEN];</div><div class="line">    FILE *fp;</div><div class="line">    <span class="keyword">int</span> trace_pid = <span class="number">0</span>;</div><div class="line">    fp = fopen(path, <span class="string">"r"</span>);</div><div class="line">    <span class="keyword">if</span> (fp == <span class="literal">NULL</span>) &#123;</div><div class="line">        LOGE(<span class="string">"status open failed:[error:%d, desc:%s]"</span>, errno, strerror(errno));</div><div class="line">        <span class="keyword">return</span>;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="keyword">while</span> (fgets(buf, BUFF_LEN, fp)) &#123;</div><div class="line">        <span class="keyword">if</span> (<span class="built_in">strstr</span>(buf, <span class="string">"TracerPid"</span>)) &#123;</div><div class="line">            <span class="keyword">char</span> *strok_rPtr, *temp;</div><div class="line">            temp = strtok_r(buf, <span class="string">":"</span>, &amp;strok_rPtr);</div><div class="line">            temp = strtok_r(<span class="literal">NULL</span>, <span class="string">":"</span>, &amp;strok_rPtr);</div><div class="line">            trace_pid = atoi(temp);</div><div class="line">            LOGD(<span class="string">"%s, TarcePid:%d"</span>, path, trace_pid);</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    fclose(fp);</div><div class="line">    <span class="keyword">return</span>;</div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="function">JNIEXPORT <span class="keyword">void</span> <span class="title">tarce_pid_monitor</span><span class="params">()</span></span>&#123;</div><div class="line">    LOGD(<span class="string">"tarce_pid_monitor"</span>);</div><div class="line">    <span class="keyword">int</span> pid = getpid();</div><div class="line">    <span class="keyword">char</span> path[BUFF_LEN];</div><div class="line"></div><div class="line">    <span class="built_in">sprintf</span>(path, <span class="string">"/proc/%d/status"</span>, pid);</div><div class="line">    tarce_pid(path);</div><div class="line"></div><div class="line">    <span class="built_in">sprintf</span>(path, <span class="string">"/proc/%d/task/%d/status"</span>, pid, pid);</div><div class="line">    tarce_pid(path);</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>检测结果：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">10-13 18:31:52.716 11538-11538/cc.gnaixx.detect_debug D/GNAIXX_NDK: tarce_pid_monitor</div><div class="line">10-13 18:31:52.716 11538-11538/cc.gnaixx.detect_debug D/GNAIXX_NDK: /proc/11538/status, TarcePid:11669</div><div class="line">10-13 18:31:52.716 11538-11538/cc.gnaixx.detect_debug D/GNAIXX_NDK: /proc/11538/task/11538/status, TarcePid:11669</div></pre></td></tr></table></figure>
+<p>##0x04 监控tcp端口<br>进行 debug 调试必然会开启端口映射，我们可以监控比较常用的逆向工具开启的端口，当然作弊者也可以修改端口。但是前提也是在了解了检测手段下。Android中开启的端口会保存在文件<code>proc/net/tcp</code>文件中。</p>
+<p>示例代码：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div></pre></td><td class="code"><pre><div class="line"><span class="function">JNIEXPORT <span class="keyword">void</span> <span class="title">tcp_monitor</span><span class="params">(JNIEnv *env, jclass thiz)</span></span>&#123;</div><div class="line">    LOGD(<span class="string">"tcp_monitor"</span>);</div><div class="line">    <span class="keyword">char</span> buff[BUFF_LEN];</div><div class="line"></div><div class="line">    FILE *fp;</div><div class="line">    <span class="keyword">const</span> <span class="keyword">char</span> dir[] = <span class="string">"/proc/net/tcp"</span>;</div><div class="line">    fp = fopen(dir, <span class="string">"r"</span>);</div><div class="line">    <span class="keyword">if</span>(fp == <span class="literal">NULL</span>)&#123;</div><div class="line">        LOGE(<span class="string">"file failed [errno:%d, desc:%s]"</span>, errno, strerror(errno));</div><div class="line">        <span class="keyword">return</span>;</div><div class="line">    &#125;</div><div class="line">    <span class="keyword">while</span>(fgets(buff, BUFF_LEN, fp))&#123;</div><div class="line">        <span class="keyword">if</span>(<span class="built_in">strstr</span>(buff, TCP_PORT) != <span class="literal">NULL</span>)&#123;</div><div class="line">            LOGI(<span class="string">"Line:%s"</span>, buff);</div><div class="line">            fclose(fp);</div><div class="line">            <span class="keyword">return</span>;</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>这里的 TCP_PORT 为 “5D8A”,也就是10进制的23946，这是ida默认的端口。</p>
+<p>##0x05 监控maps文件</p>
+<p><code>/proc/{pid}/maps</code>文件中保存了 app 运行的加载的内存信息。所有maps文件被进行ACCESS 或者 OPEN 操作都是有风险的。</p>
+<p>可以通过 inotify 对 maps 文件进行监控，这里采用了子线程进行循环监控。</p>
+<p>这里采用两种方式进行监控，一种阻塞的方式，一种非阻塞的方式（通过select）。</p>
+<p>###阻塞<br>代码示例：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">void</span> *<span class="title">inotify_maps_block</span><span class="params">()</span> </span>&#123;</div><div class="line">    LOGD(<span class="string">"start by block"</span>);</div><div class="line">    <span class="keyword">int</span> fd;                         <span class="comment">//文件描述符</span></div><div class="line">    <span class="keyword">int</span> wd;                         <span class="comment">//监视器标识符</span></div><div class="line">    <span class="keyword">int</span> event_len;                  <span class="comment">//事件长度</span></div><div class="line">    <span class="keyword">char</span> buffer[EVENT_BUFF_LEN];    <span class="comment">//事件buffer</span></div><div class="line">    <span class="keyword">char</span> map_path[PATH_LEN];        <span class="comment">//监控文件路径</span></div><div class="line"></div><div class="line">    stop = <span class="number">0</span>;                       <span class="comment">//初始化监控</span></div><div class="line">    fd = inotify_init();</div><div class="line">    <span class="keyword">pid_t</span> pid = getpid();</div><div class="line">    <span class="built_in">sprintf</span>(map_path, <span class="string">"/proc/%d/"</span>, pid); <span class="comment">//获取当前APP maps路径</span></div><div class="line">    <span class="keyword">if</span> (fd == <span class="number">-1</span>) &#123;</div><div class="line">        LOGE(<span class="string">"inotify_init [errno:%d, desc:%s]"</span>, errno, strerror(errno));</div><div class="line">        <span class="keyword">return</span> <span class="literal">NULL</span>;</div><div class="line">    &#125;</div><div class="line">    wd = inotify_add_watch(fd, map_path, IN_ALL_EVENTS);  <span class="comment">//添加监控 所有事件</span></div><div class="line">    LOGD(<span class="string">"add watch success path:%s"</span>, map_path);</div><div class="line">    <span class="keyword">while</span> (<span class="number">1</span>) &#123;</div><div class="line">        <span class="keyword">if</span> (stop == <span class="number">1</span>) <span class="keyword">break</span>;       <span class="comment">//停止监控</span></div><div class="line"></div><div class="line">        event_len = read(fd, buffer, EVENT_BUFF_LEN);   <span class="comment">//读取事件</span></div><div class="line">        <span class="keyword">if</span> (event_len &lt; <span class="number">0</span>) &#123;</div><div class="line">            LOGE(<span class="string">"inotify_event read failed [errno:%d, desc:%s]"</span>, errno, strerror(errno));</div><div class="line">            <span class="keyword">return</span> <span class="literal">NULL</span>;</div><div class="line">        &#125;</div><div class="line">        <span class="keyword">int</span> i = <span class="number">0</span>;</div><div class="line">        <span class="keyword">while</span> (i &lt; event_len) &#123;</div><div class="line">            <span class="keyword">struct</span> inotify_event *event = (<span class="keyword">struct</span> inotify_event *) &amp;buffer[i];</div><div class="line">            <span class="comment">//过滤maps文件</span></div><div class="line">            <span class="keyword">if</span> (event-&gt;len &amp;&amp; !<span class="built_in">strcmp</span>(event-&gt;name, <span class="string">"maps"</span>)) &#123;</div><div class="line">                <span class="keyword">if</span> (event-&gt;mask &amp; IN_CREATE) &#123;</div><div class="line">                    LOGD(<span class="string">"create: %s"</span>, event-&gt;name);</div><div class="line">                &#125;</div><div class="line">                <span class="keyword">else</span> <span class="keyword">if</span> (event-&gt;mask &amp; IN_DELETE) &#123;</div><div class="line">                    LOGD(<span class="string">"delete: %s"</span>, event-&gt;name);</div><div class="line">                &#125;</div><div class="line">                <span class="keyword">else</span> <span class="keyword">if</span> (event-&gt;mask &amp; IN_MODIFY) &#123;</div><div class="line">                    LOGD(<span class="string">"modified: %s"</span>, event-&gt;name);</div><div class="line">                &#125;</div><div class="line">                <span class="keyword">else</span> <span class="keyword">if</span> (event-&gt;mask &amp; IN_ACCESS) &#123;</div><div class="line">                    LOGD(<span class="string">"access: %s"</span>, event-&gt;name);</div><div class="line">                &#125;</div><div class="line">                <span class="keyword">else</span> <span class="keyword">if</span> (event-&gt;mask &amp; IN_OPEN) &#123;</div><div class="line">                    LOGD(<span class="string">"open : %s"</span>, event-&gt;name);</div><div class="line">                &#125;</div><div class="line">                <span class="keyword">else</span> &#123;</div><div class="line">                    LOGD(<span class="string">"other event [name:%s, mask:%x]"</span>, event-&gt;name, event-&gt;mask);</div><div class="line">                &#125;</div><div class="line">            &#125;</div><div class="line">            i += EVENT_SIZE + event-&gt;len;</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line">    inotify_rm_watch(fd, wd);</div><div class="line">    LOGD(<span class="string">"rm watch"</span>);</div><div class="line">    close(fd);</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>阻塞方法监控的是<code>/proc/{pid}/</code>文件夹，如果直接监控 maps 文件，可能造成无法结束线程。如果正常用户没有对 maps 文件操作，那么函数就会一直阻塞在 <code>read()</code> 方法。而监控 <code>/proc/{pid}</code> 文件夹，改文件夹下其他文件会有操作,所以不会阻塞在<code>read()</code>。</p>
+<p>###非阻塞<br>代码示例：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div><div class="line">62</div><div class="line">63</div><div class="line">64</div><div class="line">65</div><div class="line">66</div><div class="line">67</div><div class="line">68</div><div class="line">69</div><div class="line">70</div><div class="line">71</div><div class="line">72</div><div class="line">73</div><div class="line">74</div><div class="line">75</div><div class="line">76</div><div class="line">77</div><div class="line">78</div><div class="line">79</div><div class="line">80</div><div class="line">81</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">void</span> *<span class="title">inotify_maps_unblock</span><span class="params">()</span> </span>&#123;</div><div class="line">    LOGD(<span class="string">"start by unblock"</span>);</div><div class="line">    <span class="keyword">int</span> fd;                         <span class="comment">//文件描述符</span></div><div class="line">    <span class="keyword">int</span> wd;                         <span class="comment">//监视器标识符</span></div><div class="line">    <span class="keyword">int</span> event_len;                  <span class="comment">//事件长度</span></div><div class="line">    <span class="keyword">char</span> buffer[EVENT_BUFF_LEN];    <span class="comment">//事件buffer</span></div><div class="line">    <span class="keyword">char</span> map_path[PATH_LEN];        <span class="comment">//监控文件路径</span></div><div class="line"></div><div class="line">    fd_set fds;                     <span class="comment">//fd_set</span></div><div class="line">    <span class="keyword">struct</span> timeval time_to_wait;    <span class="comment">//超时时间</span></div><div class="line">    stop = <span class="number">0</span>;</div><div class="line"></div><div class="line">    <span class="comment">//初始化监控</span></div><div class="line">    fd = inotify_init();</div><div class="line">    <span class="keyword">pid_t</span> pid = getpid();</div><div class="line">    <span class="built_in">sprintf</span>(map_path, <span class="string">"/proc/%d/maps"</span>, pid); <span class="comment">//获取当前APP maps路径</span></div><div class="line">    <span class="keyword">if</span> (fd == <span class="number">-1</span>) &#123;</div><div class="line">        LOGE(<span class="string">"inotify_init [errno:%d, desc:%s]"</span>, errno, strerror(errno));</div><div class="line">        <span class="keyword">return</span> <span class="literal">NULL</span>;</div><div class="line">    &#125;</div><div class="line">    wd = inotify_add_watch(fd, map_path, IN_ALL_EVENTS);  <span class="comment">//添加监控 所有事件</span></div><div class="line">    LOGD(<span class="string">"add watch success path:%s, fd:%d, wd:%d"</span>, map_path, fd, wd);</div><div class="line"></div><div class="line">    <span class="keyword">while</span> (<span class="number">1</span>) &#123;</div><div class="line">        <span class="keyword">if</span> (stop == <span class="number">2</span>) <span class="keyword">break</span>;       <span class="comment">//停止监控</span></div><div class="line"></div><div class="line">        FD_ZERO(&amp;fds);</div><div class="line">        FD_SET(fd, &amp;fds);</div><div class="line"></div><div class="line">        <span class="comment">//之前我把初始化放在循环外 第一次可以阻塞,后面就直接跳过了</span></div><div class="line">        time_to_wait.tv_sec = <span class="number">3</span>;</div><div class="line">        time_to_wait.tv_usec = <span class="number">0</span>;</div><div class="line"></div><div class="line">        <span class="keyword">int</span> rev = select(fd + <span class="number">1</span>, &amp;fds, <span class="literal">NULL</span>, <span class="literal">NULL</span>, &amp;time_to_wait);<span class="comment">//fd, readfds, writefds, errorfds, timeout:NULL阻塞, &#123;0.0&#125;直接过, timeout</span></div><div class="line">        <span class="comment">//int rev = select(fd + 1, &amp;fds, NULL, NULL, NULL);//fd, readfds, writefds, errorfds, timeout:NULL阻塞, &#123;0.0&#125;直接过, timeout</span></div><div class="line">        LOGD(<span class="string">"select status_code: %d"</span>, rev);</div><div class="line">        <span class="keyword">if</span> (rev &lt; <span class="number">0</span>) &#123;</div><div class="line">            <span class="comment">//error</span></div><div class="line">            LOGE(<span class="string">"select failed [error:%d, desc:%s]"</span>, errno, strerror(errno));</div><div class="line">        &#125;</div><div class="line">        <span class="keyword">else</span> <span class="keyword">if</span> (rev == <span class="number">0</span>) &#123;</div><div class="line">            <span class="comment">//timeout</span></div><div class="line">            LOGD(<span class="string">"select timeout"</span>);</div><div class="line">        &#125;</div><div class="line">        <span class="keyword">else</span> &#123;</div><div class="line">            <span class="comment">//</span></div><div class="line">            event_len = read(fd, buffer, EVENT_BUFF_LEN);   <span class="comment">//读取事件</span></div><div class="line">            <span class="keyword">if</span> (event_len &lt; <span class="number">0</span>) &#123;</div><div class="line">                LOGE(<span class="string">"inotify_event read failed [errno:%d, desc:%s]"</span>, errno, strerror(errno));</div><div class="line">                <span class="keyword">return</span> <span class="literal">NULL</span>;</div><div class="line">            &#125;</div><div class="line">            <span class="keyword">int</span> i = <span class="number">0</span>;</div><div class="line">            <span class="keyword">while</span> (i &lt; event_len) &#123;</div><div class="line">                <span class="comment">//注意:这里监控的是maps文件,所以event-&gt;name 参数为空</span></div><div class="line">                <span class="keyword">struct</span> inotify_event *event = (<span class="keyword">struct</span> inotify_event *) &amp;buffer[i];</div><div class="line">                <span class="keyword">if</span> (event-&gt;mask &amp; IN_CREATE) &#123;</div><div class="line">                    LOGD(<span class="string">"create: %s"</span>, event-&gt;name);</div><div class="line">                &#125;</div><div class="line">                <span class="keyword">else</span> <span class="keyword">if</span> (event-&gt;mask &amp; IN_DELETE) &#123;</div><div class="line">                    LOGD(<span class="string">"delete: %s"</span>, event-&gt;name);</div><div class="line">                &#125;</div><div class="line">                <span class="keyword">else</span> <span class="keyword">if</span> (event-&gt;mask &amp; IN_MODIFY) &#123;</div><div class="line">                    LOGD(<span class="string">"modified: %s"</span>, event-&gt;name);</div><div class="line">                &#125;</div><div class="line">                <span class="keyword">else</span> <span class="keyword">if</span> (event-&gt;mask &amp; IN_ACCESS) &#123;</div><div class="line">                    LOGD(<span class="string">"access: %s"</span>, event-&gt;name);</div><div class="line">                &#125;</div><div class="line">                <span class="keyword">else</span> <span class="keyword">if</span> (event-&gt;mask &amp; IN_OPEN) &#123;</div><div class="line">                    LOGD(<span class="string">"open : %s"</span>, event-&gt;name);</div><div class="line">                &#125;</div><div class="line">                <span class="keyword">else</span> &#123;</div><div class="line">                    LOGD(<span class="string">"other event [name:%s, mask:%x]"</span>, event-&gt;name, event-&gt;mask);</div><div class="line">                &#125;</div><div class="line">                i += EVENT_SIZE + event-&gt;len;</div><div class="line">            &#125;</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line">    close(fd);</div><div class="line">    inotify_rm_watch(fd, wd);</div><div class="line">    LOGD(<span class="string">"rm watch"</span>);</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>通过 <code>select()</code> 来绝对阻塞方式，最后一个参数（timeval）控制超时时间：</p>
+<ul>
+<li>NULL 阻塞与上面阻塞方式一样</li>
+<li>timeval 设置超时时间</li>
+</ul>
+<p>timeval.tv_sec 为秒数<br>timeval.tv_usec 为微秒</p>
+<p><strong>注</strong> timeval 每次调用过 select 方法会被初始化为{0，0}，所以必须每次都在循环内复制。我也不知道为什么，试了好久。</p>
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+  <div style="padding: 10px 0; margin: 20px auto; width: 90%; text-align: center;">
+    <div>赏一个呗！</div>
+    <button id="rewardButton" disable="enable" onclick="var qr = document.getElementById('QR'); if (qr.style.display === 'none') {qr.style.display='block';} else {qr.style.display='none'}">
+      <span>赏</span>
+    </button>
+    <div id="QR" style="display: none;">
+      
+        <div id="wechat" style="display: inline-block">
+          <img id="wechat_qr" src="/images/wechatpay.png" alt="凸一_一凸 WeChat Pay"/>
+          <p>微信打赏</p>
+        </div>
+      
+      
+        <div id="alipay" style="display: inline-block">
+          <img id="alipay_qr" src="/images/alipay.jpg" alt="凸一_一凸 Alipay"/>
+          <p>支付宝打赏</p>
+        </div>
+      
+    </div>
+  </div>
+
+
+      
+    </div>
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/reserve/" rel="tag">#reserve</a>
+          
+            <a href="/tags/ndk/" rel="tag">#ndk</a>
+          
+            <a href="/tags/inotify/" rel="tag">#inotify</a>
+          
+            <a href="/tags/debug/" rel="tag">#debug</a>
+          
+        </div>
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2016/09/30/20160930_elf-file/" rel="next" title="ELF文件格式分析">
+                <i class="fa fa-chevron-left"></i> ELF文件格式分析
+              </a>
+            
+          </div>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2016/10/15/20161015-anti-reserve-base-way/" rel="prev" title="APK反逆向之二：四种基本加固方式">
+                APK反逆向之二：四种基本加固方式 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+      <div class="ds-thread" data-thread-key="2016/10/09/20161009_detect-debug/"
+           data-title="APK反逆向之一：监控debug" data-url="http://gnaixx.github.io/2016/10/09/20161009_detect-debug/">
+      </div>
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel ">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="//schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="/images/custom_avatar.jpg"
+               alt="凸一_一凸" />
+          <p class="site-author-name" itemprop="name">凸一_一凸</p>
+          <p class="site-description motion-element" itemprop="description"></p>
+        </div>
+        <nav class="site-state motion-element">
+          <div class="site-state-item site-state-posts">
+            <a href="/archives">
+              <span class="site-state-item-count">36</span>
+              <span class="site-state-item-name">日志</span>
+            </a>
+          </div>
+
+          
+            <div class="site-state-item site-state-categories">
+              <a href="/categories">
+                <span class="site-state-item-count">5</span>
+                <span class="site-state-item-name">分类</span>
+              </a>
+            </div>
+          
+
+          
+            <div class="site-state-item site-state-tags">
+              <a href="/tags">
+                <span class="site-state-item-count">38</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+            
+              <span class="links-of-author-item">
+                <a href="https://github.com/gnaixx" target="_blank" title="GitHub">
+                  
+                    <i class="fa fa-fw fa-github"></i>
+                  
+                  GitHub
+                </a>
+              </span>
+            
+          
+        </div>
+
+        
+        
+
+        
+        
+          <div class="links-of-blogroll motion-element links-of-blogroll-block">
+            <div class="links-of-blogroll-title">
+              <i class="fa  fa-fw fa-globe"></i>
+              友情链接
+            </div>
+            <ul class="links-of-blogroll-list">
+              
+                <li class="links-of-blogroll-item">
+                  <a href="https://waynecz.github.io/" title="wayne" target="_blank">wayne</a>
+                </li>
+              
+            </ul>
+          </div>
+        
+
+      </section>
+
+      
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+            
+              
+            
+            
+              <p class="post-toc-empty">此文章未包含目录</p>
+            
+          </div>
+        </section>
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy;  2014 - 
+  <span itemprop="copyrightYear">2016</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">凸一_一凸</span>
+</div>
+
+<div class="powered-by">
+  由 <a class="theme-link" href="https://hexo.io">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Mist
+  </a>
+</div>
+
+        
+
+<div class="busuanzi-count">
+
+  <script async src="https://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+  
+    <span class="site-uv"><i class="fa fa-user"></i><span class="busuanzi-value" id="busuanzi_value_site_uv"></span></span>
+  
+
+  
+    <span class="site-pv"><i class="fa fa-eye"></i><span class="busuanzi-value" id="busuanzi_value_site_pv"></span></span>
+  
+  
+</div>
+
+
+
+        
+      </div>
+    </footer>
+
+    <div class="back-to-top">
+      <i class="fa fa-arrow-up"></i>
+    </div>
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.0.2"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.0.2"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.0.2"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.0.2"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.0.2"></script>
+
+
+
+  
+
+  
+    
+  
+
+  <script type="text/javascript">
+    var duoshuoQuery = {short_name:"gnaix"};
+    (function() {
+      var ds = document.createElement('script');
+      ds.type = 'text/javascript';ds.async = true;
+      ds.id = 'duoshuo-script';
+      ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+      ds.charset = 'UTF-8';
+      (document.getElementsByTagName('head')[0]
+      || document.getElementsByTagName('body')[0]).appendChild(ds);
+    })();
+  </script>
+
+  
+    
+    <script src="/lib/ua-parser-js/dist/ua-parser.min.js?v=0.7.9"></script>
+    <script src="/js/src/hook-duoshuo.js"></script>
+  
+
+
+
+
+
+
+  
+  
+
+  
+
+  
+
+  
+
+  
+
+
+</body>
+</html>

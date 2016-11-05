@@ -1,0 +1,741 @@
+<!doctype html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.4.0" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.0.2" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="android,certificate," />
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/images/favicon.ico?v=5.0.2" />
+
+
+
+
+
+
+<meta name="description" content="在互联网安全通信方式上，目前用的最多的就是https配合ssl和数字证书来保证传输和认证安全了,所以基本每一个开发者都会遇到SSLPeerUnverifiedException问题。这篇blog主要讲下Android中产生证书问题的原因和解决方案">
+<meta property="og:type" content="article">
+<meta property="og:title" content="android中发生no peer certificate异常">
+<meta property="og:url" content="http://gnaixx.github.io/2015/11/12/android-no_peer_certificate/index.html">
+<meta property="og:site_name" content="凸一_一凸">
+<meta property="og:description" content="在互联网安全通信方式上，目前用的最多的就是https配合ssl和数字证书来保证传输和认证安全了,所以基本每一个开发者都会遇到SSLPeerUnverifiedException问题。这篇blog主要讲下Android中产生证书问题的原因和解决方案">
+<meta property="og:updated_time" content="2016-11-05T07:57:27.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="android中发生no peer certificate异常">
+<meta name="twitter:description" content="在互联网安全通信方式上，目前用的最多的就是https配合ssl和数字证书来保证传输和认证安全了,所以基本每一个开发者都会遇到SSLPeerUnverifiedException问题。这篇blog主要讲下Android中产生证书问题的原因和解决方案">
+
+
+
+<script type="text/javascript" id="hexo.configuration">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    scheme: 'Mist',
+    sidebar: {"position":"left","display":"post"},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    }
+  };
+</script>
+
+
+
+
+  <link rel="canonical" href="http://gnaixx.github.io/2015/11/12/android-no_peer_certificate/"/>
+
+
+  <title> android中发生no peer certificate异常 | 凸一_一凸 </title>
+</head>
+
+<body itemscope itemtype="//schema.org/WebPage" lang="zh-Hans">
+
+  
+
+
+
+  <script type="text/javascript">
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "//hm.baidu.com/hm.js?bb104a561bbdd3b6666195d45e5581a9";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+
+
+
+
+  
+  
+    
+  
+
+  <div class="container one-collumn sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="//schema.org/WPHeader">
+      <div class="header-inner"><div class="site-meta ">
+  
+
+  <div class="custom-logo-site-title">
+    <a href="/"  class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <span class="site-title">凸一_一凸</span>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+  <p class="site-subtitle">gnaixx</p>
+</div>
+
+<div class="site-nav-toggle">
+  <button>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+  </button>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories" rel="section">
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+            标签
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="//schema.org/Article">
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                android中发生no peer certificate异常
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            <span class="post-meta-item-icon">
+              <i class="fa fa-calendar-o"></i>
+            </span>
+            <span class="post-meta-item-text">发表于</span>
+            <time itemprop="dateCreated" datetime="2015-11-12T23:52:54+08:00" content="2015-11-12">
+              2015-11-12
+            </time>
+          </span>
+
+          
+            <span class="post-category" >
+              &nbsp; | &nbsp;
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+              
+                <span itemprop="about" itemscope itemtype="https://schema.org/Thing">
+                  <a href="/categories/android/" itemprop="url" rel="index">
+                    <span itemprop="name">android</span>
+                  </a>
+                </span>
+
+                
+                
+
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                &nbsp; | &nbsp;
+                <a href="/2015/11/12/android-no_peer_certificate/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count ds-thread-count" data-thread-key="2015/11/12/android-no_peer_certificate/" itemprop="commentsCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+
+          
+          
+
+          
+              &nbsp; | &nbsp;
+              <span class="page-pv"><i class="fa fa-file-o"></i>
+              <span class="busuanzi-value" id="busuanzi_value_page_pv" ></span>
+              </span>
+          
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h2 id="0x00-问题"><a href="#0x00-问题" class="headerlink" title="###0x00 问题"></a>###0x00 问题</h2><p>相信在使用https协议开发中很多人都会遇到证书异常的情况：</p>
+<font color="red"><strong>javax.net.ssl.SSLPeerUnverifiedException: No peer certificate</strong></font>   
+
+<p>在解决这个问题前我们必须先了解一下https和ssl</p>
+<p>####什么是HTTPS<br>https是在http(超文本传输协议)基础上提出的一种安全的http协议，因此可以称为安全的超文本传输协议。http协议直接放置在TCP协议之上，而https提出在http和TCP中间加上一层加密层。从发送端看，这一层负责把http的内容加密后送到下层的TCP，从接收方看，这一层负责将TCP送来的数据解密还原成http的内容。</p>
+<p>####什么是SSL/TLS<br>SSL全称是Secure Sockets Layer，安全套接字层，它是由网景公司（Netscape）设计的主要用于Web的安全传输协议，目的是为网络通信提供机密性、认证性及数据完整性保障。如今，SSL已经成为互联网保密通信的工业标准。</p>
+<p>SSL最初的几个版本（SSL 1.0、SSL2.0、SSL 3.0）由网景公司设计和维护，从3.1版本开始，SSL协议由因特网工程任务小组（IETF）正式接管，并更名为TLS（Transport Layer Security），发展至今已有TLS 1.0、TLS1.1、TLS1.2这几个版本。</p>
+<p>如TLS名字所说，SSL/TLS协议仅保障传输层安全。同时，由于协议自身特性（数字证书机制），SSL/TLS不能被用于保护多跳（multi-hop）端到端通信，而只能保护点到点通信。</p>
+<p>SSL/TLS协议能够提供的安全目标主要包括如下几个：</p>
+<ul>
+<li><p>认证性——借助数字证书认证服务器端和客户端身份，防止身份伪造</p>
+</li>
+<li><p>机密性——借助加密防止第三方窃听</p>
+</li>
+<li><p>完整性——借助消息认证码（MAC）保障数据完整性，防止消息篡改</p>
+</li>
+<li><p>重放保护——通过使用隐式序列号防止重放攻击</p>
+</li>
+</ul>
+<p>为了实现这些安全目标，SSL/TLS协议被设计为一个两阶段协议，分为握手阶段和应用阶段：</p>
+<p>握手阶段也称协商阶段，在这一阶段，客户端和服务器端会认证对方身份（依赖于PKI体系，利用数字证书进行身份认证），并协商通信中使用的安全参数、密码套件以及MasterSecret。后续通信使用的所有密钥都是通过MasterSecret生成。</p>
+<p>在握手阶段完成后，进入应用阶段。在应用阶段通信双方使用握手阶段协商好的密钥进行安全通信。<br><a href="http://drops.wooyun.org/tips/6002" target="_blank" rel="external">专业级的解释</a>就看懂了上面这部分</p>
+<h2 id="0x01-问题分析"><a href="#0x01-问题分析" class="headerlink" title="###0x01 问题分析"></a>###0x01 问题分析</h2><p>分析问题最重要的是要把https工作流程给搞清楚<br><strong><br>C: Client发送一个request（包括密码套件，SSL/TLS版本，压缩算法）<br>S: Server把支持的加密算法等以证书的形式返回（包括CA颁发机构和加密公钥，SSL使用的证书通常是X.509类型）<br>C: Client获取证书后，验证证书颁发机构，并通过与本地已有的数字证书验证Server证书的真实性。如果其中有验证失败的情况，发出警告并断开连接<br>C: 验证通过，产生一份消息，消息处理后将用作对称加密的密钥。将这份消息用Server的公钥进行加密。把这份加密的消息（ClientKeyExchange)发送给Server<br>S: Server用自己的私钥将ClientExchange中的消息解密出来作为对称加密的密钥，这时双方已经有了一套安全的加密方式了<br>之后双方传输数据可以使用该密钥进行加密然后对话了  
+</strong>  </p>
+<p><font color="red">ps:如果不清楚公钥、私钥、对称加密这些的可以去<a href="https://www.google.com" target="_blank" rel="external">google</a></font><br>清楚了流程不难定位出在Client验证证书时出现了异常。</p>
+<h2 id="0x02-原因及解决方案"><a href="#0x02-原因及解决方案" class="headerlink" title="###0x02 原因及解决方案"></a>###0x02 原因及解决方案</h2><p>####证书的颁发者不在“根受信任的证书颁发机构列表”中<br>出现这种情况大多数是自定义的证书，证书没有通过权威机构认证。因为证书需要购买并且有年限，所以对于很多想用https协议的个人开发者来说自定义证书是比较合算的。</p>
+<p>#####导入证书<br>在客户端设备中导入自定义证书，但是这种操作是客户做的不是开发者改考虑的</p>
+<p>#####信任全部证书<br>信任证书其实就是把校验证书这一步骤给省略了,源码在之前的一篇blog中有提到<strong><a href="/2015/05/20/http-https/">Android http/https网络请求</a></strong><br>虽然信任全部证书可以解决这一问题并且很多大公司也这么搞过，但是这样做的风险还是比较大的，容易遭受SSL中间人攻击。乌云平台上有很多该漏洞还包括很多知名的app。<strong><a href="http://drops.wooyun.org/tips/3296" target="_blank" rel="external">Android证书信任问题与大表哥</a></strong></p>
+<p>#####下载证书保存到本地<br>这种方式是比较保险的，当然如果是你自己的app可以先将证书保存在assets，而不需要从网上拉取</p>
+<ul>
+<li>将证书下载保存到Android的assets目录下</li>
+<li>导入证书</li>
+<li>添加证书为信任</li>
+</ul>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div></pre></td><td class="code"><pre><div class="line"><span class="function">String <span class="title">requestHTTPSPage</span><span class="params">(String mUrl)</span> </span>&#123;</div><div class="line">    InputStream ins = <span class="keyword">null</span>;</div><div class="line">    String result = <span class="string">""</span>;</div><div class="line">    <span class="keyword">try</span> &#123;</div><div class="line">        ins = context.getAssets().open(<span class="string">"app_pay.cer"</span>); <span class="comment">//下载的证书放到项目中的assets目录中</span></div><div class="line">        CertificateFactory cerFactory = CertificateFactory</div><div class="line">                .getInstance(<span class="string">"X.509"</span>);</div><div class="line">        Certificate cer = cerFactory.generateCertificate(ins);</div><div class="line">        KeyStore keyStore = KeyStore.getInstance(<span class="string">"PKCS12"</span>, <span class="string">"BC"</span>);</div><div class="line">        keyStore.load(<span class="keyword">null</span>, <span class="keyword">null</span>);</div><div class="line">        keyStore.setCertificateEntry(<span class="string">"trust"</span>, cer);</div><div class="line"> </div><div class="line">        SSLSocketFactory socketFactory = <span class="keyword">new</span> SSLSocketFactory(keyStore);</div><div class="line">        Scheme sch = <span class="keyword">new</span> Scheme(<span class="string">"https"</span>, socketFactory, <span class="number">443</span>);</div><div class="line">        HttpClient mHttpClient = <span class="keyword">new</span> DefaultHttpClient();</div><div class="line">        mHttpClient.getConnectionManager().getSchemeRegistry()</div><div class="line">                .register(sch);</div><div class="line"> </div><div class="line">        BufferedReader reader = <span class="keyword">null</span>;</div><div class="line">        <span class="keyword">try</span> &#123;</div><div class="line">            Log.d(TAG, <span class="string">"executeGet is in,murl:"</span> + mUrl);</div><div class="line">            HttpGet request = <span class="keyword">new</span> HttpGet();</div><div class="line">            request.setURI(<span class="keyword">new</span> URI(mUrl));</div><div class="line">            HttpResponse response = mHttpClient.execute(request);</div><div class="line">            <span class="keyword">if</span> (response.getStatusLine().getStatusCode() != <span class="number">200</span>) &#123;</div><div class="line">                request.abort();</div><div class="line">                <span class="keyword">return</span> result;</div><div class="line">            &#125;</div><div class="line"> </div><div class="line">            reader = <span class="keyword">new</span> BufferedReader(<span class="keyword">new</span> InputStreamReader(response</div><div class="line">                    .getEntity().getContent()));</div><div class="line">            StringBuffer buffer = <span class="keyword">new</span> StringBuffer();</div><div class="line">            String line = <span class="keyword">null</span>;</div><div class="line">            <span class="keyword">while</span> ((line = reader.readLine()) != <span class="keyword">null</span>) &#123;</div><div class="line">                buffer.append(line);</div><div class="line">            &#125;</div><div class="line">            result = buffer.toString();</div><div class="line">            Log.d(TAG, <span class="string">"mUrl="</span> + mUrl + <span class="string">"\nresult = "</span> + result);</div><div class="line">        &#125; <span class="keyword">catch</span> (Exception e) &#123;</div><div class="line">            e.printStackTrace();</div><div class="line">        &#125; <span class="keyword">finally</span> &#123;</div><div class="line">            <span class="keyword">if</span> (reader != <span class="keyword">null</span>) &#123;</div><div class="line">                reader.close();</div><div class="line">            &#125;</div><div class="line">        &#125;</div><div class="line">    &#125; <span class="keyword">catch</span> (Exception e) &#123;</div><div class="line">        <span class="comment">// <span class="doctag">TODO:</span> handle exception</span></div><div class="line">    &#125; <span class="keyword">finally</span> &#123;</div><div class="line">        <span class="keyword">try</span> &#123;</div><div class="line">            <span class="keyword">if</span> (ins != <span class="keyword">null</span>)</div><div class="line">                ins.close();</div><div class="line">        &#125; <span class="keyword">catch</span> (IOException e) &#123;</div><div class="line">            e.printStackTrace();</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line">    <span class="keyword">return</span> result;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>####证书过期<br>这种情况其实很简单不外乎更新证书，当然你也可以信任全部证书（不建议这么干）</p>
+<p>####客户端系统时间问题<br>这个问题是自己在开发的时候遇到的，困扰了很久。因为没有深入了解证书校验的具体流程所以还是被坑了很久。Client在校验证书的时候时间戳也是一项。如果Client的时间和Server时间相差比较大的话（或者在证书有效期时间外）验证就会失败。这其实是SSL/TLS的重放保护。<br>解决方法其实很简单：把客户端的时间设置成自动时间和日期（使用网络提供的时间），但是这不是开发者能决定的。<font color="red">ps:信任全部证书可以解决</font><br>测试了很多app都会有这种情况。</p>
+<p>####权限缺失<br>这种情况是网上搜索的时候看到的，并没有实际遇到过。<br><strong>解决方案:</strong><br>在AndroidManifest.xml中添加下列权限    </p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line"><span class="tag">&lt;<span class="name">uses-permission</span> <span class="attr">android:name</span>=<span class="string">"android.permission.INTERNET"</span> /&gt;</span></div><div class="line"><span class="tag">&lt;<span class="name">uses-permission</span> <span class="attr">android:name</span>=<span class="string">"android.permission.ACCESS_WIFI_STATE"</span> /&gt;</span></div><div class="line"><span class="tag">&lt;<span class="name">uses-permission</span> <span class="attr">android:name</span>=<span class="string">"android.permission.WRITE_APN_SETTINGS"</span>/&gt;</span></div><div class="line"><span class="tag">&lt;<span class="name">uses-permission</span> <span class="attr">android:name</span>=<span class="string">"android.permission.CHANGE_WIFI_STATE"</span>/&gt;</span></div></pre></td></tr></table></figure>
+<h2 id="0x03总结"><a href="#0x03总结" class="headerlink" title="###0x03总结"></a>###0x03总结</h2><p>https中发生<font color="red"><strong>javax.net.ssl.SSLPeerUnverifiedException: No peer certificate</strong></font> 的情况还是比较多的，解决问题的关键是先搞清楚https自己也是因为不是了解导致坑了很久。还有一点，多google。</p>
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+  <div style="padding: 10px 0; margin: 20px auto; width: 90%; text-align: center;">
+    <div>赏一个呗！</div>
+    <button id="rewardButton" disable="enable" onclick="var qr = document.getElementById('QR'); if (qr.style.display === 'none') {qr.style.display='block';} else {qr.style.display='none'}">
+      <span>赏</span>
+    </button>
+    <div id="QR" style="display: none;">
+      
+        <div id="wechat" style="display: inline-block">
+          <img id="wechat_qr" src="/images/wechatpay.png" alt="凸一_一凸 WeChat Pay"/>
+          <p>微信打赏</p>
+        </div>
+      
+      
+        <div id="alipay" style="display: inline-block">
+          <img id="alipay_qr" src="/images/alipay.jpg" alt="凸一_一凸 Alipay"/>
+          <p>支付宝打赏</p>
+        </div>
+      
+    </div>
+  </div>
+
+
+      
+    </div>
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/android/" rel="tag">#android</a>
+          
+            <a href="/tags/certificate/" rel="tag">#certificate</a>
+          
+        </div>
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2015/11/11/wordpress-load-style/" rel="next" title="wordpress只有本机能加载样式">
+                <i class="fa fa-chevron-left"></i> wordpress只有本机能加载样式
+              </a>
+            
+          </div>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2015/11/18/android-editor/" rel="prev" title="Editor.commit()与Editor.apply()区别">
+                Editor.commit()与Editor.apply()区别 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+      <div class="ds-thread" data-thread-key="2015/11/12/android-no_peer_certificate/"
+           data-title="android中发生no peer certificate异常" data-url="http://gnaixx.github.io/2015/11/12/android-no_peer_certificate/">
+      </div>
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel ">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="//schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="/images/custom_avatar.jpg"
+               alt="凸一_一凸" />
+          <p class="site-author-name" itemprop="name">凸一_一凸</p>
+          <p class="site-description motion-element" itemprop="description"></p>
+        </div>
+        <nav class="site-state motion-element">
+          <div class="site-state-item site-state-posts">
+            <a href="/archives">
+              <span class="site-state-item-count">36</span>
+              <span class="site-state-item-name">日志</span>
+            </a>
+          </div>
+
+          
+            <div class="site-state-item site-state-categories">
+              <a href="/categories">
+                <span class="site-state-item-count">5</span>
+                <span class="site-state-item-name">分类</span>
+              </a>
+            </div>
+          
+
+          
+            <div class="site-state-item site-state-tags">
+              <a href="/tags">
+                <span class="site-state-item-count">38</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+            
+              <span class="links-of-author-item">
+                <a href="https://github.com/gnaixx" target="_blank" title="GitHub">
+                  
+                    <i class="fa fa-fw fa-github"></i>
+                  
+                  GitHub
+                </a>
+              </span>
+            
+          
+        </div>
+
+        
+        
+
+        
+        
+          <div class="links-of-blogroll motion-element links-of-blogroll-block">
+            <div class="links-of-blogroll-title">
+              <i class="fa  fa-fw fa-globe"></i>
+              友情链接
+            </div>
+            <ul class="links-of-blogroll-list">
+              
+                <li class="links-of-blogroll-item">
+                  <a href="https://waynecz.github.io/" title="wayne" target="_blank">wayne</a>
+                </li>
+              
+            </ul>
+          </div>
+        
+
+      </section>
+
+      
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+            
+              
+            
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#0x00-问题"><span class="nav-number">1.</span> <span class="nav-text">###0x00 问题</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#0x01-问题分析"><span class="nav-number">2.</span> <span class="nav-text">###0x01 问题分析</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#0x02-原因及解决方案"><span class="nav-number">3.</span> <span class="nav-text">###0x02 原因及解决方案</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#0x03总结"><span class="nav-number">4.</span> <span class="nav-text">###0x03总结</span></a></li></ol></div>
+            
+          </div>
+        </section>
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy;  2014 - 
+  <span itemprop="copyrightYear">2016</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">凸一_一凸</span>
+</div>
+
+<div class="powered-by">
+  由 <a class="theme-link" href="https://hexo.io">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Mist
+  </a>
+</div>
+
+        
+
+<div class="busuanzi-count">
+
+  <script async src="https://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+  
+    <span class="site-uv"><i class="fa fa-user"></i><span class="busuanzi-value" id="busuanzi_value_site_uv"></span></span>
+  
+
+  
+    <span class="site-pv"><i class="fa fa-eye"></i><span class="busuanzi-value" id="busuanzi_value_site_pv"></span></span>
+  
+  
+</div>
+
+
+
+        
+      </div>
+    </footer>
+
+    <div class="back-to-top">
+      <i class="fa fa-arrow-up"></i>
+    </div>
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.0.2"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.0.2"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.0.2"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.0.2"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.0.2"></script>
+
+
+
+  
+
+  
+    
+  
+
+  <script type="text/javascript">
+    var duoshuoQuery = {short_name:"gnaix"};
+    (function() {
+      var ds = document.createElement('script');
+      ds.type = 'text/javascript';ds.async = true;
+      ds.id = 'duoshuo-script';
+      ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+      ds.charset = 'UTF-8';
+      (document.getElementsByTagName('head')[0]
+      || document.getElementsByTagName('body')[0]).appendChild(ds);
+    })();
+  </script>
+
+  
+    
+    <script src="/lib/ua-parser-js/dist/ua-parser.min.js?v=0.7.9"></script>
+    <script src="/js/src/hook-duoshuo.js"></script>
+  
+
+
+
+
+
+
+  
+  
+
+  
+
+  
+
+  
+
+  
+
+
+</body>
+</html>

@@ -1,0 +1,764 @@
+<!doctype html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.4.0" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.0.2" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="android,hooking," />
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/images/favicon.ico?v=5.0.2" />
+
+
+
+
+
+
+<meta name="description" content="在乌云上看到的一篇文章，但是乌云现在。。。。。。这篇文章主要是介绍在 Android 手机上检测是否有安装 xposed 和 cydia两个hooking 框架。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Android Java层的anti-hooking技巧">
+<meta property="og:url" content="http://gnaixx.github.io/2016/09/03/android-anti-hooking/index.html">
+<meta property="og:site_name" content="凸一_一凸">
+<meta property="og:description" content="在乌云上看到的一篇文章，但是乌云现在。。。。。。这篇文章主要是介绍在 Android 手机上检测是否有安装 xposed 和 cydia两个hooking 框架。">
+<meta property="og:updated_time" content="2016-11-05T07:57:27.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Android Java层的anti-hooking技巧">
+<meta name="twitter:description" content="在乌云上看到的一篇文章，但是乌云现在。。。。。。这篇文章主要是介绍在 Android 手机上检测是否有安装 xposed 和 cydia两个hooking 框架。">
+
+
+
+<script type="text/javascript" id="hexo.configuration">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    scheme: 'Mist',
+    sidebar: {"position":"left","display":"post"},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    }
+  };
+</script>
+
+
+
+
+  <link rel="canonical" href="http://gnaixx.github.io/2016/09/03/android-anti-hooking/"/>
+
+
+  <title> Android Java层的anti-hooking技巧 | 凸一_一凸 </title>
+</head>
+
+<body itemscope itemtype="//schema.org/WebPage" lang="zh-Hans">
+
+  
+
+
+
+  <script type="text/javascript">
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "//hm.baidu.com/hm.js?bb104a561bbdd3b6666195d45e5581a9";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+
+
+
+
+  
+  
+    
+  
+
+  <div class="container one-collumn sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="//schema.org/WPHeader">
+      <div class="header-inner"><div class="site-meta ">
+  
+
+  <div class="custom-logo-site-title">
+    <a href="/"  class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <span class="site-title">凸一_一凸</span>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+  <p class="site-subtitle">gnaixx</p>
+</div>
+
+<div class="site-nav-toggle">
+  <button>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+  </button>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories" rel="section">
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+            标签
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="//schema.org/Article">
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                Android Java层的anti-hooking技巧
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            <span class="post-meta-item-icon">
+              <i class="fa fa-calendar-o"></i>
+            </span>
+            <span class="post-meta-item-text">发表于</span>
+            <time itemprop="dateCreated" datetime="2016-09-03T10:37:02+08:00" content="2016-09-03">
+              2016-09-03
+            </time>
+          </span>
+
+          
+            <span class="post-category" >
+              &nbsp; | &nbsp;
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+              
+                <span itemprop="about" itemscope itemtype="https://schema.org/Thing">
+                  <a href="/categories/android/" itemprop="url" rel="index">
+                    <span itemprop="name">android</span>
+                  </a>
+                </span>
+
+                
+                
+
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                &nbsp; | &nbsp;
+                <a href="/2016/09/03/android-anti-hooking/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count ds-thread-count" data-thread-key="2016/09/03/android-anti-hooking/" itemprop="commentsCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+
+          
+          
+
+          
+              &nbsp; | &nbsp;
+              <span class="page-pv"><i class="fa fa-file-o"></i>
+              <span class="busuanzi-value" id="busuanzi_value_page_pv" ></span>
+              </span>
+          
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <blockquote>
+<p>原文是英文,乌云上的是中文翻译，原文地址 <a href="http://d3adend.org/blog/?p=589" target="_blank" rel="external">Android Anti-Hooking Techniques in Java</a></p>
+</blockquote>
+<p>##0x00 前言<br>一个最近关于检测native hook框架的方法让我开始思考一个Android应用如何在Java层检测Cydia Substrate或者Xposed框架。</p>
+<p><strong>声明:</strong>下文所有的anti-hooking技巧很容易就可以被有经验的逆向人员绕过，这里只是展示几个检测的方法。在最近DexGuard和GuardIT等工具中还没有这类anti-hooking检测功能，不过我相信不久就会增加这个功能。</p>
+<p>##0x01 检测安装的应用</p>
+<p>一个最直接的想法就是检测设备上有没有安装Substrate或者Xposed框架，可以直接调用PackageManager显示所有安装的应用，然后看是否安装了Substrate或者Xposed。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line">PackageManager packageManager = context.getPackageManager();</div><div class="line">List applicationInfoList  = packageManager.getInstalledApplications(PackageManager.GET_META_DATA);</div><div class="line"></div><div class="line"><span class="keyword">for</span>(ApplicationInfo applicationInfo : applicationInfoList) &#123;</div><div class="line">    <span class="keyword">if</span>(applicationInfo.packageName.equals(<span class="string">"de.robv.android.xposed.installer"</span>)) &#123;</div><div class="line">        Log.wtf(<span class="string">"HookDetection"</span>, <span class="string">"Xposed found on the system."</span>);</div><div class="line">    &#125;</div><div class="line">    <span class="keyword">if</span>(applicationInfo.packageName.equals(<span class="string">"com.saurik.substrate"</span>)) &#123;</div><div class="line">        Log.wtf(<span class="string">"HookDetection"</span>, <span class="string">"Substrate found on the system."</span>);</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>##0x02 检查调用栈里的可疑方法</p>
+<p>另一个想到的方法是检查Java调用栈里的可疑方法，主动抛出一个异常，然后打印方法的调用栈。代码如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">DoStuff</span> </span>&#123;</div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> String <span class="title">getSecret</span><span class="params">()</span> </span>&#123;</div><div class="line">        <span class="keyword">try</span> &#123;</div><div class="line">            <span class="keyword">throw</span> <span class="keyword">new</span> Exception(<span class="string">"blah"</span>);</div><div class="line">        &#125;</div><div class="line">        <span class="keyword">catch</span>(Exception e) &#123;</div><div class="line">            <span class="keyword">for</span>(StackTraceElement stackTraceElement : e.getStackTrace()) &#123;</div><div class="line">                Log.wtf(<span class="string">"HookDetection"</span>, stackTraceElement.getClassName() + <span class="string">"-&gt;"</span> + stackTraceElement.getMethodName());</div><div class="line">            &#125;</div><div class="line">        &#125;</div><div class="line">        <span class="keyword">return</span> <span class="string">"ChangeMePls!!!"</span>;</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>当应用没有被hook的时候，正常的调用栈是这样的：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div></pre></td><td class="code"><pre><div class="line">com.example.hookdetection.DoStuff-&gt;getSecret</div><div class="line">com.example.hookdetection.MainActivity-&gt;onCreate</div><div class="line">android.app.Activity-&gt;performCreate</div><div class="line">android.app.Instrumentation-&gt;callActivityOnCreate</div><div class="line">android.app.ActivityThread-&gt;performLaunchActivity</div><div class="line">android.app.ActivityThread-&gt;handleLaunchActivity</div><div class="line">android.app.ActivityThread-&gt;access<span class="variable">$800</span></div><div class="line">android.app.ActivityThread<span class="variable">$H</span>-&gt;handleMessage</div><div class="line">android.os.Handler-&gt;dispatchMessage</div><div class="line">android.os.Looper-&gt;loop</div><div class="line">android.app.ActivityThread-&gt;main</div><div class="line">java.lang.reflect.Method-&gt;invokeNative</div><div class="line">java.lang.reflect.Method-&gt;invoke</div><div class="line">com.android.internal.os.ZygoteInit<span class="variable">$MethodAndArgsCaller</span>-&gt;run</div><div class="line">com.android.internal.os.ZygoteInit-&gt;main</div><div class="line">dalvik.system.NativeStart-&gt;main</div></pre></td></tr></table></figure>
+<p>但是假如有Xposed框架hook了com.example.hookdetection.DoStuff.getSecret方法，那么调用栈会有2个变化：</p>
+<ul>
+<li>在dalvik.system.NativeStart.main方法后出现de.robv.android.xposed.XposedBridge.main调用</li>
+<li>如果Xposed hook了调用栈里的一个方法，还会有de.robv.android.xposed.XposedBridge.handleHookedMethod和de.robv.android.xposed.XposedBridge.invokeOriginalMethodNative调用</li>
+</ul>
+<p>所以如果hook了getSecret方法，调用栈就会如下：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div></pre></td><td class="code"><pre><div class="line">com.example.hookdetection.DoStuff-&gt;getSecret</div><div class="line"></div><div class="line">de.robv.android.xposed.XposedBridge-&gt;invokeOriginalMethodNative</div><div class="line">de.robv.android.xposed.XposedBridge-&gt;handleHookedMethod</div><div class="line"></div><div class="line">com.example.hookdetection.DoStuff-&gt;getSecret</div><div class="line">com.example.hookdetection.MainActivity-&gt;onCreate</div><div class="line">android.app.Activity-&gt;performCreate</div><div class="line">android.app.Instrumentation-&gt;callActivityOnCreate</div><div class="line">android.app.ActivityThread-&gt;performLaunchActivity</div><div class="line">android.app.ActivityThread-&gt;handleLaunchActivity</div><div class="line">android.app.ActivityThread-&gt;access<span class="variable">$800</span></div><div class="line">android.app.ActivityThread<span class="variable">$H</span>-&gt;handleMessage</div><div class="line">android.os.Handler-&gt;dispatchMessage</div><div class="line">android.os.Looper-&gt;loop</div><div class="line">android.app.ActivityThread-&gt;main</div><div class="line">java.lang.reflect.Method-&gt;invokeNative</div><div class="line">java.lang.reflect.Method-&gt;invoke</div><div class="line">com.android.internal.os.ZygoteInit<span class="variable">$MethodAndArgsCaller</span>-&gt;run</div><div class="line">com.android.internal.os.ZygoteInit-&gt;main</div><div class="line"></div><div class="line">de.robv.android.xposed.XposedBridge-&gt;main</div><div class="line"></div><div class="line">dalvik.system.NativeStart-&gt;main</div></pre></td></tr></table></figure>
+<p>下面看下Substrate hook com.example.hookdetection.DoStuff.getSecret方法后，调用栈会有什么变化：</p>
+<ul>
+<li>dalvik.system.NativeStart.main调用后会出现2次com.android.internal.os.ZygoteInit.main，而不是一次</li>
+<li>如果Substrate hook了调用栈里的一个方法，还会出现com.saurik.substrate.MS$2.invoked，com.saurik.substrate.MS$MethodPointer.invoke还有跟Substrate扩展相关的方法（这里是com.cigital.freak.Freak$1$1.invoked）</li>
+</ul>
+<p>所以如果hook了getSecret方法，调用栈就会如下：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div></pre></td><td class="code"><pre><div class="line">com.example.hookdetection.DoStuff-&gt;getSecret</div><div class="line"></div><div class="line">com.saurik.substrate._MS<span class="variable">$MethodPointer</span>-&gt;invoke</div><div class="line">com.saurik.substrate.MS<span class="variable">$MethodPointer</span>-&gt;invoke</div><div class="line">com.cigital.freak.Freak<span class="variable">$1</span><span class="variable">$1</span>-&gt;invoked</div><div class="line">com.saurik.substrate.MS<span class="variable">$2</span>-&gt;invoked</div><div class="line"></div><div class="line">com.example.hookdetection.DoStuff-&gt;getSecret</div><div class="line">com.example.hookdetection.MainActivity-&gt;onCreate</div><div class="line">android.app.Activity-&gt;performCreate</div><div class="line">android.app.Instrumentation-&gt;callActivityOnCreate</div><div class="line">android.app.ActivityThread-&gt;performLaunchActivity</div><div class="line">android.app.ActivityThread-&gt;handleLaunchActivity</div><div class="line">android.app.ActivityThread-&gt;access<span class="variable">$800</span></div><div class="line">android.app.ActivityThread<span class="variable">$H</span>-&gt;handleMessage</div><div class="line">android.os.Handler-&gt;dispatchMessage</div><div class="line">android.os.Looper-&gt;loop</div><div class="line">android.app.ActivityThread-&gt;main</div><div class="line">java.lang.reflect.Method-&gt;invokeNative</div><div class="line">java.lang.reflect.Method-&gt;invoke</div><div class="line">com.android.internal.os.ZygoteInit<span class="variable">$MethodAndArgsCaller</span>-&gt;run</div><div class="line">com.android.internal.os.ZygoteInit-&gt;main</div><div class="line"></div><div class="line">com.android.internal.os.ZygoteInit-&gt;main</div><div class="line"></div><div class="line">dalvik.system.NativeStart-&gt;main</div></pre></td></tr></table></figure>
+<p>在知道了调用栈的变化之后，就可以在Java层写代码进行检测：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">try</span> &#123;</div><div class="line">    <span class="keyword">throw</span> <span class="keyword">new</span> Exception(<span class="string">"blah"</span>);</div><div class="line">&#125;</div><div class="line"><span class="keyword">catch</span>(Exception e) &#123;</div><div class="line">    <span class="keyword">int</span> zygoteInitCallCount = <span class="number">0</span>;</div><div class="line">    <span class="keyword">for</span>(StackTraceElement stackTraceElement : e.getStackTrace()) &#123;</div><div class="line">        <span class="keyword">if</span>(stackTraceElement.getClassName().equals(<span class="string">"com.android.internal.os.ZygoteInit"</span>)) &#123;</div><div class="line">            zygoteInitCallCount++;</div><div class="line">            <span class="keyword">if</span>(zygoteInitCallCount == <span class="number">2</span>) &#123;</div><div class="line">                Log.wtf(<span class="string">"HookDetection"</span>, <span class="string">"Substrate is active on the device."</span>);</div><div class="line">            &#125;</div><div class="line">        &#125;</div><div class="line">        <span class="keyword">if</span>(stackTraceElement.getClassName().equals(<span class="string">"com.saurik.substrate.MS$2"</span>) &amp;&amp; </div><div class="line">                stackTraceElement.getMethodName().equals(<span class="string">"invoked"</span>)) &#123;</div><div class="line">            Log.wtf(<span class="string">"HookDetection"</span>, <span class="string">"A method on the stack trace has been hooked using Substrate."</span>);</div><div class="line">        &#125;</div><div class="line">        <span class="keyword">if</span>(stackTraceElement.getClassName().equals(<span class="string">"de.robv.android.xposed.XposedBridge"</span>) &amp;&amp; </div><div class="line">                stackTraceElement.getMethodName().equals(<span class="string">"main"</span>)) &#123;</div><div class="line">            Log.wtf(<span class="string">"HookDetection"</span>, <span class="string">"Xposed is active on the device."</span>);</div><div class="line">        &#125;</div><div class="line">        <span class="keyword">if</span>(stackTraceElement.getClassName().equals(<span class="string">"de.robv.android.xposed.XposedBridge"</span>) &amp;&amp; </div><div class="line">                stackTraceElement.getMethodName().equals(<span class="string">"handleHookedMethod"</span>)) &#123;</div><div class="line">            Log.wtf(<span class="string">"HookDetection"</span>, <span class="string">"A method on the stack trace has been hooked using Xposed."</span>);</div><div class="line">        &#125;</div><div class="line"></div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>##0x03 检测并不应该native的native方法</p>
+<p>Xposed框架会把hook的Java方法类型改为”native”，然后把原来的方法替换成自己的代码（调用hookedMethodCallback）。可以查看 <a href="https://github.com/rovo89/Xposed/blob/6a8c2db5523377742a2c40fbd317b559e46b386f/libxposed_dalvik.cpp" target="_blank" rel="external">XposedBridge_hookMethodNative</a>的实现，是修改后<code>app_process</code>里的方法。</p>
+<p>利用Xposed改变hook方法的这个特性（Substrate也使用类似的原理），就可以用来检测是否被hook了。注意这不能用来检测ART运行时的Xposed，因为没必要把方法的类型改为native。</p>
+<p>假设有下面这个方法：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">DoStuff</span> </span>&#123;</div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> String <span class="title">getSecret</span><span class="params">()</span> </span>&#123;</div><div class="line">        <span class="keyword">return</span> <span class="string">"ChangeMePls!!!"</span>;</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>如果getSecret方法被hook了，在运行的时候就会像下面的定义：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">DoStuff</span> </span>&#123;</div><div class="line">        <span class="comment">// calls hookedMethodCallback if hooked using Xposed</span></div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">native</span> <span class="keyword">static</span> String <span class="title">getSecret</span><span class="params">()</span></span>; </div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>基于上面的原理，检测的步骤如下：</p>
+<ul>
+<li>定位到应用的DEX文件</li>
+<li>枚举所有的class</li>
+<li>通过反射机制判断运行时不应该是native的方法</li>
+</ul>
+<p>下面的Java展示了这个技巧。这里假设了应用本身没有通过JNI调用本地代码，大多数应用都不需要调用本地方法。不过如果有JNI调用的话，只需要把这些native方法添加到一个白名单中即可。理论上这个方法也可以用于检测Java库或者第三方库，不过需要把第三方库的native方法添加到一个白名单。检测代码如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">for</span> (ApplicationInfo applicationInfo : applicationInfoList) &#123;</div><div class="line">    <span class="keyword">if</span> (applicationInfo.processName.equals(<span class="string">"com.example.hookdetection"</span>)) &#123;      </div><div class="line">        Set classes = <span class="keyword">new</span> HashSet();</div><div class="line">        DexFile dex;</div><div class="line">        <span class="keyword">try</span> &#123;</div><div class="line">            dex = <span class="keyword">new</span> DexFile(applicationInfo.sourceDir);</div><div class="line">            Enumeration entries = dex.entries();</div><div class="line">            <span class="keyword">while</span>(entries.hasMoreElements()) &#123;</div><div class="line">                String entry = entries.nextElement();</div><div class="line">                classes.add(entry);</div><div class="line">            &#125;</div><div class="line">            dex.close();</div><div class="line">        &#125; </div><div class="line">        <span class="keyword">catch</span> (IOException e) &#123;</div><div class="line">            Log.e(<span class="string">"HookDetection"</span>, e.toString());</div><div class="line">        &#125;</div><div class="line">        <span class="keyword">for</span>(String className : classes) &#123;</div><div class="line">            <span class="keyword">if</span>(className.startsWith(<span class="string">"com.example.hookdetection"</span>)) &#123;</div><div class="line">                <span class="keyword">try</span> &#123;</div><div class="line">                    Class clazz = HookDetection.class.forName(className);</div><div class="line">                    <span class="keyword">for</span>(Method method : clazz.getDeclaredMethods()) &#123;</div><div class="line">                        <span class="keyword">if</span>(Modifier.isNative(method.getModifiers()))&#123;</div><div class="line">                            Log.wtf(<span class="string">"HookDetection"</span>, <span class="string">"Native function found (could be hooked by Substrate or Xposed): "</span> + clazz.getCanonicalName() + <span class="string">"-&gt;"</span> + method.getName());</div><div class="line">                        &#125;</div><div class="line">                    &#125;</div><div class="line">                &#125;</div><div class="line">                <span class="keyword">catch</span>(ClassNotFoundException e) &#123;</div><div class="line">                    Log.wtf(<span class="string">"HookDetection"</span>, e.toString());</div><div class="line">                &#125;</div><div class="line">            &#125;</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>##0x04 通过/proc/[pid]/maps检测可疑的共享对象或者JAR</p>
+<p>/proc/[pid]/maps记录了内存映射的区域和访问权限，首先查看Android应用的映像，第一列是起始地址和结束地址，第六列是映射文件的路径。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div></pre></td><td class="code"><pre><div class="line"><span class="comment">#cat /proc/5584/maps</span></div><div class="line"></div><div class="line">40027000-4002c000 r-xp 00000000 103:06 2114      /system/bin/app_process</div><div class="line">4002c000-4002d000 r--p 00004000 103:06 2114      /system/bin/app_process</div><div class="line">4002d000-4002e000 rw-p 00005000 103:06 2114      /system/bin/app_process</div><div class="line">4002e000-4003d000 r-xp 00000000 103:06 246       /system/bin/linker</div><div class="line">4003d000-4003e000 r--p 0000e000 103:06 246       /system/bin/linker</div><div class="line">4003e000-4003f000 rw-p 0000f000 103:06 246       /system/bin/linker</div><div class="line">4003f000-40042000 rw-p 00000000 00:00 0 </div><div class="line">40042000-40043000 r--p 00000000 00:00 0 </div><div class="line">40043000-40044000 rw-p 00000000 00:00 0 </div><div class="line">40044000-40047000 r-xp 00000000 103:06 1176      /system/lib/libNimsWrap.so</div><div class="line">40047000-40048000 r--p 00002000 103:06 1176      /system/lib/libNimsWrap.so</div><div class="line">40048000-40049000 rw-p 00003000 103:06 1176      /system/lib/libNimsWrap.so</div><div class="line">40049000-40091000 r-xp 00000000 103:06 1237      /system/lib/libc.so</div><div class="line">... Lots of other memory regions here ...</div></pre></td></tr></table></figure>
+<p>因此可以写代码检测加载到当前内存区域中的可疑文件：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">try</span> &#123;</div><div class="line">    Set libraries = <span class="keyword">new</span> HashSet();</div><div class="line">    String mapsFilename = <span class="string">"/proc/"</span> + android.os.Process.myPid() + <span class="string">"/maps"</span>;</div><div class="line">    BufferedReader reader = <span class="keyword">new</span> BufferedReader(<span class="keyword">new</span> FileReader(mapsFilename));</div><div class="line">    String line;</div><div class="line">    <span class="keyword">while</span>((line = reader.readLine()) != <span class="keyword">null</span>) &#123;</div><div class="line">        <span class="keyword">if</span> (line.endsWith(<span class="string">".so"</span>) || line.endsWith(<span class="string">".jar"</span>)) &#123;</div><div class="line">            <span class="keyword">int</span> n = line.lastIndexOf(<span class="string">" "</span>);</div><div class="line">            libraries.add(line.substring(n + <span class="number">1</span>));</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line">    <span class="keyword">for</span> (String library : libraries) &#123;</div><div class="line">        <span class="keyword">if</span>(library.contains(<span class="string">"com.saurik.substrate"</span>)) &#123;</div><div class="line">            Log.wtf(<span class="string">"HookDetection"</span>, <span class="string">"Substrate shared object found: "</span> + library);</div><div class="line">        &#125;</div><div class="line">        <span class="keyword">if</span>(library.contains(<span class="string">"XposedBridge.jar"</span>)) &#123;</div><div class="line">            Log.wtf(<span class="string">"HookDetection"</span>, <span class="string">"Xposed JAR found: "</span> + library);</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line">    reader.close();</div><div class="line">&#125;</div><div class="line"><span class="keyword">catch</span> (Exception e) &#123;</div><div class="line">    Log.wtf(<span class="string">"HookDetection"</span>, e.toString());</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>Substrate会用到几个so：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">Substrate shared object found: /data/app-lib/com.saurik.substrate-1/libAndroidBootstrap0.so</div><div class="line">Substrate shared object found: /data/app-lib/com.saurik.substrate-1/libAndroidCydia.cy.so</div><div class="line">Substrate shared object found: /data/app-lib/com.saurik.substrate-1/libDalvikLoader.cy.so</div><div class="line">Substrate shared object found: /data/app-lib/com.saurik.substrate-1/libsubstrate.so</div><div class="line">Substrate shared object found: /data/app-lib/com.saurik.substrate-1/libsubstrate-dvm.so</div><div class="line">Substrate shared object found: /data/app-lib/com.saurik.substrate-1/libAndroidLoader.so</div></pre></td></tr></table></figure>
+<p>Xposed会用到一个Jar：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">Xposed JAR found: /data/data/de.robv.android.xposed.installer/bin/XposedBridge.jar</div></pre></td></tr></table></figure>
+<p>##0x05 绕过检测的方法</p>
+<p>上面讨论了几个anti-hooking的方法，不过相信也会有人提出绕过的方法，这里对应每个检测方法如下：</p>
+<ul>
+<li>hook PackageManager的getInstalledApplications，把Xposed或者Substrate的包名去掉</li>
+<li>hook Exception的getStackTrace，把自己的方法去掉</li>
+<li>hook getModifiers，把flag改成看起来不是native</li>
+<li>hook 打开的文件的操作，返回/dev/null或者修改的map文件</li>
+</ul>
+<p>##0x06 总结<br>第三个方法中通过分析java方法的属性是否为 native 来判断是否被hook, 这中方式可以用来保护一些自定义的接口，或者SDK API 接口。</p>
+<p>后来同事通过分析Xposed源码，发现通过ClassLoader可以识别出具体的Xposed module hook了某个具体的函数，下次说下分析思路。</p>
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+  <div style="padding: 10px 0; margin: 20px auto; width: 90%; text-align: center;">
+    <div>赏一个呗！</div>
+    <button id="rewardButton" disable="enable" onclick="var qr = document.getElementById('QR'); if (qr.style.display === 'none') {qr.style.display='block';} else {qr.style.display='none'}">
+      <span>赏</span>
+    </button>
+    <div id="QR" style="display: none;">
+      
+        <div id="wechat" style="display: inline-block">
+          <img id="wechat_qr" src="/images/wechatpay.png" alt="凸一_一凸 WeChat Pay"/>
+          <p>微信打赏</p>
+        </div>
+      
+      
+        <div id="alipay" style="display: inline-block">
+          <img id="alipay_qr" src="/images/alipay.jpg" alt="凸一_一凸 Alipay"/>
+          <p>支付宝打赏</p>
+        </div>
+      
+    </div>
+  </div>
+
+
+      
+    </div>
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/android/" rel="tag">#android</a>
+          
+            <a href="/tags/hooking/" rel="tag">#hooking</a>
+          
+        </div>
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2016/07/24/nexus5-android6-xposed/" rel="next" title="nexus5 刷 Android6.0+Xposed">
+                <i class="fa fa-chevron-left"></i> nexus5 刷 Android6.0+Xposed
+              </a>
+            
+          </div>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2016/09/07/android-so-abi/" rel="prev" title="关于Android so文件你所需要了解的">
+                关于Android so文件你所需要了解的 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+      <div class="ds-thread" data-thread-key="2016/09/03/android-anti-hooking/"
+           data-title="Android Java层的anti-hooking技巧" data-url="http://gnaixx.github.io/2016/09/03/android-anti-hooking/">
+      </div>
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel ">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="//schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="/images/custom_avatar.jpg"
+               alt="凸一_一凸" />
+          <p class="site-author-name" itemprop="name">凸一_一凸</p>
+          <p class="site-description motion-element" itemprop="description"></p>
+        </div>
+        <nav class="site-state motion-element">
+          <div class="site-state-item site-state-posts">
+            <a href="/archives">
+              <span class="site-state-item-count">36</span>
+              <span class="site-state-item-name">日志</span>
+            </a>
+          </div>
+
+          
+            <div class="site-state-item site-state-categories">
+              <a href="/categories">
+                <span class="site-state-item-count">5</span>
+                <span class="site-state-item-name">分类</span>
+              </a>
+            </div>
+          
+
+          
+            <div class="site-state-item site-state-tags">
+              <a href="/tags">
+                <span class="site-state-item-count">38</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+            
+              <span class="links-of-author-item">
+                <a href="https://github.com/gnaixx" target="_blank" title="GitHub">
+                  
+                    <i class="fa fa-fw fa-github"></i>
+                  
+                  GitHub
+                </a>
+              </span>
+            
+          
+        </div>
+
+        
+        
+
+        
+        
+          <div class="links-of-blogroll motion-element links-of-blogroll-block">
+            <div class="links-of-blogroll-title">
+              <i class="fa  fa-fw fa-globe"></i>
+              友情链接
+            </div>
+            <ul class="links-of-blogroll-list">
+              
+                <li class="links-of-blogroll-item">
+                  <a href="https://waynecz.github.io/" title="wayne" target="_blank">wayne</a>
+                </li>
+              
+            </ul>
+          </div>
+        
+
+      </section>
+
+      
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+            
+              
+            
+            
+              <p class="post-toc-empty">此文章未包含目录</p>
+            
+          </div>
+        </section>
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy;  2014 - 
+  <span itemprop="copyrightYear">2016</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">凸一_一凸</span>
+</div>
+
+<div class="powered-by">
+  由 <a class="theme-link" href="https://hexo.io">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Mist
+  </a>
+</div>
+
+        
+
+<div class="busuanzi-count">
+
+  <script async src="https://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+  
+    <span class="site-uv"><i class="fa fa-user"></i><span class="busuanzi-value" id="busuanzi_value_site_uv"></span></span>
+  
+
+  
+    <span class="site-pv"><i class="fa fa-eye"></i><span class="busuanzi-value" id="busuanzi_value_site_pv"></span></span>
+  
+  
+</div>
+
+
+
+        
+      </div>
+    </footer>
+
+    <div class="back-to-top">
+      <i class="fa fa-arrow-up"></i>
+    </div>
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.0.2"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.0.2"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.0.2"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.0.2"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.0.2"></script>
+
+
+
+  
+
+  
+    
+  
+
+  <script type="text/javascript">
+    var duoshuoQuery = {short_name:"gnaix"};
+    (function() {
+      var ds = document.createElement('script');
+      ds.type = 'text/javascript';ds.async = true;
+      ds.id = 'duoshuo-script';
+      ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+      ds.charset = 'UTF-8';
+      (document.getElementsByTagName('head')[0]
+      || document.getElementsByTagName('body')[0]).appendChild(ds);
+    })();
+  </script>
+
+  
+    
+    <script src="/lib/ua-parser-js/dist/ua-parser.min.js?v=0.7.9"></script>
+    <script src="/js/src/hook-duoshuo.js"></script>
+  
+
+
+
+
+
+
+  
+  
+
+  
+
+  
+
+  
+
+  
+
+
+</body>
+</html>

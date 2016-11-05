@@ -1,0 +1,720 @@
+<!doctype html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.4.0" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.0.2" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="ndk,android,jni," />
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/images/favicon.ico?v=5.0.2" />
+
+
+
+
+
+
+<meta name="description" content="在开发中部分关键代码是在 NDK 中处理的，但是前段时间我们在线上日志中发现有少量的日志报错。通过排查我们发现问题出现在 NDK 的 `ReleaseStringUTFChars` 函数上。虽然找到了解决办法，但是我还是没有分析出具体的问题在哪。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="NDK开发-ReleaseStringUTFChars调用的坑">
+<meta property="og:url" content="http://gnaixx.github.io/2016/06/28/ndk-ReleaseStringUTFChars/index.html">
+<meta property="og:site_name" content="凸一_一凸">
+<meta property="og:description" content="在开发中部分关键代码是在 NDK 中处理的，但是前段时间我们在线上日志中发现有少量的日志报错。通过排查我们发现问题出现在 NDK 的 `ReleaseStringUTFChars` 函数上。虽然找到了解决办法，但是我还是没有分析出具体的问题在哪。">
+<meta property="og:updated_time" content="2016-11-05T07:57:27.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="NDK开发-ReleaseStringUTFChars调用的坑">
+<meta name="twitter:description" content="在开发中部分关键代码是在 NDK 中处理的，但是前段时间我们在线上日志中发现有少量的日志报错。通过排查我们发现问题出现在 NDK 的 `ReleaseStringUTFChars` 函数上。虽然找到了解决办法，但是我还是没有分析出具体的问题在哪。">
+
+
+
+<script type="text/javascript" id="hexo.configuration">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    scheme: 'Mist',
+    sidebar: {"position":"left","display":"post"},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    }
+  };
+</script>
+
+
+
+
+  <link rel="canonical" href="http://gnaixx.github.io/2016/06/28/ndk-ReleaseStringUTFChars/"/>
+
+
+  <title> NDK开发-ReleaseStringUTFChars调用的坑 | 凸一_一凸 </title>
+</head>
+
+<body itemscope itemtype="//schema.org/WebPage" lang="zh-Hans">
+
+  
+
+
+
+  <script type="text/javascript">
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "//hm.baidu.com/hm.js?bb104a561bbdd3b6666195d45e5581a9";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+
+
+
+
+  
+  
+    
+  
+
+  <div class="container one-collumn sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="//schema.org/WPHeader">
+      <div class="header-inner"><div class="site-meta ">
+  
+
+  <div class="custom-logo-site-title">
+    <a href="/"  class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <span class="site-title">凸一_一凸</span>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+  <p class="site-subtitle">gnaixx</p>
+</div>
+
+<div class="site-nav-toggle">
+  <button>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+  </button>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories" rel="section">
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+            标签
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="//schema.org/Article">
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                NDK开发-ReleaseStringUTFChars调用的坑
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            <span class="post-meta-item-icon">
+              <i class="fa fa-calendar-o"></i>
+            </span>
+            <span class="post-meta-item-text">发表于</span>
+            <time itemprop="dateCreated" datetime="2016-06-28T18:28:01+08:00" content="2016-06-28">
+              2016-06-28
+            </time>
+          </span>
+
+          
+            <span class="post-category" >
+              &nbsp; | &nbsp;
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+              
+                <span itemprop="about" itemscope itemtype="https://schema.org/Thing">
+                  <a href="/categories/android/" itemprop="url" rel="index">
+                    <span itemprop="name">android</span>
+                  </a>
+                </span>
+
+                
+                
+
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                &nbsp; | &nbsp;
+                <a href="/2016/06/28/ndk-ReleaseStringUTFChars/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count ds-thread-count" data-thread-key="2016/06/28/ndk-ReleaseStringUTFChars/" itemprop="commentsCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+
+          
+          
+
+          
+              &nbsp; | &nbsp;
+              <span class="page-pv"><i class="fa fa-file-o"></i>
+              <span class="busuanzi-value" id="busuanzi_value_page_pv" ></span>
+              </span>
+          
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>##0x00 问题描述<br>出于安全考虑我们会把部分关键的代码用 NKD 开发，加大被逆向的难度。但是可能是自己水平还不够，实际开发中会发现其实 NDK 开发还是有很多坑。<br>出现问题的函数处理流程其实很简单，接收 JAVA String 变量，对其进行简单的处理，然后返回。<br>示例代码：</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div></pre></td><td class="code"><pre><div class="line"><span class="function">NIEXPORT jstring JNICALL <span class="title">Java_cn_sdk_NativeEncode_getHello</span></span></div><div class="line">        <span class="params">(JNIEnv *env, jclass object, jstring j_data, jstring j_key)</span> &#123;</div><div class="line"></div><div class="line">	 <span class="comment">//提取data key</span></div><div class="line">    <span class="keyword">const</span> <span class="keyword">char</span> *c_data = env-&gt;GetStringUTFChars(j_data, <span class="number">0</span>);</div><div class="line">    <span class="keyword">const</span> <span class="keyword">char</span> *c_key = env-&gt;GetStringUTFChars(j_key, <span class="number">0</span>);</div><div class="line"></div><div class="line">    <span class="comment">//计算长度</span></div><div class="line">    <span class="keyword">int</span> len_data = <span class="built_in">strlen</span>(c_data);</div><div class="line">    <span class="keyword">int</span> len_key = <span class="built_in">strlen</span>(c_key);</div><div class="line">    <span class="comment">//拷贝到cc_data cc_key</span></div><div class="line">    <span class="keyword">char</span> *cc_data = <span class="built_in">calloc</span>((len_data * <span class="keyword">sizeof</span>(<span class="keyword">char</span>)), <span class="number">1</span>);</div><div class="line">    <span class="keyword">char</span> *cc_key = <span class="built_in">calloc</span>((len_key) * <span class="keyword">sizeof</span>(<span class="keyword">char</span>), <span class="number">1</span>);</div><div class="line">    <span class="built_in">strcpy</span>(cc_data, c_data);</div><div class="line">    <span class="built_in">strcpy</span>(cc_key, c_key);</div><div class="line"></div><div class="line">	 <span class="comment">//是否字符串</span></div><div class="line">    env-&gt;ReleaseStringUTFChars(j_data, c_data);</div><div class="line">    env-&gt;ReleaseStringUTFChars(j_key, c_key);</div><div class="line"></div><div class="line">    <span class="keyword">char</span> result[<span class="number">1024</span>];</div><div class="line">    <span class="comment">//数据处理</span></div><div class="line">    <span class="built_in">free</span>(cc_data);</div><div class="line">    <span class="built_in">free</span>(cc_key);</div><div class="line">    <span class="keyword">return</span> env-&gt;NewStringUTF(result);</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>其中很诡异的一点是：相同的data, 当我修改 key 时，有时候正常了。有时候 data 的一个字符的 <code>ASCII</code> 码是 <strong>0</strong>，这个就是导致失败的原因。</p>
+<p>##0x01 代码分析<br>一开始我以为是数据处理部分代码有问题，但是经过多次的排查可以证实该部分代码没有问题。后来想是不是自己的代码在内存处理上有问题，导致了内存溢出或者野指针的情况。所以就找了一份 google的 NDK 开发 example。发现一般都是在 return 之前调用 <code>ReleaseStringUTF</code> 方法，而我在 copy 后就直接释放了。    </p>
+<p>那么就有必要分析一下 <code>ReleaseStringUTF</code> 这个函数了，先看一下该函数的解释：</p>
+<blockquote>
+<p>在调用 GetStringUTFChars 函数从 JVM 内部获取一个字符串之后，JVM 内部会分配一块新的内存，用于存储源字符串的拷贝，以便本地代码访问和修改。即然有内存分配，用完之后马上释放是一个编程的好习惯。通过调用ReleaseStringUTFChars 函数通知 JVM 这块内存已经不使用了，你可以清除了。注意：这两个函数是配对使用的，用了 GetXXX 就必须调用 ReleaseXXX，而且这两个函数的命名也有规律，除了前面的 Get 和 Release 之外，后面的都一样。</p>
+</blockquote>
+<p>再看另一个相关的函数 <code>strcpy(src, dest)</code> 的解释：</p>
+<blockquote>
+<p>C语言标准库函数strcpy，把从src地址开始且含有’\0’结束符的字符串复制到以dest开始的地址空间。</p>
+</blockquote>
+<p>所以代码运行的时候应该是先分配了一块新的内存地址保存 JAVA 变量的值，然后 <code>strcopy</code> 拷贝新内存的值 而不是地址，这时候释放新分配的内存，实际上不应该影响到 <code>strcopy(str, dest)</code> 中的 dest 的值。但是不幸，就是不行。</p>
+<p>##0x02 解决方法</p>
+<p>后来我就把<code>ReleaseStringUTF</code>放到数据处理结束后 return 前调用。卧槽还真就好了，也幸好线上拉下的错误日志可以复现 BUG 情况，所以就特么的修复了。</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div></pre></td><td class="code"><pre><div class="line"><span class="function">JNIEXPORT jstring JNICALL <span class="title">Java_cn_sdk_NativeEncode_getHello</span></span></div><div class="line">        <span class="params">(JNIEnv *env, jclass object, jstring j_data)</span> &#123;</div><div class="line"></div><div class="line">    <span class="keyword">const</span> <span class="keyword">char</span> *c_data = env-&gt;GetStringUTFChars(j_data, <span class="number">0</span>);</div><div class="line">    <span class="keyword">const</span> <span class="keyword">char</span> *c_key = env-&gt;GetStringUTFChars(j_key, <span class="number">0</span>);</div><div class="line"></div><div class="line">    <span class="keyword">int</span> len_data = <span class="built_in">strlen</span>(c_data);</div><div class="line">    <span class="keyword">int</span> len_key = <span class="built_in">strlen</span>(c_key);</div><div class="line">    <span class="keyword">char</span> *cc_data = <span class="built_in">calloc</span>((len_data * <span class="keyword">sizeof</span>(<span class="keyword">char</span>)), <span class="number">1</span>);</div><div class="line">    <span class="keyword">char</span> *cc_key = <span class="built_in">calloc</span>((len_key) * <span class="keyword">sizeof</span>(<span class="keyword">char</span>), <span class="number">1</span>);</div><div class="line"></div><div class="line">    <span class="keyword">char</span> result[<span class="number">1024</span>];</div><div class="line">    <span class="comment">//数据处理</span></div><div class="line"></div><div class="line">    <span class="built_in">free</span>(cc_data);</div><div class="line">    <span class="built_in">free</span>(cc_key);</div><div class="line">    env-&gt;ReleaseStringUTFChars(j_data, c_data);</div><div class="line">    <span class="keyword">return</span> env-&gt;NewStringUTF(result);</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>##0x03 总结<br>其实我还是很懵逼，为什么我一开始写的会出现 bug 并且不是必现的，只有在极少数情况下才出现。希望有大神给我解释一下，解决我这一脸懵逼。</p>
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+  <div style="padding: 10px 0; margin: 20px auto; width: 90%; text-align: center;">
+    <div>赏一个呗！</div>
+    <button id="rewardButton" disable="enable" onclick="var qr = document.getElementById('QR'); if (qr.style.display === 'none') {qr.style.display='block';} else {qr.style.display='none'}">
+      <span>赏</span>
+    </button>
+    <div id="QR" style="display: none;">
+      
+        <div id="wechat" style="display: inline-block">
+          <img id="wechat_qr" src="/images/wechatpay.png" alt="凸一_一凸 WeChat Pay"/>
+          <p>微信打赏</p>
+        </div>
+      
+      
+        <div id="alipay" style="display: inline-block">
+          <img id="alipay_qr" src="/images/alipay.jpg" alt="凸一_一凸 Alipay"/>
+          <p>支付宝打赏</p>
+        </div>
+      
+    </div>
+  </div>
+
+
+      
+    </div>
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/ndk/" rel="tag">#ndk</a>
+          
+            <a href="/tags/android/" rel="tag">#android</a>
+          
+            <a href="/tags/jni/" rel="tag">#jni</a>
+          
+        </div>
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2016/06/19/txy-update-cheat/" rel="next" title=""**游"强制更新破解">
+                <i class="fa fa-chevron-left"></i> "**游"强制更新破解
+              </a>
+            
+          </div>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2016/07/24/nexus5-android6-xposed/" rel="prev" title="nexus5 刷 Android6.0+Xposed">
+                nexus5 刷 Android6.0+Xposed <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+      <div class="ds-thread" data-thread-key="2016/06/28/ndk-ReleaseStringUTFChars/"
+           data-title="NDK开发-ReleaseStringUTFChars调用的坑" data-url="http://gnaixx.github.io/2016/06/28/ndk-ReleaseStringUTFChars/">
+      </div>
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel ">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="//schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="/images/custom_avatar.jpg"
+               alt="凸一_一凸" />
+          <p class="site-author-name" itemprop="name">凸一_一凸</p>
+          <p class="site-description motion-element" itemprop="description"></p>
+        </div>
+        <nav class="site-state motion-element">
+          <div class="site-state-item site-state-posts">
+            <a href="/archives">
+              <span class="site-state-item-count">36</span>
+              <span class="site-state-item-name">日志</span>
+            </a>
+          </div>
+
+          
+            <div class="site-state-item site-state-categories">
+              <a href="/categories">
+                <span class="site-state-item-count">5</span>
+                <span class="site-state-item-name">分类</span>
+              </a>
+            </div>
+          
+
+          
+            <div class="site-state-item site-state-tags">
+              <a href="/tags">
+                <span class="site-state-item-count">38</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+            
+              <span class="links-of-author-item">
+                <a href="https://github.com/gnaixx" target="_blank" title="GitHub">
+                  
+                    <i class="fa fa-fw fa-github"></i>
+                  
+                  GitHub
+                </a>
+              </span>
+            
+          
+        </div>
+
+        
+        
+
+        
+        
+          <div class="links-of-blogroll motion-element links-of-blogroll-block">
+            <div class="links-of-blogroll-title">
+              <i class="fa  fa-fw fa-globe"></i>
+              友情链接
+            </div>
+            <ul class="links-of-blogroll-list">
+              
+                <li class="links-of-blogroll-item">
+                  <a href="https://waynecz.github.io/" title="wayne" target="_blank">wayne</a>
+                </li>
+              
+            </ul>
+          </div>
+        
+
+      </section>
+
+      
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+            
+              
+            
+            
+              <p class="post-toc-empty">此文章未包含目录</p>
+            
+          </div>
+        </section>
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy;  2014 - 
+  <span itemprop="copyrightYear">2016</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">凸一_一凸</span>
+</div>
+
+<div class="powered-by">
+  由 <a class="theme-link" href="https://hexo.io">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Mist
+  </a>
+</div>
+
+        
+
+<div class="busuanzi-count">
+
+  <script async src="https://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+  
+    <span class="site-uv"><i class="fa fa-user"></i><span class="busuanzi-value" id="busuanzi_value_site_uv"></span></span>
+  
+
+  
+    <span class="site-pv"><i class="fa fa-eye"></i><span class="busuanzi-value" id="busuanzi_value_site_pv"></span></span>
+  
+  
+</div>
+
+
+
+        
+      </div>
+    </footer>
+
+    <div class="back-to-top">
+      <i class="fa fa-arrow-up"></i>
+    </div>
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.0.2"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.0.2"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.0.2"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.0.2"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.0.2"></script>
+
+
+
+  
+
+  
+    
+  
+
+  <script type="text/javascript">
+    var duoshuoQuery = {short_name:"gnaix"};
+    (function() {
+      var ds = document.createElement('script');
+      ds.type = 'text/javascript';ds.async = true;
+      ds.id = 'duoshuo-script';
+      ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+      ds.charset = 'UTF-8';
+      (document.getElementsByTagName('head')[0]
+      || document.getElementsByTagName('body')[0]).appendChild(ds);
+    })();
+  </script>
+
+  
+    
+    <script src="/lib/ua-parser-js/dist/ua-parser.min.js?v=0.7.9"></script>
+    <script src="/js/src/hook-duoshuo.js"></script>
+  
+
+
+
+
+
+
+  
+  
+
+  
+
+  
+
+  
+
+  
+
+
+</body>
+</html>

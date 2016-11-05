@@ -1,0 +1,750 @@
+<!doctype html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.4.0" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.0.2" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="android,crack,smali,idea," />
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/images/favicon.ico?v=5.0.2" />
+
+
+
+
+
+
+<meta name="description" content="最近超级想打球，然后打了五分钟就把脚踝给扭伤了。原以为10月已经够悲伤了，没想到11月还倒霉。还好还有一群小伙伴。在寝室休息了两天，动不了，想起了之前kindle下的好几本书都没看，看了一半的《白夜行》（还不错，手贱先百度了剧情。。。。。雪穗），然后有个比我更无聊的人，发了一个网址给我。。。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="无聊 crackme">
+<meta property="og:url" content="http://gnaixx.github.io/2016/11/03/20161103_crackme/index.html">
+<meta property="og:site_name" content="凸一_一凸">
+<meta property="og:description" content="最近超级想打球，然后打了五分钟就把脚踝给扭伤了。原以为10月已经够悲伤了，没想到11月还倒霉。还好还有一群小伙伴。在寝室休息了两天，动不了，想起了之前kindle下的好几本书都没看，看了一半的《白夜行》（还不错，手贱先百度了剧情。。。。。雪穗），然后有个比我更无聊的人，发了一个网址给我。。。">
+<meta property="og:image" content="https://gnaixx.github.io/blog_images/crackme/5.png">
+<meta property="og:image" content="https://gnaixx.github.io/blog_images/crackme/6.png">
+<meta property="og:image" content="https://gnaixx.github.io/blog_images/crackme/7.png">
+<meta property="og:image" content="https://gnaixx.github.io/blog_images/crackme/8.png">
+<meta property="og:image" content="https://gnaixx.github.io/blog_images/crackme/9.png">
+<meta property="og:updated_time" content="2016-11-05T09:28:44.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="无聊 crackme">
+<meta name="twitter:description" content="最近超级想打球，然后打了五分钟就把脚踝给扭伤了。原以为10月已经够悲伤了，没想到11月还倒霉。还好还有一群小伙伴。在寝室休息了两天，动不了，想起了之前kindle下的好几本书都没看，看了一半的《白夜行》（还不错，手贱先百度了剧情。。。。。雪穗），然后有个比我更无聊的人，发了一个网址给我。。。">
+<meta name="twitter:image" content="https://gnaixx.github.io/blog_images/crackme/5.png">
+
+
+
+<script type="text/javascript" id="hexo.configuration">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    scheme: 'Mist',
+    sidebar: {"position":"left","display":"post"},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    }
+  };
+</script>
+
+
+
+
+  <link rel="canonical" href="http://gnaixx.github.io/2016/11/03/20161103_crackme/"/>
+
+
+  <title> 无聊 crackme | 凸一_一凸 </title>
+</head>
+
+<body itemscope itemtype="//schema.org/WebPage" lang="zh-Hans">
+
+  
+
+
+
+  <script type="text/javascript">
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "//hm.baidu.com/hm.js?bb104a561bbdd3b6666195d45e5581a9";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+
+
+
+
+  
+  
+    
+  
+
+  <div class="container one-collumn sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="//schema.org/WPHeader">
+      <div class="header-inner"><div class="site-meta ">
+  
+
+  <div class="custom-logo-site-title">
+    <a href="/"  class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <span class="site-title">凸一_一凸</span>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+  <p class="site-subtitle">gnaixx</p>
+</div>
+
+<div class="site-nav-toggle">
+  <button>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+  </button>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories" rel="section">
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+            标签
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="//schema.org/Article">
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                无聊 crackme
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            <span class="post-meta-item-icon">
+              <i class="fa fa-calendar-o"></i>
+            </span>
+            <span class="post-meta-item-text">发表于</span>
+            <time itemprop="dateCreated" datetime="2016-11-03T16:23:12+08:00" content="2016-11-03">
+              2016-11-03
+            </time>
+          </span>
+
+          
+            <span class="post-category" >
+              &nbsp; | &nbsp;
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+              
+                <span itemprop="about" itemscope itemtype="https://schema.org/Thing">
+                  <a href="/categories/android/" itemprop="url" rel="index">
+                    <span itemprop="name">android</span>
+                  </a>
+                </span>
+
+                
+                
+
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                &nbsp; | &nbsp;
+                <a href="/2016/11/03/20161103_crackme/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count ds-thread-count" data-thread-key="2016/11/03/20161103_crackme/" itemprop="commentsCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+
+          
+          
+
+          
+              &nbsp; | &nbsp;
+              <span class="page-pv"><i class="fa fa-file-o"></i>
+              <span class="busuanzi-value" id="busuanzi_value_page_pv" ></span>
+              </span>
+          
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h2 id="0x00-简介"><a href="#0x00-简介" class="headerlink" title="0x00 简介"></a>0x00 简介</h2><p>题目其实很简单，通过破解<a href="https://github.com/gnaixx/gnaixx.github.io/files/568775/CrackMe.apk.zip" target="_blank" rel="external">CrackMe.apk</a>获取一个key。但是之前没尝试过用 idea 动态调试 smali 代码，刚好记录一下。</p>
+<h2 id="0x01-工具介绍"><a href="#0x01-工具介绍" class="headerlink" title="0x01 工具介绍"></a>0x01 工具介绍</h2><ul>
+<li>apktool: 反编译apk，得到 smali 代码</li>
+<li>Android Studio: 调试 smali 代码工具，用 idea 也一样</li>
+<li>smalidea-003.zip: idea 插件，下载地址 <a href="https://bitbucket.org/JesusFreke/smali/downloads" target="_blank" rel="external">smalidea-003.zip</a></li>
+</ul>
+<h2 id="0x02-逆向过程"><a href="#0x02-逆向过程" class="headerlink" title="0x02 逆向过程"></a>0x02 逆向过程</h2><p>题目提示的很清楚破解 apk 找到隐藏的 flag。</p>
+<h3 id="利用apktool反编译-smali-代码"><a href="#利用apktool反编译-smali-代码" class="headerlink" title="利用apktool反编译 smali 代码"></a>利用apktool反编译 smali 代码</h3><p>执行：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">apktool d -o crackme CrackMe.apk</div></pre></td></tr></table></figure>
+<p>反编译后crackme 文件目录：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div></pre></td><td class="code"><pre><div class="line">→ tree -L 1</div><div class="line">.</div><div class="line">├── AndroidManifest.xml</div><div class="line">├── apktool.yml</div><div class="line">├── assets</div><div class="line">├── build</div><div class="line">├── crackme.iml</div><div class="line">├── dist</div><div class="line">├── gen</div><div class="line">├── original</div><div class="line">├── res</div><div class="line">└── smali</div></pre></td></tr></table></figure>
+<p>smali 目录就是接下里动态调试的代码。</p>
+<h3 id="修改menifest-xml"><a href="#修改menifest-xml" class="headerlink" title="修改menifest.xml"></a>修改menifest.xml</h3><p>动态调试需要apk支持 debug。所以我们需要修改一下：</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line">&lt;?xml version="1.0" encoding="utf-8" standalone="no"?&gt;</div><div class="line"><span class="tag">&lt;<span class="name">manifest</span> <span class="attr">xmlns:android</span>=<span class="string">"http://schemas.android.com/apk/res/android"</span> <span class="attr">package</span>=<span class="string">"com.suctf.crackme"</span> <span class="attr">platformBuildVersionCode</span>=<span class="string">"23"</span> <span class="attr">platformBuildVersionName</span>=<span class="string">"6.0-2704002"</span>&gt;</span></div><div class="line">    <span class="tag">&lt;<span class="name">application</span> <span class="attr">android:allowBackup</span>=<span class="string">"true"</span> <span class="attr">android:debuggable</span>=<span class="string">"true"</span> <span class="attr">android:icon</span>=<span class="string">"@mipmap/ic_launcher"</span> <span class="attr">android:label</span>=<span class="string">"@string/app_name"</span> <span class="attr">android:name</span>=<span class="string">"com.suctf.crackme.App"</span> <span class="attr">android:supportsRtl</span>=<span class="string">"true"</span> <span class="attr">android:theme</span>=<span class="string">"@style/AppTheme"</span>&gt;</span></div><div class="line">        <span class="tag">&lt;<span class="name">activity</span> <span class="attr">android:name</span>=<span class="string">"com.suctf.crackme.MainActivity"</span>&gt;</span></div><div class="line">            <span class="tag">&lt;<span class="name">intent-filter</span>&gt;</span></div><div class="line">                <span class="tag">&lt;<span class="name">action</span> <span class="attr">android:name</span>=<span class="string">"android.intent.action.MAIN"</span>/&gt;</span></div><div class="line">                <span class="tag">&lt;<span class="name">category</span> <span class="attr">android:name</span>=<span class="string">"android.intent.category.LAUNCHER"</span>/&gt;</span></div><div class="line">            <span class="tag">&lt;/<span class="name">intent-filter</span>&gt;</span></div><div class="line">        <span class="tag">&lt;/<span class="name">activity</span>&gt;</span></div><div class="line">    <span class="tag">&lt;/<span class="name">application</span>&gt;</span></div><div class="line"><span class="tag">&lt;/<span class="name">manifest</span>&gt;</span></div></pre></td></tr></table></figure>
+<p>在 <application> 标签中添加 <code>android:debuggable=&quot;true&quot;</code></application></p>
+<p>修改后需要用 apktool 进行回编，并用 auto-sign 重新签名，这里不做具体介绍了。</p>
+<h2 id="0x03-代码分析"><a href="#0x03-代码分析" class="headerlink" title="0x03 代码分析"></a>0x03 代码分析</h2><p>在开始调试代码前需要分析一下源码的逻辑，因为没有混淆，可以比较轻易的分析。</p>
+<p>利用 jadx-gui 反编译 Java 源码，当然也可以用 smali 工具反编译回 java。</p>
+<p>MainActivity.class:</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">MainActivity</span> <span class="keyword">extends</span> <span class="title">AppCompatActivity</span> </span>&#123;</div><div class="line">    Button btn;</div><div class="line">    String correct = <span class="string">"XclSH6nZEPVd41FsAsqeChz6Uy+HFzV8Cl9jqMyg6mMrcgSoM0vJtA1BpApYahCY"</span>;</div><div class="line">    Encrypt encrypt;</div><div class="line">    EditText flagText;</div><div class="line">    ImageView imageView;</div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">protected</span> <span class="keyword">void</span> <span class="title">onCreate</span><span class="params">(Bundle savedInstanceState)</span> </span>&#123;</div><div class="line">        <span class="keyword">super</span>.onCreate(savedInstanceState);</div><div class="line">        setContentView((<span class="keyword">int</span>) R.layout.activity_main);</div><div class="line">        <span class="keyword">this</span>.imageView = (ImageView) findViewById(R.id.imageView);</div><div class="line">        <span class="keyword">this</span>.flagText = (EditText) findViewById(R.id.flagText);</div><div class="line">        <span class="keyword">this</span>.encrypt = <span class="keyword">new</span> Encrypt();</div><div class="line">        <span class="keyword">this</span>.btn = (Button) findViewById(R.id.button);</div><div class="line">        <span class="keyword">try</span> &#123;</div><div class="line">            <span class="keyword">this</span>.imageView.setImageBitmap(BitmapFactory.decodeStream(getAssets().open(<span class="string">"kawai.jpg"</span>)));</div><div class="line">        &#125; <span class="keyword">catch</span> (Exception e) &#123;</div><div class="line">        &#125;</div><div class="line">        <span class="keyword">this</span>.btn.setOnClickListener(<span class="keyword">new</span> OnClickListener() &#123;</div><div class="line">            <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">onClick</span><span class="params">(View view)</span> </span>&#123;</div><div class="line">                <span class="keyword">if</span> (MainActivity.<span class="keyword">this</span>.encrypt.doEncrypt(MainActivity.<span class="keyword">this</span>.flagText.getText().toString()).equals(MainActivity.<span class="keyword">this</span>.correct)) &#123;</div><div class="line">                    Toast.makeText(MainActivity.<span class="keyword">this</span>.getApplicationContext(), <span class="string">"Correct!"</span>, <span class="number">1</span>).show();</div><div class="line">                &#125; <span class="keyword">else</span> &#123;</div><div class="line">                    Toast.makeText(MainActivity.<span class="keyword">this</span>.getApplicationContext(), <span class="string">"Wrong!"</span>, <span class="number">1</span>).show();</div><div class="line">                &#125;</div><div class="line">            &#125;</div><div class="line">        &#125;);</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>Encrypt.class：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div><div class="line">62</div><div class="line">63</div><div class="line">64</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Encrypt</span> </span>&#123;</div><div class="line">    <span class="keyword">private</span> String key = <span class="string">"3b0de20546e9331c7c87aaabf9d0d4afd8c8a761"</span>;</div><div class="line"></div><div class="line">	<span class="comment">//点击CRACK调用该函数，需要注意加密后值进行了一次base64</span></div><div class="line">    <span class="function"><span class="keyword">public</span> String <span class="title">doEncrypt</span><span class="params">(String source)</span> </span>&#123;</div><div class="line">        <span class="keyword">try</span> &#123;</div><div class="line">            <span class="keyword">char</span>[] iv = <span class="keyword">new</span> <span class="keyword">char</span>[<span class="number">16</span>];</div><div class="line">            BufferedReader reader = <span class="keyword">new</span> BufferedReader(<span class="keyword">new</span> InputStreamReader(ContextHolder.getContext().getAssets().open(<span class="string">"kawai.jpg"</span>)));</div><div class="line">            reader.skip(<span class="number">424</span>);</div><div class="line">            reader.read(iv);</div><div class="line">            reader.close();</div><div class="line">            <span class="keyword">return</span> Base64.encodeToString(encrypt(source.getBytes(), <span class="keyword">this</span>.key.getBytes(), charArrayToByteArray(iv)), <span class="number">2</span>);</div><div class="line">        &#125; <span class="keyword">catch</span> (Exception e) &#123;</div><div class="line">            e.printStackTrace();</div><div class="line">            <span class="keyword">return</span> BuildConfig.FLAVOR;</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="keyword">private</span> <span class="keyword">byte</span>[] charArrayToByteArray(<span class="keyword">char</span>[] chars) &#123;</div><div class="line">        <span class="keyword">byte</span>[] ret = <span class="keyword">new</span> <span class="keyword">byte</span>[chars.length];</div><div class="line">        <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; chars.length; i++) &#123;</div><div class="line">            ret[i] = (<span class="keyword">byte</span>) chars[i];</div><div class="line">        &#125;</div><div class="line">        <span class="keyword">return</span> ret;</div><div class="line">    &#125;</div><div class="line">    </div><div class="line">	<span class="comment">//破解的关键，只需要知道key, IV.就可以通过AES解密出 flag</span></div><div class="line">    <span class="keyword">public</span> <span class="keyword">byte</span>[] encrypt(<span class="keyword">byte</span>[] source, <span class="keyword">byte</span>[] key, <span class="keyword">byte</span>[] IV) <span class="keyword">throws</span> Exception &#123;</div><div class="line">        <span class="keyword">byte</span>[] realKey = transformKey(key);</div><div class="line">        Cipher cipher = Cipher.getInstance(<span class="string">"AES/CFB/PKCS7Padding"</span>);</div><div class="line">        cipher.init(<span class="number">1</span>, <span class="keyword">new</span> SecretKeySpec(realKey, <span class="string">"AES"</span>), <span class="keyword">new</span> IvParameterSpec(IV));</div><div class="line">        <span class="keyword">return</span> cipher.doFinal(source);</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="keyword">private</span> <span class="keyword">byte</span>[] transformKey(<span class="keyword">byte</span>[] key) &#123;</div><div class="line">        <span class="keyword">int</span> i;</div><div class="line">        <span class="keyword">byte</span>[] allKey = <span class="keyword">new</span> <span class="keyword">byte</span>[<span class="number">32</span>];</div><div class="line">        <span class="keyword">char</span>[] pwd = <span class="keyword">new</span> <span class="keyword">char</span>[<span class="number">32</span>];</div><div class="line">        <span class="keyword">if</span> (key.length &gt;= <span class="number">32</span>) &#123;</div><div class="line">            <span class="keyword">for</span> (i = <span class="number">0</span>; i &lt; <span class="number">32</span>; i++) &#123;</div><div class="line">                allKey[i] = key[i];</div><div class="line">            &#125;</div><div class="line">        &#125; <span class="keyword">else</span> &#123;</div><div class="line">            <span class="keyword">for</span> (i = <span class="number">0</span>; i &lt; key.length; i++) &#123;</div><div class="line">                allKey[i] = key[i];</div><div class="line">            &#125;</div><div class="line">            <span class="keyword">for</span> (i = key.length; i &lt; <span class="number">32</span>; i++) &#123;</div><div class="line">                allKey[i] = (<span class="keyword">byte</span>) i;</div><div class="line">            &#125;</div><div class="line">        &#125;</div><div class="line">        <span class="keyword">try</span> &#123;</div><div class="line">            BufferedReader reader = <span class="keyword">new</span> BufferedReader(<span class="keyword">new</span> InputStreamReader(ContextHolder.getContext().getAssets().open(<span class="string">"kawai.jpg"</span>)));</div><div class="line">            reader.skip(<span class="number">1023</span>);</div><div class="line">            reader.read(pwd);</div><div class="line">            reader.close();</div><div class="line">            <span class="keyword">for</span> (i = <span class="number">0</span>; i &lt; <span class="number">32</span>; i++) &#123;</div><div class="line">                allKey[i] = (<span class="keyword">byte</span>) (allKey[i] ^ pwd[i]);</div><div class="line">            &#125;</div><div class="line">        &#125; <span class="keyword">catch</span> (IOException e) &#123;</div><div class="line">            e.printStackTrace();</div><div class="line">        &#125;</div><div class="line">        <span class="keyword">return</span> allKey;</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>apk 的逻辑很简单，填写一个flag，点击 CRACK 按钮，将 flag 通过 <code>Encrypt.doEncrypt</code>函数进行加密，将加密后的值与 MainActivity中 <code>String correct = &quot;XclSH6nZEPVd41FsAsqeChz6Uy+HFzV8Cl9jqMyg6mMrcgSoM0vJtA1BpApYahCY&quot;</code>进行比较。</p>
+<p>关键的函数是 <code>Encrypt.encrypt</code>,这个函数有三个参数 source, key, IV。source 是输入的 flag 值， key是<code>3b0de20546e9331c7c87aaabf9d0d4afd8c8a761</code>, IV 是通过”kawai.jpg” 获取的。需要注意的是 函数内有个realKey，AES的秘钥其实由它和IV生成的。</p>
+<p>所以只需要在 <code>Cipher cipher = Cipher.getInstance(&quot;AES/CFB/PKCS7Padding&quot;);</code>下个断点，获取到realKey, IV。那么就可以知道 flag了。</p>
+<h2 id="0x04-动态分析"><a href="#0x04-动态分析" class="headerlink" title="0x04 动态分析"></a>0x04 动态分析</h2><h3 id="导入插件"><a href="#导入插件" class="headerlink" title="导入插件"></a>导入插件</h3><p>导入之前下载好的 smalidea-003.zip。</p>
+<h3 id="导入-smali-代码"><a href="#导入-smali-代码" class="headerlink" title="导入 smali 代码"></a>导入 smali 代码</h3><p><img src="https://gnaixx.github.io/blog_images/crackme/5.png" alt=""></p>
+<p>选择上面反编译的 smali 目录。最后导入的项目：</p>
+<p><img src="https://gnaixx.github.io/blog_images/crackme/6.png" alt=""></p>
+<h3 id="设置调试"><a href="#设置调试" class="headerlink" title="设置调试"></a>设置调试</h3><p><strong>1.配置AS调试配置</strong></p>
+<p>Run-&gt;Edit Configurations, 点击+号，新建 Remote 类型调试，设置name, 修改端口号（本次设置为8800）。</p>
+<p><img src="https://gnaixx.github.io/blog_images/crackme/7.png" alt=""></p>
+<p><strong>2.配置端口</strong></p>
+<p><img src="https://gnaixx.github.io/blog_images/crackme/8.png" alt=""></p>
+<ul>
+<li>在AS的终端以调试模式启动应用，进程挂起，此时运行命令查看该应用的进程号为1667</li>
+<li>设置端口转发，在本地8800端口与手机1667进程之间建立一条通道，当开始调试时，AS连接本地的8800端口，通过这条通道控制程序的运行</li>
+</ul>
+<p><strong>3.下断点</strong></p>
+<p>需要注意的是，smali并不是每一行都可以下断点，当下断点没有成功时，选择其他地方下断点测试。</p>
+<p><strong>4.调试</strong></p>
+<p><img src="https://gnaixx.github.io/blog_images/crackme/9.png" alt=""><br>Run-&gt;Debug 选择刚才新增的调试器，此时程序会断在设置的断点的行，这时候已经可以直接看到 realKey 跟 IV的值了。</p>
+<h2 id="0x05-编写解密程序"><a href="#0x05-编写解密程序" class="headerlink" title="0x05 编写解密程序"></a>0x05 编写解密程序</h2><p>通过上面的动态调试，已经知道了 AES 加密的秘钥跟加密后的密文，剩下的就是写一个简单的AES解密算法了。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">decrypt</span><span class="params">()</span> </span>&#123;</div><div class="line">    <span class="keyword">byte</span>[] realKey = <span class="keyword">new</span> <span class="keyword">byte</span>[]&#123;<span class="number">46</span>, <span class="number">121</span>, <span class="number">19</span>, <span class="number">74</span>, -<span class="number">104</span>, <span class="number">25</span>, -<span class="number">51</span>, -<span class="number">56</span>, <span class="number">73</span>, -<span class="number">53</span>, -<span class="number">104</span>, -<span class="number">60</span>, <span class="number">73</span>, -<span class="number">50</span>, -<span class="number">52</span>, -<span class="number">98</span>, -<span class="number">54</span>, -<span class="number">98</span>, <span class="number">104</span>, -<span class="number">54</span>, -<span class="number">100</span>, <span class="number">27</span>, -<span class="number">100</span>, <span class="number">5</span>, -<span class="number">101</span>, <span class="number">46</span>, -<span class="number">103</span>, -<span class="number">51</span>, <span class="number">10</span>, -<span class="number">55</span>, <span class="number">62</span>, -<span class="number">101</span>&#125;;</div><div class="line">    <span class="keyword">byte</span>[] IV = <span class="keyword">new</span> <span class="keyword">byte</span>[]&#123;<span class="number">13</span>, <span class="number">14</span>, <span class="number">13</span>, <span class="number">16</span>, <span class="number">14</span>, <span class="number">14</span>, <span class="number">16</span>, <span class="number">20</span>, <span class="number">14</span>, <span class="number">14</span>, <span class="number">14</span>, <span class="number">20</span>, <span class="number">20</span>, <span class="number">14</span>, <span class="number">14</span>, <span class="number">14</span>&#125;;</div><div class="line">    String source = <span class="string">"XclSH6nZEPVd41FsAsqeChz6Uy+HFzV8Cl9jqMyg6mMrcgSoM0vJtA1BpApYahCY"</span>;</div><div class="line">   </div><div class="line">    <span class="keyword">try</span> &#123;</div><div class="line">        <span class="keyword">byte</span>[] targeSource = Base64.decode(source, Base64.NO_WRAP);</div><div class="line">        Cipher cipher = Cipher.getInstance(<span class="string">"AES/CFB/PKCS7Padding"</span>);</div><div class="line">        cipher.init(Cipher.DECRYPT_MODE, <span class="keyword">new</span> SecretKeySpec(realKey, <span class="string">"AES"</span>), <span class="keyword">new</span> IvParameterSpec(IV));</div><div class="line">        <span class="keyword">byte</span>[] pwd = cipher.doFinal(targeSource);</div><div class="line">        Log.d(<span class="string">"gnaixx"</span>, <span class="keyword">new</span> String(pwd));</div><div class="line">    &#125; <span class="keyword">catch</span> (Exception e) &#123;</div><div class="line">        e.printStackTrace();</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+  <div style="padding: 10px 0; margin: 20px auto; width: 90%; text-align: center;">
+    <div>赏一个呗！</div>
+    <button id="rewardButton" disable="enable" onclick="var qr = document.getElementById('QR'); if (qr.style.display === 'none') {qr.style.display='block';} else {qr.style.display='none'}">
+      <span>赏</span>
+    </button>
+    <div id="QR" style="display: none;">
+      
+        <div id="wechat" style="display: inline-block">
+          <img id="wechat_qr" src="/images/wechatpay.png" alt="凸一_一凸 WeChat Pay"/>
+          <p>微信打赏</p>
+        </div>
+      
+      
+        <div id="alipay" style="display: inline-block">
+          <img id="alipay_qr" src="/images/alipay.jpg" alt="凸一_一凸 Alipay"/>
+          <p>支付宝打赏</p>
+        </div>
+      
+    </div>
+  </div>
+
+
+      
+    </div>
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/android/" rel="tag">#android</a>
+          
+            <a href="/tags/crack/" rel="tag">#crack</a>
+          
+            <a href="/tags/smali/" rel="tag">#smali</a>
+          
+            <a href="/tags/idea/" rel="tag">#idea</a>
+          
+        </div>
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2016/10/15/20161015-anti-reserve-base-way/" rel="next" title="APK反逆向之二：四种基本加固方式">
+                <i class="fa fa-chevron-left"></i> APK反逆向之二：四种基本加固方式
+              </a>
+            
+          </div>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+      <div class="ds-thread" data-thread-key="2016/11/03/20161103_crackme/"
+           data-title="无聊 crackme" data-url="http://gnaixx.github.io/2016/11/03/20161103_crackme/">
+      </div>
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel ">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="//schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="/images/custom_avatar.jpg"
+               alt="凸一_一凸" />
+          <p class="site-author-name" itemprop="name">凸一_一凸</p>
+          <p class="site-description motion-element" itemprop="description"></p>
+        </div>
+        <nav class="site-state motion-element">
+          <div class="site-state-item site-state-posts">
+            <a href="/archives">
+              <span class="site-state-item-count">36</span>
+              <span class="site-state-item-name">日志</span>
+            </a>
+          </div>
+
+          
+            <div class="site-state-item site-state-categories">
+              <a href="/categories">
+                <span class="site-state-item-count">5</span>
+                <span class="site-state-item-name">分类</span>
+              </a>
+            </div>
+          
+
+          
+            <div class="site-state-item site-state-tags">
+              <a href="/tags">
+                <span class="site-state-item-count">38</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+            
+              <span class="links-of-author-item">
+                <a href="https://github.com/gnaixx" target="_blank" title="GitHub">
+                  
+                    <i class="fa fa-fw fa-github"></i>
+                  
+                  GitHub
+                </a>
+              </span>
+            
+          
+        </div>
+
+        
+        
+
+        
+        
+          <div class="links-of-blogroll motion-element links-of-blogroll-block">
+            <div class="links-of-blogroll-title">
+              <i class="fa  fa-fw fa-globe"></i>
+              友情链接
+            </div>
+            <ul class="links-of-blogroll-list">
+              
+                <li class="links-of-blogroll-item">
+                  <a href="https://waynecz.github.io/" title="wayne" target="_blank">wayne</a>
+                </li>
+              
+            </ul>
+          </div>
+        
+
+      </section>
+
+      
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+            
+              
+            
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#0x00-简介"><span class="nav-number">1.</span> <span class="nav-text">0x00 简介</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#0x01-工具介绍"><span class="nav-number">2.</span> <span class="nav-text">0x01 工具介绍</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#0x02-逆向过程"><span class="nav-number">3.</span> <span class="nav-text">0x02 逆向过程</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#利用apktool反编译-smali-代码"><span class="nav-number">3.1.</span> <span class="nav-text">利用apktool反编译 smali 代码</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#修改menifest-xml"><span class="nav-number">3.2.</span> <span class="nav-text">修改menifest.xml</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#0x03-代码分析"><span class="nav-number">4.</span> <span class="nav-text">0x03 代码分析</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#0x04-动态分析"><span class="nav-number">5.</span> <span class="nav-text">0x04 动态分析</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#导入插件"><span class="nav-number">5.1.</span> <span class="nav-text">导入插件</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#导入-smali-代码"><span class="nav-number">5.2.</span> <span class="nav-text">导入 smali 代码</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#设置调试"><span class="nav-number">5.3.</span> <span class="nav-text">设置调试</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#0x05-编写解密程序"><span class="nav-number">6.</span> <span class="nav-text">0x05 编写解密程序</span></a></li></ol></div>
+            
+          </div>
+        </section>
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy;  2014 - 
+  <span itemprop="copyrightYear">2016</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">凸一_一凸</span>
+</div>
+
+<div class="powered-by">
+  由 <a class="theme-link" href="https://hexo.io">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Mist
+  </a>
+</div>
+
+        
+
+<div class="busuanzi-count">
+
+  <script async src="https://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+  
+    <span class="site-uv"><i class="fa fa-user"></i><span class="busuanzi-value" id="busuanzi_value_site_uv"></span></span>
+  
+
+  
+    <span class="site-pv"><i class="fa fa-eye"></i><span class="busuanzi-value" id="busuanzi_value_site_pv"></span></span>
+  
+  
+</div>
+
+
+
+        
+      </div>
+    </footer>
+
+    <div class="back-to-top">
+      <i class="fa fa-arrow-up"></i>
+    </div>
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.0.2"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.0.2"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.0.2"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.0.2"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.0.2"></script>
+
+
+
+  
+
+  
+    
+  
+
+  <script type="text/javascript">
+    var duoshuoQuery = {short_name:"gnaix"};
+    (function() {
+      var ds = document.createElement('script');
+      ds.type = 'text/javascript';ds.async = true;
+      ds.id = 'duoshuo-script';
+      ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+      ds.charset = 'UTF-8';
+      (document.getElementsByTagName('head')[0]
+      || document.getElementsByTagName('body')[0]).appendChild(ds);
+    })();
+  </script>
+
+  
+    
+    <script src="/lib/ua-parser-js/dist/ua-parser.min.js?v=0.7.9"></script>
+    <script src="/js/src/hook-duoshuo.js"></script>
+  
+
+
+
+
+
+
+  
+  
+
+  
+
+  
+
+  
+
+  
+
+
+</body>
+</html>
