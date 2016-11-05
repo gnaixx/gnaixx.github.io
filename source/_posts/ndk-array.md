@@ -8,7 +8,7 @@ description: 很多时候利用 NDK 开发都是为了对数据进行加密操�
 ---
 　　JNI 中的数组分为基本类型数组和对象数组，它们的处理方式是不一样的，基本类型数组中的所有元素都是 JNI 的基本数据类型，可以直接访问。而对象数组中的所有元素是一个类的实例或其它数组的引用，和字符串操作一样，不能直接访问 Java 传递给 JNI 层的数组，必须选择合适的 JNI 函数来访问和设置 Java 层的数组对象。
 
-###0x00 访问基本类型数组
+## 0x00 访问基本类型数组
 Java 代码：
 
 ```java
@@ -83,7 +83,7 @@ JNIEXPORT jint JNICALL Java_com_example_gnaix_ndk_NativeMethod_getByteArray
 }
 ```
 
-###0x01 访问引用类型数组
+## 0x01 访问引用类型数组
 　　JNI 提供了两个函数来访问对象数组，GetObjectArrayElement 返回数组中指定位置的元素，SetObjectArrayElement 修改数组中指定位置的元素。与基本类型不同的是，我们不能一次得到数据中的所有对象元素或者一次复制多个对象元素到缓冲区。因为字符串和数组都是引用类型，只能通过 Get/SetObjectArrayElement 这样的 JNI 函数来访问字符串数组或者数组中的数组元素。    
 　　下面的例子同调用 Native 方法 创建一个对象数组，返回后打印这个数组内容：
 
@@ -199,7 +199,7 @@ JNIEXPORT jobjectArray JNICALL Java_com_example_gnaix_ndk_NativeMethod_getPerson
 　　调用 `NewObjectArray` 创建一个数组，在for循环中 `NewObject` 实例化 Person类，并通过 `SetXXField` 函数给实例变量赋值。`SetObjectArrayElement` 将实例化对象插入数组。   
 　　最后调用 `DeleteLocalRef` 方法释放局部变量。 `DeleteLocalRef` 将新创建的 引用从引用表中移除。在 JNI 中，只有 jobject 以及子类属于引用变量，会占用引用表的空间，jint，jfloat，jboolean 等都是基本类型变量，不会占用引用表空间，即不需要释放。引用表最大空间为 512 个，如果超出这个范围，JVM 就会挂掉。
 
-###0x02 方法签名
+## 0x02 方法签名
 　　在上面的的例子中，在调用实例变量或者方法，都必须传入一个 jmethodID 的参数。因为在 Java 中存在方法重载（方法名相同，参数列表不同），所以要明确告诉 JVM 调用的是类或实例中的哪一个方法。调用 JNI 的 GetMethodID 函数获取一个 jmethodID 时，需要传入一个方法名称和方法签名，方法名称就是在 Java 中定义的方法名，方法签名的格式为：(形参参数类型列表)返回值。形参参数列表中，引用类型以 L 开头，后面紧跟类的全路径名（需将.全部替换成/），<font color=red>以分号结尾</font>。  
 　　可以通过 `javap` 命令获取类的签名，以 Person 为例：
 

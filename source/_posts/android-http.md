@@ -8,8 +8,8 @@ description: Android中实现网络请求主要通过HttpClient，网络请求�
 ---
 Android中实现网络请求主要通过HttpClient，网络请求又分为get和post两种。HttpClient支持http和https，http实现相对简单。[https](http://www.cnblogs.com/P_Chou/archive/2010/12/27/https-ssl-certification.html)是安全的http协议，在使用的时候必须考虑SSL和数字证书的问题。
 
-##0x00 获取HttpClient
-###默认单例HttpClient
+## 0x00 获取HttpClient
+### 默认单例HttpClient
 可以通过`new DefaultHttpClient()`获取默认HttpClient
 ``` java
 /**
@@ -23,7 +23,7 @@ public static HttpClient getHttpClient(String urlString){
     return httpClient;
 }
 ```
-###线程安全单例HttpClient
+### 线程安全单例HttpClient
 Android API中通过ClientConnectionManager接口可以获取线程安全的HttpClient，支持http和https。其中SSLSoketFactoryEX为自定义类继承了SSLSoketFactory，下面会介绍。
 ```java
 /**
@@ -66,8 +66,8 @@ public static synchronized HttpClient getSaveHttpClient(){
     return httpClient;
 }
 ```
-##0x01 实现get/post请求
-###get请求
+## 0x01 实现get/post请求
+### get请求
 get请求主要是为了获取数据，当然也可以发送简单的数据，如URL:'http://hexo.com?name=XX&pwd=XX'
 ```java
 /**
@@ -105,7 +105,7 @@ public static final String ConnectByGet(String urlStr){
 }
 ```
 
-###post请求
+### post请求
 post请求用来作为数据的发送接口。
 ```java
     /**
@@ -156,11 +156,11 @@ post请求用来作为数据的发送接口。
     }
 ```
 
-##0x02 解决HTTPS证书问题
+## 0x02 解决HTTPS证书问题
 在Android使用https请求经常会遇到SSLPeerUnverifiedException异常：
 <span style="color:red;">javax.net.ssl.SSLPeerUnverifiedException: No peer certificate</span>
 这问题主要是因为https协议使用了SSL/TSL认证，认证过程中必须校验证书。
-###信任全部证书
+### 信任全部证书
 继承SSLSocketFactory，对里面方法进行重写。
 ```java
 /**
@@ -218,7 +218,7 @@ class SSLSocketFactoryEx extends SSLSocketFactory{
     }
 }
 ```
-###下载证书保存到本地
+### 下载证书保存到本地
 * 将证书下载保存到Android的assets目录下
 * 导入证书
 * 添加证书为信任
@@ -282,7 +282,7 @@ class SSLSocketFactoryEx extends SSLSocketFactory{
         return result;
     }
 ```
-##0x03 附录
+## 0x03 附录
 HttpHelper的完整代码
 
 ```java

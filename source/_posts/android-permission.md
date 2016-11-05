@@ -7,7 +7,7 @@ description: android中权限有分类成不同的等级，每个等级的权限
 ---
  >android中权限有分类成不同的等级，每个等级的权限调用方式都不一样。
  
-###0x00 Protection Level
+## 0x00 Protection Level
 android中Permission主要分为四大类**normal、dangerous、signature、signatureOrSystem**,平常开发中normal、dangerous用到的比较多。
 
 - **normal** ：低风险权限，只要申请了就可以使用   
@@ -22,7 +22,7 @@ A permission that the system grants only if the requesting application is signed
 - **signatureOrSystem** ：签名相同，或者申请权限的应用为系统应用（在system image中）<font color=red>ps:这个不是很理解</font>    
 A permission that the system grants only to applications that are in the Android system image or that are signed with the same certificates as those in the system image. Please avoid using this option, as the signature protection level should be sufficient for most needs and works regardless of exactly where applications are installed. The "signatureOrSystem" permission is used for certain special situations where multiple vendors have applications built into a system image and need to share specific features explicitly because they are being built together.
 
-###0x01 Protection normal:
+## 0x01 Protection normal:
 **normal**权限不需要特殊的处理，只要在AndroidManifest中注册就可以使用了    
 
 - android.permission.ACCESS_LOCATION_EXTRA_COMMANDS
@@ -63,7 +63,7 @@ A permission that the system grants only to applications that are in the Android
 - com.android.launcher.permission.INSTALL_SHORTCUT
 - com.android.launcher.permission.UNINSTALL_SHORTCUT
 
-###0x02 permission groups
+## 0x02 permission groups
 权限组中只要申请获取了其中某一个权限，组内其他权限也是默认可用的
 <table style="color:#035707" class="table table-bordered table-striped table-condensed">
 <tr style="color:white">
@@ -120,7 +120,7 @@ A permission that the system grants only to applications that are in the Android
 <li> android.permission.WRITE_EXTERNAL_STORAGE
 </table>
 
-####<font color=red>PS:</font>
+### <font color=red>PS:</font>
 在我们的项目开发过程中运用到了`android.permission.WRITE_SETTINGS`,该权限是属于**signature**级别的。按照我的理解是系统级别的应用（具有相同签名）才可以使用生效的。   
 但是在实际开发中发现Android6.0以前的版本都可以在应用中注册，并且调用
 

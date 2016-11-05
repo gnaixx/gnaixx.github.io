@@ -9,12 +9,12 @@ description: 在乌云上看到的一篇文章，但是乌云现在。。。。�
 > 原文是英文,乌云上的是中文翻译，原文地址 [Android Anti-Hooking Techniques in Java](http://d3adend.org/blog/?p=589)
 
 
-##0x00 前言
+## 0x00 前言
 一个最近关于检测native hook框架的方法让我开始思考一个Android应用如何在Java层检测Cydia Substrate或者Xposed框架。
 
 **声明:**下文所有的anti-hooking技巧很容易就可以被有经验的逆向人员绕过，这里只是展示几个检测的方法。在最近DexGuard和GuardIT等工具中还没有这类anti-hooking检测功能，不过我相信不久就会增加这个功能。
 
-##0x01 检测安装的应用
+## 0x01 检测安装的应用
 
 一个最直接的想法就是检测设备上有没有安装Substrate或者Xposed框架，可以直接调用PackageManager显示所有安装的应用，然后看是否安装了Substrate或者Xposed。
 
@@ -32,7 +32,7 @@ for(ApplicationInfo applicationInfo : applicationInfoList) {
 }     
 ```
 
-##0x02 检查调用栈里的可疑方法
+## 0x02 检查调用栈里的可疑方法
 
 另一个想到的方法是检查Java调用栈里的可疑方法，主动抛出一个异常，然后打印方法的调用栈。代码如下：
 
@@ -174,7 +174,7 @@ catch(Exception e) {
 }
 ```
 
-##0x03 检测并不应该native的native方法
+## 0x03 检测并不应该native的native方法
 
 Xposed框架会把hook的Java方法类型改为"native"，然后把原来的方法替换成自己的代码（调用hookedMethodCallback）。可以查看 [XposedBridge_hookMethodNative](https://github.com/rovo89/Xposed/blob/6a8c2db5523377742a2c40fbd317b559e46b386f/libxposed_dalvik.cpp)的实现，是修改后`app_process`里的方法。
 
@@ -243,7 +243,7 @@ for (ApplicationInfo applicationInfo : applicationInfoList) {
 }
 ```
 
-##0x04 通过/proc/[pid]/maps检测可疑的共享对象或者JAR
+## 0x04 通过/proc/[pid]/maps检测可疑的共享对象或者JAR
 
 /proc/[pid]/maps记录了内存映射的区域和访问权限，首先查看Android应用的映像，第一列是起始地址和结束地址，第六列是映射文件的路径。
 
@@ -312,7 +312,7 @@ Xposed会用到一个Jar：
 Xposed JAR found: /data/data/de.robv.android.xposed.installer/bin/XposedBridge.jar
 ```
 
-##0x05 绕过检测的方法
+## 0x05 绕过检测的方法
 
 上面讨论了几个anti-hooking的方法，不过相信也会有人提出绕过的方法，这里对应每个检测方法如下：
 
@@ -321,7 +321,7 @@ Xposed JAR found: /data/data/de.robv.android.xposed.installer/bin/XposedBridge.j
 - hook getModifiers，把flag改成看起来不是native
 - hook 打开的文件的操作，返回/dev/null或者修改的map文件
 
-##0x06 总结
+## 0x06 总结
 第三个方法中通过分析java方法的属性是否为 native 来判断是否被hook, 这中方式可以用来保护一些自定义的接口，或者SDK API 接口。
 
 后来同事通过分析Xposed源码，发现通过ClassLoader可以识别出具体的Xposed module hook了某个具体的函数，下次说下分析思路。

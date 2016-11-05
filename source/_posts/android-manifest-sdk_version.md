@@ -9,7 +9,7 @@ description: 在android开发中你需要配置不同的Sdk版本，每个版本
 
 在android开发中你需要配置不同的Sdk版本，每个版本都有其特定的含义。
 
-###0x00 Eclipse
+## 0x00 Eclipse
 在使用eclipse开发android应用程序时可以发现AndroidManifest.xml文件中有下面几行代码
 
 ```java
@@ -23,7 +23,7 @@ description: 在android开发中你需要配置不同的Sdk版本，每个版本
 target=android-23
 ```
 
-###0x01 Android Studio/IDEA
+## 0x01 Android Studio/IDEA
 而在使用Android studio/idea开发时不在使用Ant作为自动化构建工具改用gradle，所以大部分配置信息都在build.gradle文件中。
 
 ```java
@@ -40,7 +40,7 @@ target=android-23
 ```
 虽然我很喜欢as，但是必须说一句as的编译速度比eclipse慢好多。
 
-###0x02 ***SdkVersion含义
+## 0x02 ***SdkVersion含义
 
 1. compileSdkVersion: 编译源码的Android SDK版本号
 2. minSdkVersion: apk最低支持版本

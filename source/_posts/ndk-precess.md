@@ -17,9 +17,9 @@ description:  上一篇简单介绍了Android Studio的NDK开发环境搭建，�
 - C/C++代码编写
 - 运行编译SO
 
-###0x00 java层代码编写
+## 0x00 java层代码编写
 　　新建一个`NativeMethod`的Class，java层代码主要负责两件事： 
-####Load native library（SO文件）
+### Load native library（SO文件）
 　　Load操作很简单，其中包名为`build.gradle`中定义的ndk名，代码如下：  
 
 ```gradle
@@ -37,7 +37,7 @@ description:  上一篇简单介绍了Android Studio的NDK开发环境搭建，�
         System.loadLibrary("native");
     }
 ```
-####定义接口名
+### 定义接口名
 　　JNI的接口名以`native`字符修饰，并且不需要实现。  
 
 ```java
@@ -100,11 +100,11 @@ public class NativeMethod {
 　　到这里java层的活就干完了。
 
 
-###0x01 java代码编译
+## 0x01 java代码编译
 　　在生成C／C++的头文件前需要把上面写的class编译成`.class`文件。Android Studio中编译很简单点一下右上角的<img width=40px height=35px src="https://gnaixx.github.io/blog_images/ndk/1.png" style="display:inline-block"/>按钮就可以了。生成的class文件在`app/build/intermediates/calsses/all/debug/xx.xx.xx/xx.class`。
 
 
-####C/C++头文件生成
+### C/C++头文件生成
 　　JNI开发对C/C++的头文件有命名的格式要求，所以我们可以使用`jdk`提供的`javah`命令生成规定的C/C++头文件。为了方便可以先切换到`app/src/main`目录下。   
 
 ```shell
@@ -186,7 +186,7 @@ JNIEXPORT jobjectArray JNICALL Java_com_example_gnaix_ndk_NativeMethod_getPerson
 #endif
 #endif
 ```
-###0x02 C/C++代码编写
+## 0x02 C/C++代码编写
 　　生成头文件后就可以写具体的C++的实现代码，这里只写了一小段实现代码，具体的调用开发细节下一篇再说。 实现了`getInt`方法，获取了android的serialno，并用log打印出来。
 
 ```c++
@@ -203,9 +203,9 @@ using namespace std;
 #define ENABLE_DEBUG 1
 #if ENABLE_DEBUG
 #define TAG "NDK_NATIVE"
-#define LOGD(fmt, args...)  __android_log_print(ANDROID_LOG_DEBUG,TAG, fmt, ##args)
+#define LOGD(fmt, args...)  __android_log_print(ANDROID_LOG_DEBUG,TAG, fmt,# #args)
 #define DEBUG_PRINT(format, args...) \
-    LOGD(format, ##args)
+    LOGD(format,# #args)
 #else
 #define  DEBUG_PRINT(format, args...)
 #endif
@@ -221,7 +221,7 @@ JNIEXPORT jint JNICALL Java_com_example_gnaix_ndk_NativeMethod_getInt
 }
 ```
 
-###0x03运行编译SO
+## 0x03运行编译SO
 　　经过上面的步骤，已经可以编译了，在NDK开发中除了自己apk需要，更多时候是作为第三方包提供给客户使用。Android Studio也为我们打包好了，可以在module目录下找到。   
 <img width=300px height=400px src="https://gnaixx.github.io/blog_images/ndk/2.png"/>
 

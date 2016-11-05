@@ -22,10 +22,10 @@ description: 看到一篇写的很不错的介绍JNI各种引用的文章 mark �
 
 　　由于 Java 程序运行在虚拟机中的这个特点，在 Java 中创建的对象、定义的变量和方法，内部对象的数据结构是怎么定义的，只有 JVM 自己知道。如果我们在 C/C++ 中想要访问 Java 中对象的属性和方法时，是不能够直接操作 JVM 内部 Java 对象的数据结构的。想要在 C/C++ 中正确的访问 Java 的数据结构，JVM 就必须有一套规则来约束 C/C++ 与 Java 互相访问的机制，所以才有了 JNI 规范，JNI 规范定义了一系列接口，任何实现了这套 JNI 接口的 Java 虚拟机，C/C++ 就可以通过调用这一系列接口来间接的访问 Java 中的数据结构。比如前面文章中学习到的常用 JNI 接口有：GetStringUTFChars（从 Java 虚拟机中获取一个字符串）、ReleaseStringUTFChars（释放从 JVM 中获取字符串所分配的内存空间）、NewStringUTF、GetArrayLength、GetFieldID、GetMethodID、FindClass 等。
 
-###0x00 三种引用简介及区别
+## 0x00 三种引用简介及区别
 　　在 JNI 规范中定义了三种引用：局部引用（Local Reference）、全局引用（Global Reference）、弱全局引用（Weak Global Reference）。区别如下：
 
-####局部引用
+### 局部引用
 　　通过 NewLocalRef 和各种 JNI 接口创建（FindClass、NewObject、GetObjectClass和NewCharArray等）。会阻止 GC 回收所引用的对象，不在本地函数中跨函数使用，不能跨线前使用。函数返回后局部引用所引用的对象会被JVM 自动释放，或调用 DeleteLocalRef 释放。`(*env)->DeleteLocalRef(env,local_ref)`
 
 ```c++
@@ -36,7 +36,7 @@ jstring str_obj_local_ref = (*env)->NewLocalRef(env,str_obj);   // 通过NewLoca
 ...
 ```
 
-####全局引用
+### 全局引用
 　　调用 NewGlobalRef 基于局部引用创建，会阻 GC 回收所引用的对象。可以跨方法、跨线程使用。JVM 不会自动释放，必须调用 DeleteGlobalRef 手动释放。`(*env)->DeleteGlobalRef(env,g_cls_string)`
 
 ```c++
@@ -47,7 +47,7 @@ void TestFunc(JNIEnv* env, jobject obj) {
 }
 ```
 
-####弱全局引用
+### 弱全局引用
 　　调用 NewWeakGlobalRef 基于局部引用或全局引用创建，不会阻止 GC 回收所引用的对象，可以跨方法、跨线程使用。引用不会自动释放，在 JVM 认为应该回收它的时候（比如内存紧张的时候）进行回收而被释放。或调用DeleteWeakGlobalRef 手动释放。`(*env)->DeleteWeakGlobalRef(env,g_cls_string)`
 
 ```c++
@@ -58,7 +58,7 @@ void TestFunc(JNIEnv* env, jobject obj) {
 }
 ```
 
-####局部引用
+### 局部引用
 
 　　局部引用也称本地引用，通常是在函数中创建并使用。会阻止 GC 回收所引用的对象。比如，调用 NewObject 接口创建一个新的对象实例并返回一个对这个对象的局部引用。局部引用只有在创建它的本地方法返回前有效，本地方法返回到 Java 层之后，如果 Java 层没有对返回的局部引用使用的话，局部引用就会被 JVM 自动释放。你可能会为了提高程序的性能，在函数中将局部引用存储在静态变量中缓存起来，供下次调用时使用。这种方式是错误的，因为函数返回后局部引很可能马上就会被释放掉，静态变量中存储的就是一个被释放后的内存地址，成了一个野针对，下次再使用的时候就会造成非法地址的访问，使程序崩溃。请看下面一个例子，错误的缓存了 String 的 Class 引用。
 
@@ -119,7 +119,7 @@ C.f 方法返回后，JVM 会释放在这个方法执行期间创建的所有局
 ...
 ```
 
-####释放局部引用
+### 释放局部引用
 　　释放一个局部引用有两种方式，一个是本地方法执行完毕后 JVM 自动释放，另外一个是自己调用 DeleteLocalRef 手动释放。既然 JVM 会在函数返回后会自动释放所有局部引用，为什么还需要手动释放呢？大部分情况下，我们在实现一个本地方法时不必担心局部引用的释放问题，函数被调用完成后，JVM 会自动释放函数中创建的所有局部引用。尽管如此，以下几种情况下，为了避免内存溢出，我们应该手动释放局部引用。
 
 　　JNI 会将创建的局部引用都存储在一个局部引用表中，如果这个表超过了最大容量限制，就会造成局部引用表溢出，使程序崩溃。经测试，Android 上的 JNI 局部引用表最大数量是 512 个。当我们在实现一个本地方法时，可能需要创建大量的局部引用，如果没有及时释放，就有可能导致 JNI 局部引用表的溢出，所以，在不需要局部引用时就立即调用 DeleteLocalRef 手动删除。比如，在下面的代码中，本地代码遍历一个特别大的字符串数组，每遍历一个元素，都会创建一个局部引用，当对使用完这个元素的局部引用时，就应该马上手动释放它。
@@ -150,7 +150,7 @@ JNIEXPORT void JNICALL Java_pkg_Cls_func(JNIEnv *env, jobject this)
 }
 ```
 
-####管理局部引用
+### 管理局部引用
 
 　　JNI 提供了一系列函数来管理局部引用的生命周期。这些函数包括：EnsureLocalCapacity、NewLocalRef、PushLocalFrame、PopLocalFrame、DeleteLocalRef。JNI 规范指出，任何实现 JNI 规范的 JVM，必须确保每个本地函数至少可以创建 16 个局部引用（可以理解为虚拟机默认支持创建 16 个局部引用）。实际经验表明，这个数量已经满足大多数不需要和 JVM 中内部对象有太多交互的本地方函数。如果需要创建更多的引用，可以通过调用 EnsureLocalCapacity 函数，确保在当前线程中创建指定数量的局部引用，如果创建成功则返回 0，否则创建失败，并抛出 OutOfMemoryError 异常。EnsureLocalCapacity 这个函数是 1.2 以上版本才提供的，为了向下兼容，在编译的时候，如果申请创建的局部引用超过了本地引用的最大容量，在运行时 JVM 会调用 FatalError 函数使程序强制退出。在开发过程当中，可以为 JVM 添加-verbose:jni参数，在编译的时如果发现本地代码在试图申请过多的引用时，会打印警告信息提示我们要注意。在下面的代码中，遍历数组时会获取每个元素的引用，使用完了之后不手动删除，不考虑内存因素的情况下，它可以为这种创建大量的局部引用提供足够的空间。由于没有及时删除局部引用，因此在函数执行期间，会消耗更多的内存。
 
@@ -202,7 +202,7 @@ for (i = 0; i < len; i++) {
 
 　　还要注意的一个问题是，局部引用不能跨线程使用，只在创建它的线程有效。不要试图在一个线程中创建局部引用并存储到全局引用中，然后在另外一个线程中使用。
 
-####全局引用
+### 全局引用
 
 　　全局引用可以跨方法、跨线程使用，直到它被手动释放才会失效。同局部引用一样，也会阻止它所引用的对象被 GC 回收。与局部引用创建方式不同的是，只能通过 NewGlobalRef 函数创建。下面这个版本的 newString 演示怎么样使用一个全局引用。
 
@@ -236,7 +236,7 @@ JNIEXPORT jstring JNICALL Java_com_study_jnilearn_AccessCache_newString
 }
 ```
 
-####弱全局引用
+### 弱全局引用
 　　弱全局引用使用 NewGlobalWeakRef 创建，使用 DeleteGlobalWeakRef 释放。下面简称弱引用。与全局引用类似，弱引用可以跨方法、线程使用。但与全局引用很重要不同的一点是，弱引用不会阻止 GC 回收它引用的对象。在newString 这个函数中，我们也可以使用弱引用来存储 String 的 Class 引用，因为 java.lang.String 这个类是系统类，永远不会被 GC 回收。当本地代码中缓存的引用不一定要阻止 GC 回收它所指向的对象时，弱引用就是一个最好的选择。假设，一个本地方法mypkg.MyCls.f需要缓存一个指向类mypkg.MyCls2的引用，如果在弱引用中缓存的话，仍然允许mypkg.MyCls2这个类被 unload，因为弱引用不会阻止 GC 回收所引用的对象。请看下面的代码段。
 
 ```c++
@@ -263,7 +263,7 @@ Java_mypkg_MyCls_f(JNIEnv *env, jobject self)
 
 　　我们假设 MyCls 和 MyCls2 有相同的生命周期（例如，他们可能被相同的类加载器加载），因为弱引用的存在，我们不必担心 MyCls 和它所在的本地代码在被使用时，MyCls2 这个类出现先被 unload，后来又会 preload 的情况。当然，如果真的发生这种情况时（MyCls 和 MyCls2 此时的生命周期不同），我们在使用弱引用时，必须先检查缓存过的弱引用是指向活动的类对象，还是指向一个已经被 GC 给 unload 的类对象。下面马上告诉你怎样检查弱引用是否活动，即引用的比较。
 
-####引用比较
+### 引用比较
 　　给定两个引用（不管是全局、局部还是弱全局引用），我们只需要调用 IsSameObject 来判断它们两个是否指向相同的对象。例如：`（*env)->IsSameObject(env, obj1, obj2)`，如果 obj1 和 obj2 指向相同的对象，则返回 JNI_TRUE（或者 1），否则返回 JNI_FALSE（或者 0）。有一个特殊的引用需要注意：NULL，JNI 中的 NULL 引用指向 JVM 中的 null 对象。如果 obj 是一个局部或全局引用，使用(*env)->IsSameObject(env, obj, NULL) 或者obj == NULL 来判断 obj 是否指向一个 null 对象即可。但需要注意的是，IsSameObject 用于弱全局引用与 NULL 比较时，返回值的意义是不同于局部引用和全局引用的。
 
 ```c++
@@ -275,10 +275,10 @@ jboolean isEqual = (*env)->IsSameObject(env, g_obj_ref, NULL);
 
 　　在上面的 IsSameObject 调用中，如果 g_obj_ref 指向的引用已经被回收，会返回 JNI_TRUE，如果 wobj 仍然指向一个活动对象，会返回 JNI_FALSE。
 
-####释放全局引用
+### 释放全局引用
 　　每一个 JNI 引用被建立时，除了它所指向的 JVM 中对象的引用需要占用一定的内存空间外，引用本身也会消耗掉一个数量的内存空间。作为一个优秀的程序员，我们应该对程序在一个给定的时间段内使用的引用数量要十分小心。短时间内创建大量而没有被立即回收的引用很可能就会导致内存溢出。     当我们的本地代码不再需要一个全局引用时，应该马上调用 DeleteGlobalRef 来释放它。如果不手动调用这个函数，即使这个对象已经没用了，JVM 也不会回收这个全局引用所指向的对象。      同样，当我们的本地代码不再需要一个弱全局引用时，也应该调用 DeleteWeakGlobalRef 来释放它，如果不手动调用这个函数来释放所指向的对象，JVM 仍会回收弱引用所指向的对象，但弱引用本身在引用表中所占的内存永远也不会被回收。
 
-####管理引用的规则
+### 管理引用的规则
 　　前面对三种引用已做了一个全面的介绍，下面来总结一下引用的管理规则和使用时的一些注意事项，使用好引用的目的就是为了减少内存使用和对象被引用保持而不能释放，造成内存浪费。所以在开发当中要特别小心！
 
 　　通常情况下，有两种本地代码使用引用时要注意：
@@ -350,4 +350,4 @@ jobject f(JNIEnv *env, ...)
     return result;
 }
 ```
-　　上面的代码同样演示了函数 PopLocalFrame 的第二个参数的用法，局部引用 result 一开始在 PushLocalFrame 创建在当前 frame 里面，而把 result 传入 PopLocalFrame 中时，PopLocalFrame 在弹出当前的 frame 前，会由 result 生成一个新的局部引用，再将这个新生成的局部引用存储在上一个 frame 当中。
+　　上面的代码同样演示了函数 PopLocalFrame 的第二个参数的用法，局部引用 result 一开始在 PushLocalFrame 创建在当前 frame 里面，而把 result 传入 PopLocalFrame 中时，PopLocalFrame 在弹出当前的 frame 前，会由 result 生成一个新的局部引用，再将这个新生成的局部引用存储在上一个 frame 当中。ƒ

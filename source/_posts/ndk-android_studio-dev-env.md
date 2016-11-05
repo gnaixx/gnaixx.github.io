@@ -9,16 +9,16 @@ description: Android studio在很早版本已经开始支持NDK开发了，但�
 
 **0.4.0**是`Experimental Plugin`版本所以在使用的时候和正式版本的配置还是有挺大的差别的。[http://tools.android.com/tech-docs/new-build-system/gradle-experimental/0-4-0]()是官方文档，上面给出了`Experimental Plugin`版本使用说明，但是实际使用中还是发现了不少问题，比如签名配置。
 
-###0x00 Change Config
+## 0x00 Change Config
 
 主要修改包括三个文件
 
-```shell
+```shell##
 ./app/build.gradle
 ./build.gradle
 ./gradle/wrapper/gradle-wrapper.properties
 ```
-####./gradle/wrapper/gradle-wrapper.properties
+###./gradle/wrapper/gradle-wrapper.properties
 每个插件版本都对应着一个gradle版本       
 
 | Plugin Version | Gragle Version | 
@@ -43,7 +43,7 @@ zipStorePath=wrapper/dists
 distributionUrl=https\://services.gradle.org/distributions/gradle-2.8-all.zip
 ```
 
-####./build.gradle
+###./build.gradle
 修改classpath为当前的0.4.0版本插件   
 
 ```gradle
@@ -70,7 +70,7 @@ task clean(type: Delete) {
 }
 ```
 
-####./app/build.gradle
+###./app/build.gradle
 `./app/build.gradle`文件需要改动的东西比较多，很多配置与正式版本不一样。
 
 - 用`'com.android.model.application'`替换` 'com.android.application'`如果是library模块改为`com.android.model.library`
@@ -183,7 +183,7 @@ dependencies {
 
 ```
 
-###0x01 Signing Config
+## 0x01 Signing Config
 下面这段代码是官方文档给出的签名配置，但是在实际编译中报错了。改成上面的配置则可以了。   
 <font color="red">PS:</font>之前我都是新建`gradle.properties`文件配置签名信息，方便多项目应用，可是在这里好像不行。  
 
@@ -213,7 +213,7 @@ model {
 }
 ```
 
-###0x02 Source Set
+## 0x02 Source Set
 默认情况下C/C++文件是存放在`src/main/jni`目录下。可以配置android.sources节点改变路径。不过我还是喜欢默认路径。   
 
 ```gradle
@@ -254,7 +254,7 @@ android.sources {
 ```
 注意这里需要写SO包命全称，加上lib。
 
-###0x03 Other Config
+## 0x03 Other Config
 文档中还介绍了将SO作为一个独立的lib编译的方式，在实际操作中我也失败了，当时项目时间紧也就没有研究了=_=#。    
 ***文档示例/lib/build.gradle：***
    

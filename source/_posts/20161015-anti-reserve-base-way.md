@@ -7,7 +7,7 @@ description: 近些年来移动 APP 数量呈现爆炸式的增长，黑产也�
 
 ---
 
-##0x00 简介
+## 0x00 简介
 
 应该大多数开发者都不会关注应用会不逆向破解，而且现在有第三方厂商提供免费的加固方案，所以 apk 应用的安全性就全部依赖于第三方。但是如果第三方加固方案被破解那么 apk 就陷于被动，所以我们也可以通过一些手段来加固应用本身逻辑，或者数据的加密。
 
@@ -15,7 +15,7 @@ description: 近些年来移动 APP 数量呈现爆炸式的增长，黑产也�
 
 下面介绍的四种加固方式成本比较低，开发者可以很快开发完成，并且也不会影响应用的兼容性。
 
-##0x01 proguard混淆
+## 0x01 proguard混淆
 
 ### 简介
 ProGuard 是一个 SourceForge 上知名的开源项目。官网网址是：[http://proguard.sourceforge.net/](http://proguard.sourceforge.net/)。
@@ -245,7 +245,7 @@ at cc.gnaixx.ServiceDetectLte$2.void onReceive(android.content.Context,android.c
 
 ```
 
-##0x02 签名比对验证
+## 0x02 签名比对验证
 
 ### 简介
 Android APK的发布是需要签名的。签名机制在Android应用和框架中有着十分重要的作用。
@@ -360,15 +360,15 @@ private static void writeSignatureBlock(
 2. Android签名机制不能阻止APK包被修改，但修改后的再签名无法与原先的签名保持一致。（拥有私钥的情况除外）。
 3. APK包加密的公钥就打包在APK包内，且不同的私钥对应不同的公钥。换句话言之，不同的私钥签名的APK公钥也必不相同。所以我们可以根据公钥的对比，来判断私钥是否一致。
 
-###APK签名比对的实现方式
+### APK签名比对的实现方式
 具体的实现方式在之前的一篇博客中有进行了介绍，实现方式其实很简单：
 
 [APK自我保护 - DEX/APK/证书校验](http://gnaixx.cc/2016/04/19/android-protect-dex_apk_cert_check/)
 
 
-##0x03 ndk 编译.so 动态库
+## 0x03 ndk 编译.so 动态库
 
-###简介
+### 简介
 逆向 ndk 跟逆向 java 代码难度真不是在一个等级上的，ndk 开发除了安全性相对 java 开发高很多，而且在运行效率也高很多。
 
 所以 NDK 开发相对于 JAVA 开发的优势：
@@ -383,7 +383,7 @@ private static void writeSignatureBlock(
 
 但是 NDK 的兼容性相对 JAVA 差很多，所以在进行 NDK 开发的时候兼容性是一个很大的问题。
 
-###教程
+### 教程
 之前写了几篇关于 NDK 开发的文章基本覆盖了 NDK 开发的所有内容了。
 
 - [NDK开发 - Android Studio环境搭建](http://gnaixx.cc/2016/03/07/ndk-android_studio-dev-env/)
@@ -416,7 +416,7 @@ externalNativeBuild {
 官网文档：
 [Add C and C++ Code to Your Project](https://developer.android.com/studio/projects/add-native-code.html#existing-project)
 
-##0x04 代码动态加载
+## 0x04 代码动态加载
 
 ### 简介
 这篇文章是在看雪上看到的对动态加载的原理介绍的比较清楚，大多数应用也是采用这种方式对 dex 文件进行加密处理。
@@ -527,7 +527,7 @@ public Class loadClass(String name, ClassLoader loader) {
 
 另外，PathClassLoader在加载类时调用的是DexFile的loadClassBinaryName，而DexClassLoader调用的是loadClass。因此，在使用PathClassLoader时类全名需要用”/”替换”.”。
 
-###实际操作
+### 实际操作
 
 这一部分比较简单，因此我就不赘言了。只是简单的说下。
 
@@ -536,7 +536,7 @@ public Class loadClass(String name, ClassLoader loader) {
 加载好类后，通常我们可以通过Java反射机制来使用这个类。但是这样效率相对不高，而且老用反射代码也比较复杂凌乱。更好的做法是定义一个interface，并将这个interface写进容器端。待加载的类，继承自这个interface，并且有一个参数为空的构造函数，以使我们能够通过Class的newInstance方法产生对象。然后将对象强制转换为interface对象，于是就可以直接调用成员方法了。
 
 
-###关于代码加密的一些设想
+### 关于代码加密的一些设想
 
 最初设想将dex文件加密，然后通过JNI将解密代码写在Native层。解密之后直接传上二进制流，再通过defineClass将类加载到内存中。
 
@@ -548,7 +548,7 @@ Dalvik虚拟机内核仅支持从dex文件加载类的方式是不灵活的，�
 
 在RawDexFile出来之前，我们都只能使用这种存在一定风险的加密方式。需要注意释放的dex文件路径及权限管理，另外，在加载完毕类之后，除非出于其他目的否则应该马上删除临时的解密文件
 
-###总结
+### 总结
 目前的方式如果被识别后破解还是相对比较简单的，即使加密后的 dex 文件也需要在 load 前进行解密操作，并且需要把文件缓存在本地。所以只需要在合适的地方下个断点就可以把加密的 dex 拷贝下来。
 
 但是我们可以通过其他方式对 dex 进行加密，比如隐藏函数。这样即使拿到了 dex 也无法通过逆向工具查看源码。

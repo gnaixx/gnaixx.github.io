@@ -8,7 +8,7 @@ description: 这两天在写2048的游戏，涉及到了绘制文字。所以用
 
 TextPaint是paint的子类，一般情况下遇到绘制文字的需求时可以用它提供的方法。
 
-##0x00 FontMetris
+## 0x00 FontMetris
 
 FontMetris是Paint的内部类，作为"字体测量"。它定义了top、ascent、descent、bottom、leading五个成员变量。   
 
@@ -44,7 +44,7 @@ FontMetris是Paint的内部类，作为"字体测量"。它定义了top、ascent
         public float   leading;
     }
 ```
-##0x01 变量含义
+## 0x01 变量含义
 
 下面两张图可以很好的说明这几个变量的含义  
 ![textpaint](https://gnaixx.github.io/blog_images/textpaint/textpaint_1.png)
@@ -56,7 +56,7 @@ FontMetris是Paint的内部类，作为"字体测量"。它定义了top、ascent
 - Leading：则表示上一行字符的descent到该行字符的ascent之间的距离
 - Top,Bottom：TextView在绘制文本的时候总会在文本的最外层留出一些内边距，如图2"A"顶上字符。
 
-##0x02 代码验证
+## 0x02 代码验证
 
 ```java
 private static final String TEXT = "ap卡了ξτβбпшㄎㄊěǔぬも┰┠№＠↓";
@@ -92,11 +92,11 @@ bottom：13.549805
 ```
 <font color=red><b>注：Baseline上方的值为负，下方的值为正</b></font>
 
-##0x03 FontMetrics中的变量和文字的size，typeface有关
+## 0x03 FontMetrics中的变量和文字的size，typeface有关
 
 从代码中我们可以看到一个很特别的现象，在我们绘制文本之前我们便可以获取文本的FontMetrics属性值，也就是说我们FontMetrics的这些值跟我们要绘制什么文本是无关的，而仅与绘制文本Paint的size和typeface有关。当你改变了paint绘制文字的size或typeface时，FontMetrics中的top、bottom等值就会发生改变。如果我们仅仅更改了文字，这些值是不会发生任何改变的。
 
-##0x04 绘制居中屏幕文字
+## 0x04 绘制居中屏幕文字
 **代码**
 
 ```java

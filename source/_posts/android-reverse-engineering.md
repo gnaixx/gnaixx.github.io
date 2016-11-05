@@ -9,7 +9,7 @@ description: 最近在看《Android软件安全与逆向分析》，所以把自
 
 　　分析Android程序是开发Android程序的一个逆向过程。在分析前必须要了解Android开发的流程，程序结构，语句分支，解密原理。
 
-###0x00 编写一个Android程序
+## 0x00 编写一个Android程序
 　　具体的编写过程就不做介绍了，源码已经上传github [github.com/gnaix92/crack](https://github.com/gnaix92/crack)可以下载实践(module crackme0201)。其中涉及的工具可以在根目录的tools文件夹中找到。    
 这里贴出关键代码：
 
@@ -84,14 +84,14 @@ description: 最近在看《Android软件安全与逆向分析》，所以把自
 ```
 　　通过比对用户输入的用户名和注册码判断是否注册成功，注册码根据用户名进行MD5后的字符串的下标偶数位组成。
 
-####编译生成APK
+### 编译生成APK
 执行效果:    
 <img width=250px height=400px src="https://gnaixx.github.io/blog_images/crackme/1.jpg"></img>
 
-###0x01 破解APK
+## 0x01 破解APK
 　　通过apktool对APK包进行反编译，生成Smali文件。通过Smali代码找到程序的突破口进行修改，最后使用apktool重新编译并签名。
 
-####反编译APK
+### 反编译APK
 　　我用了最新的apktool版本(2.0.3)进行反编译，工具可以项目的[tools/apktool](https://github.com/gnaix92/crack/tree/master/tools/apktool)目录中找到。
 使用非常简单
 
@@ -101,7 +101,7 @@ apktool d ***.apk -o output
 生成的反编译文件都在output目录下。  
 <img width=400px height=200px src="https://gnaixx.github.io/blog_images/crackme/2.png"></img>  
 
-####分析APK文件
+### 分析APK文件
 　　反编译apk文件成功后，会在当前的output目录下生成一系列目录与文件.其中smali目录下存放了程序所有的反编译代码。res目录是程序的所有资源文件，这些目录的子目录和文件与开发时的源码目录结构是一致的。   
 　　如何寻找突破口是分析一个程序的关键。对于一般的Android来说，错误提示信息通常是指引关键代码的风向标，错误提示附件一般是核心验证代码。   
 错误提示是Android程序中的字符串资源，开发Android程序时，这些字符串可能硬编码到源码中，也可能引用自“res/values”目录下的`string.xml`文件，apk文件在打包的时候`string.xml`中的字符串被加密存储在`resources.arsc`文件保存打apk程序中，apk被反编译后这个文件也被解密出来。    
@@ -182,11 +182,11 @@ const v1, 0x7f06001c  #successed字符串
 ```
 　　不难判断当`if-nez v0, :cond_0`条件为真的时候则注册成功，反之注册失败。
 
-####修改Smali文件代码
+### 修改Smali文件代码
 　　`if-nez v0, :cond_0`作为程序破解的关键，我们只要将其修改成功能相反的指令即可。`if-nez`是Dalvik指令集中的一个条件跳转指令，类似的还有`if-eqz, if-gez, if-lez`等。与`if-nez`功能相反的是`if-eqz`。
 所以我们可以将`if-nez v0, :cond_0`修改为`if-eqz v0, :cond_0`。
 
-###0x02 重新编译APK并签名
+## 0x02 重新编译APK并签名
 　　这里需要说一点，一开始我重新编译直接报错了,如下:
 
 ```shell
@@ -216,7 +216,7 @@ Caused by: brut.common.BrutException: could not exec command: [/var/folders/vr/n
 　　推测可能是因为apktool还不能破解sdk 23编译的apk。所以我把 `compileSdkVersion`和`targetSdkVersion`都改为22。同时把`appcompat-v7`改为22版本`compile 'com.android.support:appcompat-v7:22.2.0'`，重新编译顺利通过。  
 　　不过后来验证只要将`appcompat-v7`改为23版本一下就可以了。具体原因还是不清楚，在作者的[issue](https://github.com/iBotPeaches/Apktool/issues/1171)反馈了。
 
-####重新编译APK
+### 重新编译APK
 　　利用apktool重新编译很简单只需要一条简单的命令
 
 ```shell
@@ -226,7 +226,7 @@ apktool b output
 
 　　编译成功后会在output目录下生成dist目录，里面有编译成功的apk文件。
 
-####签名
+### 签名
 　　apktool编译的apk并没有签名不能直接安装需要添加签名，用`signapk.jar`工具对apk进行签名。除了`signapk.jar` 还需要`testkey.x509.pem testkey.pk8`两个文件。工具可以在[/tools/auto-sign](https://github.com/gnaix92/crack/tree/master/tools/auto-sign)中找到。运行命令：
 
 ```shell
@@ -234,7 +234,7 @@ java -jar signapk.jar testkey.x509.pem testkey.pk8 **.apk signgapk.apk
 ```
 　　签名成功后会在根目录下生成signapk.apk。
 
-####安装测试
+### 安装测试
 　　安装签名好后的apk，输入原来测试的用户名和注册码。可以发现程序注册成功，成功破解。    
 <img width=250px height=400px src="https://gnaixx.github.io/blog_images/crackme/4.png"></img>
 

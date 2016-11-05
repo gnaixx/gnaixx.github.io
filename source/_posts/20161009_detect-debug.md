@@ -7,7 +7,7 @@ description: 在开发和逆向过程中很多时候都需要动态调试，开�
 
 ---
 
-##0x00 简介
+## 0x00 简介
 在 apk 被调试的时候，有很多特征可以检测到，比如 hook so的时候需要分析 maps文件确定内存加载的位置，还有调试器很 android 设备进行接口通讯需要开启端口映射。这些特征都可以被作为检测 debug 的一种手段。 
  
 下面介绍了几种检测 debug 的方式，有些案例只是介绍思路，具体的实现方式需要进行更改，例如监控 tcp 端口，需要改成 service 形式在后台运行。    
@@ -16,7 +16,7 @@ description: 在开发和逆向过程中很多时候都需要动态调试，开�
 
 源码地址：[anti-reverse](https://github.com/gnaixx/anti-reverse)
 
-##0x01 debug开关
+## 0x01 debug开关
 debug 开关默认在编译 release 版本的时候自己会关闭，但是你还是可以通过显示的设置把他打开。但是如果你这么干了，估计你老板要打死你。
 
 release 版本开启 debug 调试，修改项目 build.gradle中 的 buildTypes 参数：`debuggable true`
@@ -44,7 +44,7 @@ void detectOsDebug(){
 ```
 这种方式获取的值其实意义不大，发布的 release 版本基本没有会开启的除非失误。
 
-##0x02 单步检测
+## 0x02 单步检测
 单步调试的原理很简单：检测某段代码执行的时间，动态调试的时候肯定会在一些地方下断点，如果一段代码执行时间超过2秒（这里需要排除耗时的io读写等操作），则可以认为 apk 可能被动态分析。
 
 示例代码：
@@ -66,7 +66,7 @@ JNIEXPORT void single_step(){
 
 这里的时间间隔可以根据实际情况作调整。
 
-##0x03 监控TarcePid
+## 0x03 监控TarcePid
 在 apk 被附加进程的时候在`/proc/{pid}/status`,`/proc/{pid}/task/{pid}/status`文件中会保存附件进程的 pid ：`TarcePid : 1212`。只需要读取这两个文件中的 TarcePid 是不是为0，如果不为0则可能被附加了进程。
 
 示例代码：
@@ -117,7 +117,7 @@ JNIEXPORT void tarce_pid_monitor(){
 10-13 18:31:52.716 11538-11538/cc.gnaixx.detect_debug D/GNAIXX_NDK: /proc/11538/task/11538/status, TarcePid:11669
 ```
 
-##0x04 监控tcp端口
+## 0x04 监控tcp端口
 进行 debug 调试必然会开启端口映射，我们可以监控比较常用的逆向工具开启的端口，当然作弊者也可以修改端口。但是前提也是在了解了检测手段下。Android中开启的端口会保存在文件`proc/net/tcp`文件中。
 
 示例代码：
@@ -145,7 +145,7 @@ JNIEXPORT void tcp_monitor(JNIEnv *env, jclass thiz){
 ```
 这里的 TCP_PORT 为 "5D8A",也就是10进制的23946，这是ida默认的端口。
 
-##0x05 监控maps文件
+## 0x05 监控maps文件
 
 `/proc/{pid}/maps`文件中保存了 app 运行的加载的内存信息。所有maps文件被进行ACCESS 或者 OPEN 操作都是有风险的。
 
@@ -153,7 +153,7 @@ JNIEXPORT void tcp_monitor(JNIEnv *env, jclass thiz){
 
 这里采用两种方式进行监控，一种阻塞的方式，一种非阻塞的方式（通过select）。
 
-###阻塞
+### 阻塞
 代码示例：
 
 ```c
@@ -217,7 +217,7 @@ void *inotify_maps_block() {
 ```
 阻塞方法监控的是`/proc/{pid}/`文件夹，如果直接监控 maps 文件，可能造成无法结束线程。如果正常用户没有对 maps 文件操作，那么函数就会一直阻塞在 `read()` 方法。而监控 `/proc/{pid}` 文件夹，改文件夹下其他文件会有操作,所以不会阻塞在`read()`。
 
-###非阻塞
+### 非阻塞
 代码示例：
 
 ```c

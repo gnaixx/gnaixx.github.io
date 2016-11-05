@@ -7,14 +7,14 @@ description: 代码乱序是指在不影响原有的代码逻辑，打乱代码�
 
 ---
 
-###0x00 乱序原理
+## 0x00 乱序原理
 为了增加逆向分析的难度,可以将原有代码在 smali 格式上进行乱序处理同时又不会影响程序的正常运行。乱序的基本原理如下图所示,将指令重新布局,并给每块指令赋予一个 label,在函数开头处使用 goto 跳到原先的第一条指令处,然后第一条指令处理完,再跳到 第二条指令,以此类推。
 
 <img width=700px height=250px src="https://gnaixx.github.io/blog_images/apksafe/1.png" style="display:inline-block"/>
 
-###0x01 乱序流程
+## 0x01 乱序流程
 下面步骤需要使用到的 `smali`, `baksmali` 和 `dex2jar` 工具可以在：[/tools](https://github.com/gnaix92/crack/tree/master/tools) 下载。
-####Java代码
+### Java代码
 写了一个简单的Java代码：
 
 ```java
@@ -28,7 +28,7 @@ public class Hello {
 }
 ```
 
-####反编译.smali文件
+### 反编译.smali文件
 我们最后是通过修改 smali 指令来达到重新布局代码，所以需要通过编译生成 smali 文件。
 
 ```java
@@ -44,7 +44,7 @@ java -jar baksmali-2.1.1.jar Hello.dex
 经过上面命令会在跟目录下生成 `out/Hello.smali` 文件。
 
 
-####修改smali文件
+### 修改smali文件
 生成的 Hello.smali 代码为：
 
 ```smali
@@ -165,7 +165,7 @@ java -jar baksmali-2.1.1.jar Hello.dex
 <img width=700px height=500px src="https://gnaixx.github.io/blog_images/apksafe/3.png" style="display:inline-block"/>
 
 
-####重新编译回dex文件
+### 重新编译回dex文件
 重新编译回 dex 文件很简单，只需要 smali 工具就可以了：
 
 ```java
@@ -175,7 +175,7 @@ java -jar smali-2.1.1.jar Hello.smali
 运行完成会生成一个 `out.dex` 文件。
 
 
-####代码对比
+### 代码对比
 生成的 `out.dex` 不能直接用 `jd-gui` 查看源码，所以可以 `dex2jar` 工具转化为 jar 文件:
 
 ```java
