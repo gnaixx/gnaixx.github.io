@@ -68,7 +68,7 @@
 <link href="/css/main.css?v=5.0.2" rel="stylesheet" type="text/css" />
 
 
-  <meta name="keywords" content="java," />
+  <meta name="keywords" content="android,ndk,makefile," />
 
 
 
@@ -84,16 +84,16 @@
 
 
 
-<meta name="description" content="受不了老是忘记public、protected、public的区别，必须写一篇记住他们">
+<meta name="description" content="Android.mk 的可配置参数很多，但是其实在自己开发中用到的其实比较简单比较少。但是有必要知道ndk编译中可以使用那些参数。">
 <meta property="og:type" content="article">
-<meta property="og:title" content="Java中的private/protected/public/区别">
-<meta property="og:url" content="http://gnaixx.github.io/2015/11/25/java-modifier/index.html">
+<meta property="og:title" content="Android.mk 配置">
+<meta property="og:url" content="http://gnaixx.github.io/2016/11/06/20161106android-mk/index.html">
 <meta property="og:site_name" content="凸一_一凸">
-<meta property="og:description" content="受不了老是忘记public、protected、public的区别，必须写一篇记住他们">
-<meta property="og:updated_time" content="2016-11-05T09:56:15.000Z">
+<meta property="og:description" content="Android.mk 的可配置参数很多，但是其实在自己开发中用到的其实比较简单比较少。但是有必要知道ndk编译中可以使用那些参数。">
+<meta property="og:updated_time" content="2016-11-06T14:18:20.000Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="Java中的private/protected/public/区别">
-<meta name="twitter:description" content="受不了老是忘记public、protected、public的区别，必须写一篇记住他们">
+<meta name="twitter:title" content="Android.mk 配置">
+<meta name="twitter:description" content="Android.mk 的可配置参数很多，但是其实在自己开发中用到的其实比较简单比较少。但是有必要知道ndk编译中可以使用那些参数。">
 
 
 
@@ -114,10 +114,10 @@
 
 
 
-  <link rel="canonical" href="http://gnaixx.github.io/2015/11/25/java-modifier/"/>
+  <link rel="canonical" href="http://gnaixx.github.io/2016/11/06/20161106android-mk/"/>
 
 
-  <title> Java中的private/protected/public/区别 | 凸一_一凸 </title>
+  <title> Android.mk 配置 | 凸一_一凸 </title>
 </head>
 
 <body itemscope itemtype="//schema.org/WebPage" lang="zh-Hans">
@@ -249,7 +249,7 @@
             
             
               
-                Java中的private/protected/public/区别
+                Android.mk 配置
               
             
           </h1>
@@ -261,8 +261,8 @@
               <i class="fa fa-calendar-o"></i>
             </span>
             <span class="post-meta-item-text">发表于</span>
-            <time itemprop="dateCreated" datetime="2015-11-25T21:27:09+08:00" content="2015-11-25">
-              2015-11-25
+            <time itemprop="dateCreated" datetime="2016-11-06T21:05:48+08:00" content="2016-11-06">
+              2016-11-06
             </time>
           </span>
 
@@ -275,8 +275,8 @@
               <span class="post-meta-item-text">分类于</span>
               
                 <span itemprop="about" itemscope itemtype="https://schema.org/Thing">
-                  <a href="/categories/java/" itemprop="url" rel="index">
-                    <span itemprop="name">java</span>
+                  <a href="/categories/android/" itemprop="url" rel="index">
+                    <span itemprop="name">android</span>
                   </a>
                 </span>
 
@@ -291,8 +291,8 @@
             
               <span class="post-comments-count">
                 &nbsp; | &nbsp;
-                <a href="/2015/11/25/java-modifier/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count ds-thread-count" data-thread-key="2015/11/25/java-modifier/" itemprop="commentsCount"></span>
+                <a href="/2016/11/06/20161106android-mk/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count ds-thread-count" data-thread-key="2016/11/06/20161106android-mk/" itemprop="commentsCount"></span>
                 </a>
               </span>
             
@@ -320,57 +320,11 @@
       
 
       
-        <blockquote>
-<p>Java中的private、protected、public、default（friendly）区别</p>
-</blockquote>
-<h2 id="0x00-定义"><a href="#0x00-定义" class="headerlink" title="0x00 定义"></a>0x00 定义</h2><ol>
-<li><strong>public</strong>: 具有最大的访问权限，可以访问任何一个在CLASSPATH下的类、接口、异常等。它往往用于对外的情况，也就是对象或类对外的一种接口的形式</li>
-<li><strong>protected</strong>: 主要作用用来保护子类，访问仅限于包含类或从包含类派生的类型,只有包含该成员的类以及继承的类可以存取。</li>
-<li><strong>default(friendly)</strong>: 它是针对本包访问而设计的，任何处于本包下的类、接口、异常等，都可以相互访问，即使是父类没有用protected修饰的成员也可以</li>
-<li><strong>private</strong>: 访问权限仅限于类的内部，是一种封装的体现，例如，大多数的成员变量都是修饰符为private的，它们不希望被其他任何外部的类访问</li>
-</ol>
-<h2 id="0x01-作用域"><a href="#0x01-作用域" class="headerlink" title="0x01 作用域"></a>0x01 作用域</h2><table>
-<thead>
-<tr>
-<th>修饰符</th>
-<th style="text-align:center">类内部</th>
-<th style="text-align:center">包内部</th>
-<th style="text-align:center">子类</th>
-<th style="text-align:center">外部类</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>public</td>
-<td style="text-align:center">√</td>
-<td style="text-align:center">√</td>
-<td style="text-align:center">√</td>
-<td style="text-align:center">√</td>
-</tr>
-<tr>
-<td>protected</td>
-<td style="text-align:center">√</td>
-<td style="text-align:center">√</td>
-<td style="text-align:center">√</td>
-<td style="text-align:center">X</td>
-</tr>
-<tr>
-<td>default</td>
-<td style="text-align:center">√</td>
-<td style="text-align:center">√</td>
-<td style="text-align:center">X</td>
-<td style="text-align:center">X</td>
-</tr>
-<tr>
-<td>private</td>
-<td style="text-align:center">√</td>
-<td style="text-align:center">X</td>
-<td style="text-align:center">X</td>
-<td style="text-align:center">X</td>
-</tr>
-</tbody>
-</table>
-<h2 id="0x02-区别"><a href="#0x02-区别" class="headerlink" title="0x02 区别"></a>0x02 区别</h2><p>（1）public：可以被所有其他类所访问。<br>（2）private：只能被自己访问和修改。<br>（3）protected：自身，子类及同一个包中类可以访问。<br>（4）default（默认）：同一包中的类可以访问，声明时没有加修饰符，认为是friendly。</p>
+        <h2 id="0x00-LOCAL-PATH"><a href="#0x00-LOCAL-PATH" class="headerlink" title="0x00 LOCAL_PATH"></a>0x00 LOCAL_PATH</h2><p>根据 Android 构建系统要求，Android.mk 文档必须以 LOCAL_PATH 变量的定义开头。<br><code>LOCAL_PATH := $(call my-dir)</code><br>Android 构建系统利用 LOCAL_PATH 来定位源文件。因为将改变量设置为硬编码值不合适，所以 Android 构建系统提供了一个名为 my-dir 的宏功能。通过将该变量设置为 my-dir 宏功能的返回值，可以将其放在当前目录下。</p>
+<h2 id="0x01-CLEAR-VARS"><a href="#0x01-CLEAR-VARS" class="headerlink" title="0x01 CLEAR_VARS"></a>0x01 CLEAR_VARS</h2><p>Android 构建系统将 CLEAR_VARS 变量设置为 clear-vars.mk 片段的位置。包含 Makefile 片段可以清除除了 LOCAL<em>PATH 以外的 LOCAL</em><name> 变量，例如 LOCAL_MODULE 与 LOCAL_SRC_FILE 等。<br><code>Include $(CLEAR_VARS)</code><br>这样做是因为 Android 构建系统可以在单次执行中解析多个构建文件和模式定义，LOCAL_<name> 是全局变量。清除它们可以避免冲突，每一个原生组件被称为一个模块。</name></name></p>
+<h2 id="0x02-LOCAL-MODULE"><a href="#0x02-LOCAL-MODULE" class="headerlink" title="0x02 LOCAL_MODULE"></a>0x02 LOCAL_MODULE</h2><p>改变了是用来给这些模块设定一个唯一的名称。下面的代码将该模块的名称设为 hello-jni:<br><code>LOCAL_MODULE := hello-jni</code><br>因为模块名称也被用于给构建过程的所生成的文件命名，所以构建系统给文件添加适当的前缀和后缀。本例中， hello-jni 模块会生成一个共享文件且构建系统会将它命名为 libhello-jni.so。</p>
+<h2 id="0x03-LOCAL-SRC-FILES"><a href="#0x03-LOCAL-SRC-FILES" class="headerlink" title="0x03 LOCAL_SRC_FILES"></a>0x03 LOCAL_SRC_FILES</h2><p>该变量用来建立和组装这个模块的源文件列表。<br><code>LOCAL_SRC_FILES := hello-jni.c</code><br>这里，hello-jni 模块只有一个源文件生成，而 LOCAL_SRC_FILES 变量可以包含用空格分开的多个源文件名。</p>
+<h2 id="0x04-BUILD-SHARED-LIBRARY"><a href="#0x04-BUILD-SHARED-LIBRARY" class="headerlink" title="0x04 BUILD_SHARED_LIBRARY"></a>0x04 BUILD_SHARED_LIBRARY</h2><p>为了建立可供主应用程序使用的模块，必须将该模块变成共享库。Android NDK 构建系统将 BUILD_SHARED_LIBRARY 变量设置成 build_shared_libray.mk 文件保存的位置。改 Makefile 片段包含了将源文件构建和组装成共享库的必要过程。<br><code>include $(BUILD_SHARED_LIBRARY)</code>   </p>
 
       
     </div>
@@ -414,7 +368,11 @@
       
         <div class="post-tags">
           
-            <a href="/tags/java/" rel="tag">#java</a>
+            <a href="/tags/android/" rel="tag">#android</a>
+          
+            <a href="/tags/ndk/" rel="tag">#ndk</a>
+          
+            <a href="/tags/makefile/" rel="tag">#makefile</a>
           
         </div>
       
@@ -423,17 +381,13 @@
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
-              <a href="/2015/11/24/android-SimpleBaseAdapter/" rel="next" title="Android简便通用SimpleBaseAdapter">
-                <i class="fa fa-chevron-left"></i> Android简便通用SimpleBaseAdapter
+              <a href="/2016/11/03/20161103_crackme/" rel="next" title="无聊 crackme">
+                <i class="fa fa-chevron-left"></i> 无聊 crackme
               </a>
             
           </div>
 
           <div class="post-nav-prev post-nav-item">
-            
-              <a href="/2015/12/16/linux-command/" rel="prev" title="开发常用的linux命令">
-                开发常用的linux命令 <i class="fa fa-chevron-right"></i>
-              </a>
             
           </div>
         </div>
@@ -459,8 +413,8 @@
           
   <div class="comments" id="comments">
     
-      <div class="ds-thread" data-thread-key="2015/11/25/java-modifier/"
-           data-title="Java中的private/protected/public/区别" data-url="http://gnaixx.github.io/2015/11/25/java-modifier/">
+      <div class="ds-thread" data-thread-key="2016/11/06/20161106android-mk/"
+           data-title="Android.mk 配置" data-url="http://gnaixx.github.io/2016/11/06/20161106android-mk/">
       </div>
     
   </div>
@@ -576,7 +530,7 @@
               
             
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#0x00-定义"><span class="nav-number">1.</span> <span class="nav-text">0x00 定义</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#0x01-作用域"><span class="nav-number">2.</span> <span class="nav-text">0x01 作用域</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#0x02-区别"><span class="nav-number">3.</span> <span class="nav-text">0x02 区别</span></a></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#0x00-LOCAL-PATH"><span class="nav-number">1.</span> <span class="nav-text">0x00 LOCAL_PATH</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#0x01-CLEAR-VARS"><span class="nav-number">2.</span> <span class="nav-text">0x01 CLEAR_VARS</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#0x02-LOCAL-MODULE"><span class="nav-number">3.</span> <span class="nav-text">0x02 LOCAL_MODULE</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#0x03-LOCAL-SRC-FILES"><span class="nav-number">4.</span> <span class="nav-text">0x03 LOCAL_SRC_FILES</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#0x04-BUILD-SHARED-LIBRARY"><span class="nav-number">5.</span> <span class="nav-text">0x04 BUILD_SHARED_LIBRARY</span></a></li></ol></div>
             
           </div>
         </section>
