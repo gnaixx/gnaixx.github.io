@@ -84,18 +84,19 @@
 
 
 
-<meta name="description" content="有一段时间没有更新博客了，最近在写个工具，主要功能是通过配置对 dex 文件中的类型、函数、属性进行隐藏，达到防止被静态分析的效果。所以在写工具前必须对 dex 的文件格式有个清晰的认识，相对于 elf 文件格式 dex 文件格式会简单一些。">
+<meta name="description" content="前段时间忙于破解移动和电信的 apk ,挺久没有更新博客了，最近在写个工具，主要功能是通过配置对 dex 文件中的类型、函数、属性进行隐藏，达到防止被静态分析的效果。所以在写工具前必须对 dex 的文件格式有个清晰的认识，相对于 elf 文件格式 dex 文件格式会简单一些。">
 <meta property="og:type" content="article">
 <meta property="og:title" content="DEX文件格式分析">
 <meta property="og:url" content="http://gnaixx.github.io/2016/11/26/20161126dex-file/index.html">
 <meta property="og:site_name" content="凸一_一凸">
-<meta property="og:description" content="有一段时间没有更新博客了，最近在写个工具，主要功能是通过配置对 dex 文件中的类型、函数、属性进行隐藏，达到防止被静态分析的效果。所以在写工具前必须对 dex 的文件格式有个清晰的认识，相对于 elf 文件格式 dex 文件格式会简单一些。">
+<meta property="og:description" content="前段时间忙于破解移动和电信的 apk ,挺久没有更新博客了，最近在写个工具，主要功能是通过配置对 dex 文件中的类型、函数、属性进行隐藏，达到防止被静态分析的效果。所以在写工具前必须对 dex 的文件格式有个清晰的认识，相对于 elf 文件格式 dex 文件格式会简单一些。">
 <meta property="og:image" content="http://gnaixx.cc/blog_images/20161129/1.png">
 <meta property="og:image" content="http://gnaixx.cc/blog_images/20161129/2.png">
-<meta property="og:updated_time" content="2016-11-29T14:46:38.000Z">
+<meta property="og:image" content="http://gnaixx.cc/blog_images/20161129/3.png">
+<meta property="og:updated_time" content="2016-11-30T06:11:43.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="DEX文件格式分析">
-<meta name="twitter:description" content="有一段时间没有更新博客了，最近在写个工具，主要功能是通过配置对 dex 文件中的类型、函数、属性进行隐藏，达到防止被静态分析的效果。所以在写工具前必须对 dex 的文件格式有个清晰的认识，相对于 elf 文件格式 dex 文件格式会简单一些。">
+<meta name="twitter:description" content="前段时间忙于破解移动和电信的 apk ,挺久没有更新博客了，最近在写个工具，主要功能是通过配置对 dex 文件中的类型、函数、属性进行隐藏，达到防止被静态分析的效果。所以在写工具前必须对 dex 的文件格式有个清晰的认识，相对于 elf 文件格式 dex 文件格式会简单一些。">
 <meta name="twitter:image" content="http://gnaixx.cc/blog_images/20161129/1.png">
 
 
@@ -329,6 +330,8 @@
 <p><img src="http://gnaixx.cc/blog_images/20161129/1.png" alt="dex文件布局"></p>
 <p>010Editor 中除了数据区(data)没有显示出来，其他区段都有显示，另外 link_data 在模板中被定为 map_list</p>
 <p><img src="http://gnaixx.cc/blog_images/20161129/2.png" alt="010Editor布局"></p>
+<h2 id="0x02-header"><a href="#0x02-header" class="headerlink" title="0x02 header"></a>0x02 header</h2><p>header 描述了 dex 文件信息，和其他各个区的索引。010Editor(写010Editor 有点麻烦下面直接写010)中用结构体 <code>struct header_item</code> 来描述 header。</p>
+<p><img src="http://gnaixx.cc/blog_images/20161129/3.png" alt="header"></p>
 
       
     </div>
@@ -532,7 +535,7 @@
               
             
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#0x00-前言"><span class="nav-number">1.</span> <span class="nav-text">0x00 前言</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#0x01-文件布局"><span class="nav-number">2.</span> <span class="nav-text">0x01 文件布局</span></a></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#0x00-前言"><span class="nav-number">1.</span> <span class="nav-text">0x00 前言</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#0x01-文件布局"><span class="nav-number">2.</span> <span class="nav-text">0x01 文件布局</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#0x02-header"><span class="nav-number">3.</span> <span class="nav-text">0x02 header</span></a></li></ol></div>
             
           </div>
         </section>
