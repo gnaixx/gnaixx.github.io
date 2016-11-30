@@ -68,7 +68,7 @@
 <link href="/css/main.css?v=5.0.2" rel="stylesheet" type="text/css" />
 
 
-  <meta name="keywords" content="android,dex," />
+  <meta name="keywords" content="dex,android," />
 
 
 
@@ -95,9 +95,10 @@
 <meta property="og:image" content="http://gnaixx.cc/blog_images/20161129/3.png">
 <meta property="og:image" content="http://gnaixx.cc/blog_images/20161129/6.png">
 <meta property="og:image" content="http://gnaixx.cc/blog_images/20161129/7.png">
+<meta property="og:image" content="http://gnaixx.cc/blog_images/20161129/8.png">
 <meta property="og:image" content="http://gnaixx.cc/blog_images/20161129/4.png">
 <meta property="og:image" content="http://gnaixx.cc/blog_images/20161129/5.png">
-<meta property="og:updated_time" content="2016-11-30T09:05:40.000Z">
+<meta property="og:updated_time" content="2016-11-30T09:14:09.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="DEX文件格式分析">
 <meta name="twitter:description" content="前段时间忙于破解移动和电信的 apk ,挺久没有更新博客了，最近在写个工具，主要功能是通过配置对 dex 文件中的类型、函数、属性进行隐藏，达到防止被静态分析的效果。所以在写工具前必须对 dex 的文件格式有个清晰的认识，相对于 elf 文件格式 dex 文件格式会简单一些。">
@@ -369,7 +370,9 @@
 <p>class_idx: 表示 method 所属的 class 类型，class_idx 的值是 type_ids 的一个 index，并且必须指向一个 class 类型 。</p>
 <p>proto_idx: 表示 method 的类型，它的值也是 type_ids 的一个 index 。</p>
 <p>name_idx: 表示 method 的名称，它的值是 string_ids 的一个 index 。</p>
-<h2 id="0x08-class-defs"><a href="#0x08-class-defs" class="headerlink" title="0x08 class_defs"></a>0x08 class_defs</h2><h2 id="0x09-map-list"><a href="#0x09-map-list" class="headerlink" title="0x09 map_list"></a>0x09 map_list</h2><p>map_list 中大部分 item 跟 header 中的相应描述相同，都是介绍了各个区的偏移和大小，但是 map_list 中描述的更加全面，包括了 HEADER_ITEM 、TYPE_LIST、STRING_DATA_ITEM、DEBUG_INFO_ITEM 等信息。</p>
+<h2 id="0x08-class-defs"><a href="#0x08-class-defs" class="headerlink" title="0x08 class_defs"></a>0x08 class_defs</h2><p>class_def 区段主要是对 class 的定义，它的结构很复杂，看的我有点晕，一层套一层。先看一张 010 的结构图：</p>
+<p><img src="http://gnaixx.cc/blog_images/20161129/8.png" alt="class_defs"></p>
+<h2 id="0x09-map-list"><a href="#0x09-map-list" class="headerlink" title="0x09 map_list"></a>0x09 map_list</h2><p>map_list 中大部分 item 跟 header 中的相应描述相同，都是介绍了各个区的偏移和大小，但是 map_list 中描述的更加全面，包括了 HEADER_ITEM 、TYPE_LIST、STRING_DATA_ITEM、DEBUG_INFO_ITEM 等信息。</p>
 <p>010 中map_list 表示为：</p>
 <p><img src="http://gnaixx.cc/blog_images/20161129/4.png" alt="map_list"></p>
 <p>数据结构为：</p>
@@ -419,9 +422,9 @@
       
         <div class="post-tags">
           
-            <a href="/tags/android/" rel="tag">#android</a>
-          
             <a href="/tags/dex/" rel="tag">#dex</a>
+          
+            <a href="/tags/android/" rel="tag">#android</a>
           
         </div>
       
