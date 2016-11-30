@@ -97,7 +97,7 @@
 <meta property="og:image" content="http://gnaixx.cc/blog_images/20161129/7.png">
 <meta property="og:image" content="http://gnaixx.cc/blog_images/20161129/4.png">
 <meta property="og:image" content="http://gnaixx.cc/blog_images/20161129/5.png">
-<meta property="og:updated_time" content="2016-11-30T11:38:49.000Z">
+<meta property="og:updated_time" content="2016-11-30T11:40:56.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="DEX文件格式分析">
 <meta name="twitter:description" content="前段时间忙于破解移动和电信的 apk ,挺久没有更新博客了，最近在写个工具，主要功能是通过配置对 dex 文件中的类型、函数、属性进行隐藏，达到防止被静态分析的效果。所以在写工具前必须对 dex 的文件格式有个清晰的认识，相对于 elf 文件格式 dex 文件格式会简单一些。">
@@ -373,13 +373,11 @@
 </li>
 </ul>
 <h2 id="0x06-field-ids"><a href="#0x06-field-ids" class="headerlink" title="0x06 field_ids"></a>0x06 field_ids</h2><p>filed_ids 区里面有 dex 文件引用的所有的 field。区段的元素格式是 field_id_item，结构如下:</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line">ushort <span class="number">16</span>-bit <span class="keyword">unsigned</span> <span class="keyword">int</span>, little-endian </div><div class="line">uint   <span class="number">32</span>-bit <span class="keyword">unsigned</span> <span class="keyword">int</span>, little-endian </div><div class="line"></div><div class="line"><span class="keyword">struct</span> filed_id_item</div><div class="line">&#123;</div><div class="line">	ushort class_idx;  <span class="comment">//--&gt;type_ids</span></div><div class="line">	ushort type_idx;   <span class="comment">//--&gt;type_ids</span></div><div class="line">	uint   name_idx;   <span class="comment">//--&gt;string_ids</span></div><div class="line">&#125;</div></pre></td></tr></table></figure>
 <ul>
-<li><p>class_idx: 表示 field 所属的 class 类型，class_idx 的值是 type_ids 的一个 index，并且必须指向一个 class 类型 。</p>
-</li>
-<li><p>type_idx: 表示本 field 的类型，它的值也是 type_ids 的一个 index 。</p>
-</li>
-<li><p>name_idx: 表示本 field 的名称，它的值是 string_ids 的一个 index 。</p>
-</li>
+<li>class_idx: 表示 field 所属的 class 类型，class_idx 的值是 type_ids 的一个 index，并且必须指向一个 class 类型。</li>
+<li>type_idx: 表示本 field 的类型，它的值也是 type_ids 的一个 index 。</li>
+<li>name_idx: 表示本 field 的名称，它的值是 string_ids 的一个 index 。</li>
 </ul>
 <h2 id="0x07-method-ids"><a href="#0x07-method-ids" class="headerlink" title="0x07 method_ids"></a>0x07 method_ids</h2><p>method_ids 是索引区的最后一个条目，描述了 dex 文件里的所有的 method。method_ids 的元素格式是 method_id_item，结构跟 fields_ids 很相似:</p>
 <p>```c++<br>ushort 16-bit unsigned int, little-endian<br>uint   32-bit unsigned int, little-endian </p>
