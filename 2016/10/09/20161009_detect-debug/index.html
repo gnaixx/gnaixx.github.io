@@ -90,7 +90,7 @@
 <meta property="og:url" content="http://gnaixx.github.io/2016/10/09/20161009_detect-debug/index.html">
 <meta property="og:site_name" content="凸一_一凸">
 <meta property="og:description" content="在开发和逆向过程中很多时候都需要动态调试，开发时候可以用开发 android 的 IDE进行调试，native层也可用调试，Android Studio早就可以进行 native 的debug调试了。但是在 release 后的 apk 如果还检测到了 debug 调试，那么说明该 apk 正被破解。">
-<meta property="og:updated_time" content="2016-11-05T09:46:36.000Z">
+<meta property="og:updated_time" content="2017-02-07T02:01:19.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="APK反逆向之一：监控debug">
 <meta name="twitter:description" content="在开发和逆向过程中很多时候都需要动态调试，开发时候可以用开发 android 的 IDE进行调试，native层也可用调试，Android Studio早就可以进行 native 的debug调试了。但是在 release 后的 apk 如果还检测到了 debug 调试，那么说明该 apk 正被破解。">
@@ -323,7 +323,7 @@
         <h2 id="0x00-简介"><a href="#0x00-简介" class="headerlink" title="0x00 简介"></a>0x00 简介</h2><p>在 apk 被调试的时候，有很多特征可以检测到，比如 hook so的时候需要分析 maps文件确定内存加载的位置，还有调试器很 android 设备进行接口通讯需要开启端口映射。这些特征都可以被作为检测 debug 的一种手段。 </p>
 <p>下面介绍了几种检测 debug 的方式，有些案例只是介绍思路，具体的实现方式需要进行更改，例如监控 tcp 端口，需要改成 service 形式在后台运行。    </p>
 <p>检测 debug 是为了防止应用被逆向动态分析，所以检测的方法也都是采用 native 开发提高被逆向的成本。</p>
-<p>源码地址：<a href="https://github.com/gnaixx/anti-reverse" target="_blank" rel="external">anti-reverse</a></p>
+<p>源码地址：<a href="https://github.com/gnaixx/anti-debug" target="_blank" rel="external">anti-debug</a></p>
 <h2 id="0x01-debug开关"><a href="#0x01-debug开关" class="headerlink" title="0x01 debug开关"></a>0x01 debug开关</h2><p>debug 开关默认在编译 release 版本的时候自己会关闭，但是你还是可以通过显示的设置把他打开。但是如果你这么干了，估计你老板要打死你。</p>
 <p>release 版本开启 debug 调试，修改项目 build.gradle中 的 buildTypes 参数：<code>debuggable true</code></p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line">android &#123;</div><div class="line">	buildTypes &#123;</div><div class="line">        release &#123;</div><div class="line">            debuggable <span class="literal">true</span></div><div class="line">            minifyEnabled <span class="literal">false</span></div><div class="line">            proguardFiles.add(file(<span class="string">"proguard-rules.pro"</span>))</div><div class="line">            signingConfig = $(<span class="string">"android.signingConfigs.myConfig"</span>)</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
