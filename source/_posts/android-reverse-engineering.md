@@ -10,7 +10,7 @@ description: 最近在看《Android软件安全与逆向分析》，所以把自
 　　分析Android程序是开发Android程序的一个逆向过程。在分析前必须要了解Android开发的流程，程序结构，语句分支，解密原理。
 
 ## 0x00 编写一个Android程序
-　　具体的编写过程就不做介绍了，源码已经上传github [github.com/gnaix92/crack](https://github.com/gnaix92/crack)可以下载实践(module crackme0201)。其中涉及的工具可以在根目录的tools文件夹中找到。    
+　　具体的编写过程就不做介绍了，源码已经上传github [droid-hack](https://github.com/gnaixx/droid-hack)可以下载实践(module crackme0201)。其中涉及的工具可以在根目录的tools文件夹中找到。    
 这里贴出关键代码：
 
 ```java
