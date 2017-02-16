@@ -10,8 +10,11 @@ description: 现在部分 app 出于安全性(比如加密算法)或者用户体
 
 ## 0x00 前言
 混淆加密主要是为了隐藏 dex 文件中关键的代码，力度从轻到重包括：静态变量的隐藏、函数的重复定义、函数的隐藏、以及整个类的隐藏。混淆后的 dex 文件依旧可以通过 dex2jar jade 等工具的反编译成 Java 源码，但是里面关键的代码已经看不到了。    
-**效果图：**    
+**java 效果图：**     
 ![效果图](/blog_images/20170206/compare-total.png)
+
+**smali 效果图：**     
+![效果图](/blog_images/20170206/compare-smali.png)
 
 源码地址和使用说明在 github 上 **[hidex-hack](https://github.com/gnaixx/hidex-hack)**
 
@@ -901,4 +904,4 @@ void recode(char* source, uint sourceLen, char* target, uint* targetLen){
 ## 0x09 总结
 整体功能还是比较简单，实现的代码也不是很复杂，但是这些都需要基于对 dex 文件格式的了解的前提下。     
 另外该工具存在一个缺点，dex 的加载问题。Android中加载 dex 的 DexClassLoad 只支持文件路径加载，不像 java 中的 ClassLoad 可以支持二进制流加载，所以在加载 dex 是就存在加密后的 dex 缓存，这是非常危险的。所以下个研究的点也就是自定义 DexClassLoad 实现不落地加载。（很多安全加固厂商老早就实现了🙄）。     
-虽然功能不算强大，也有不少缺点，不过也花了自己不少时间研究，对 dex 文件格式也有点了解，也也算值得了。
+虽然功能不算强大，也有不少缺点，不过也花了自己不少时间研究，对 dex 文件格式也有点了解，也算值得了。
