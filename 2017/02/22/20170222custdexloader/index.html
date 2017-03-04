@@ -84,13 +84,16 @@
 
 
 
+<meta name="description" content="系统 API 不管 DexClassLoader 还是 PathClassLoader 都只支持文件路径参数，所以在加载 dex 文件的时候必须生成一个缓存文件，而且是正常格式的 dex 文件。自定义的目的就是去掉这个缓存的过程，简单来讲就是让 DexClassLoader 支持 byte 数组参数，以内存形式加载。为什么加个伪，因为只实现了 Android4.0 系统到 Android4.4 系">
 <meta property="og:type" content="article">
-<meta property="og:title" content="自定义DexClassLoader">
+<meta property="og:title" content="自定义 DexClassLoad(伪)">
 <meta property="og:url" content="http://gnaixx.github.io/2017/02/22/20170222custdexloader/index.html">
 <meta property="og:site_name" content="凸一_一凸">
-<meta property="og:updated_time" content="2017-02-28T09:45:43.000Z">
+<meta property="og:description" content="系统 API 不管 DexClassLoader 还是 PathClassLoader 都只支持文件路径参数，所以在加载 dex 文件的时候必须生成一个缓存文件，而且是正常格式的 dex 文件。自定义的目的就是去掉这个缓存的过程，简单来讲就是让 DexClassLoader 支持 byte 数组参数，以内存形式加载。为什么加个伪，因为只实现了 Android4.0 系统到 Android4.4 系">
+<meta property="og:updated_time" content="2017-03-02T10:03:57.000Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="自定义DexClassLoader">
+<meta name="twitter:title" content="自定义 DexClassLoad(伪)">
+<meta name="twitter:description" content="系统 API 不管 DexClassLoader 还是 PathClassLoader 都只支持文件路径参数，所以在加载 dex 文件的时候必须生成一个缓存文件，而且是正常格式的 dex 文件。自定义的目的就是去掉这个缓存的过程，简单来讲就是让 DexClassLoader 支持 byte 数组参数，以内存形式加载。为什么加个伪，因为只实现了 Android4.0 系统到 Android4.4 系">
 
 
 
@@ -114,7 +117,7 @@
   <link rel="canonical" href="http://gnaixx.github.io/2017/02/22/20170222custdexloader/"/>
 
 
-  <title> 自定义DexClassLoader | 凸一_一凸 </title>
+  <title> 自定义 DexClassLoad(伪) | 凸一_一凸 </title>
 </head>
 
 <body itemscope itemtype="//schema.org/WebPage" lang="zh-Hans">
@@ -246,7 +249,7 @@
             
             
               
-                自定义DexClassLoader
+                自定义 DexClassLoad(伪)
               
             
           </h1>
@@ -317,7 +320,7 @@
       
 
       
-        
+        <h2 id="0x00-前言"><a href="#0x00-前言" class="headerlink" title="0x00 前言"></a>0x00 前言</h2><h2 id="0x01-load-流程"><a href="#0x01-load-流程" class="headerlink" title="0x01 load 流程"></a>0x01 load 流程</h2><h2 id="0x02-源码分析"><a href="#0x02-源码分析" class="headerlink" title="0x02 源码分析"></a>0x02 源码分析</h2><h2 id="0x03-代码实现"><a href="#0x03-代码实现" class="headerlink" title="0x03 代码实现"></a>0x03 代码实现</h2><h2 id="0x04-总结"><a href="#0x04-总结" class="headerlink" title="0x04 总结"></a>0x04 总结</h2>
       
     </div>
 
@@ -406,7 +409,7 @@
   <div class="comments" id="comments">
     
       <div class="ds-thread" data-thread-key="2017/02/22/20170222custdexloader/"
-           data-title="自定义DexClassLoader" data-url="http://gnaixx.github.io/2017/02/22/20170222custdexloader/">
+           data-title="自定义 DexClassLoad(伪)" data-url="http://gnaixx.github.io/2017/02/22/20170222custdexloader/">
       </div>
     
   </div>
@@ -522,7 +525,7 @@
               
             
             
-              <p class="post-toc-empty">此文章未包含目录</p>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#0x00-前言"><span class="nav-number">1.</span> <span class="nav-text">0x00 前言</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#0x01-load-流程"><span class="nav-number">2.</span> <span class="nav-text">0x01 load 流程</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#0x02-源码分析"><span class="nav-number">3.</span> <span class="nav-text">0x02 源码分析</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#0x03-代码实现"><span class="nav-number">4.</span> <span class="nav-text">0x03 代码实现</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#0x04-总结"><span class="nav-number">5.</span> <span class="nav-text">0x04 总结</span></a></li></ol></div>
             
           </div>
         </section>
