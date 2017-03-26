@@ -98,11 +98,11 @@
 <meta property="og:image" content="http://gnaixx.github.io/blog_images/20170222/dexfile.png">
 <meta property="og:image" content="http://gnaixx.github.io/blog_images/20170222/opendexfile.png">
 <meta property="og:image" content="http://gnaixx.github.io/blog_images/20170222/loadclass.png">
-<meta property="og:image" content="http://gnaixx.github.io/blog_images/20170222/bfindClass.png">
-<meta property="og:image" content="http://gnaixx.github.io/blog_images/20170222/dfindClass.png">
+<meta property="og:image" content="http://gnaixx.github.io/blog_images/20170222/bfindclass.png">
+<meta property="og:image" content="http://gnaixx.github.io/blog_images/20170222/dfindclass.png">
 <meta property="og:image" content="http://gnaixx.github.io/blog_images/20170222/loadclassbinaryname.png">
 <meta property="og:image" content="http://gnaixx.github.io/blog_images/20170222/dex-load.png">
-<meta property="og:updated_time" content="2017-03-14T09:44:57.000Z">
+<meta property="og:updated_time" content="2017-03-26T08:11:37.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="自定义 DexClassLoad(伪)">
 <meta name="twitter:description" content="系统 API 不管 DexClassLoader 还是 PathClassLoader 都只支持文件路径参数，所以在加载 dex 文件的时候必须生成一个缓存文件，而且是正常格式的 dex 文件。自定义的目的就是去掉这个缓存的过程，简单来讲就是让 DexClassLoader 支持 byte 数组参数，以内存形式加载。为什么加个伪，因为只实现了 Android4.0 系统到 Android4.4 系">
@@ -345,8 +345,8 @@
 <p><strong>openDexFile</strong> 是 Load dex 文件的关键，他的实现很简单只调用了一个 native 方法 <strong>openDexFileNative</strong> 这个方法不同版本的 API 实现都有差别，下一章节会介绍到。<br><strong>DexFile.java:</strong><br><img src="/blog_images/20170222/opendexfile.png" alt="openDexFile"></p>
 <p>到这里 dex 文件的加载 java 层的流程基本就结束了。</p>
 <h3 id="class-类加载"><a href="#class-类加载" class="headerlink" title="class 类加载"></a>class 类加载</h3><p><strong>DexClassLoader</strong> 加载一个类是通过 <strong>loadClass</strong> 方法，但是在 <strong>DexClassLoader</strong> 和 <strong>BaseDexClassLoader</strong> 中都没有该方法，该方法的实现是在 <strong>ClassLoader</strong> 中。<strong>loadClass</strong> 中有三处返回，1.判断 <strong>BootClassLoader</strong> 是否加载 2.父类<strong>ClassLoader</strong>是否加载 3.通过<strong>findClass</strong>加载。<br><strong>ClassLoader.java:</strong><br><img src="/blog_images/20170222/loadclass.png" alt="loadClass"></p>
-<p><strong>ClassLoader.findClass</strong> 实现是空的，真正的实现在 <strong>BaseDexClassLoader</strong> 中，调用了 <strong>DexPathList</strong> 的 <strong>findClass</strong> 方法。<br><strong>BaseDexClassLoader.java:</strong><br><img src="/blog_images/20170222/bfindClass.png" alt="bfindClass"></p>
-<p><strong>DexPathList</strong> 通过遍历所有加载的 <strong>DexFile</strong> 对象，调用 <strong>DexFile</strong> 的 <strong>loadClassBinaryName</strong> 方法。<br><strong>DexPathList.java:</strong><br><img src="/blog_images/20170222/dfindClass.png" alt="dfindClass"></p>
+<p><strong>ClassLoader.findClass</strong> 实现是空的，真正的实现在 <strong>BaseDexClassLoader</strong> 中，调用了 <strong>DexPathList</strong> 的 <strong>findClass</strong> 方法。<br><strong>BaseDexClassLoader.java:</strong><br><img src="/blog_images/20170222/bfindclass.png" alt="bfindClass"></p>
+<p><strong>DexPathList</strong> 通过遍历所有加载的 <strong>DexFile</strong> 对象，调用 <strong>DexFile</strong> 的 <strong>loadClassBinaryName</strong> 方法。<br><strong>DexPathList.java:</strong><br><img src="/blog_images/20170222/dfindclass.png" alt="dfindClass"></p>
 <p><strong>loadClassBinaryName</strong> 方法直接调用了 <strong>defineClass</strong> 方法，而 <strong>defineClass</strong> 调用了一个 native 方法 <strong>defineClassNative</strong>。其中第三个参数 <strong>cookie</strong> 即方法 <strong>openDexFile</strong> 的返回值。<br><strong>DexFile.java:</strong><br><img src="/blog_images/20170222/loadclassbinaryname.png" alt="loadClassBinaryName"></p>
 <p>上述的流程就是 dex 文件在 java 层加载的过程，可以用一个流程图直观的展示函数调用流程。<br><img src="/blog_images/20170222/dex-load.png" alt="dex-load"></p>
 <h2 id="0x02-源码分析"><a href="#0x02-源码分析" class="headerlink" title="0x02 源码分析"></a>0x02 源码分析</h2><h3 id="2-3-api-10-以下系统"><a href="#2-3-api-10-以下系统" class="headerlink" title="2.3(api:10) 以下系统"></a>2.3(api:10) 以下系统</h3><h3 id="4-0-4-3-api-14-18-系统"><a href="#4-0-4-3-api-14-18-系统" class="headerlink" title="4.0 - 4.3(api:14-18) 系统"></a>4.0 - 4.3(api:14-18) 系统</h3><h3 id="4-4-api-19-系统"><a href="#4-4-api-19-系统" class="headerlink" title="4.4(api:19) 系统"></a>4.4(api:19) 系统</h3><h3 id="5-0-5-1-api-21-22-系统"><a href="#5-0-5-1-api-21-22-系统" class="headerlink" title="5.0 - 5.1(api:21-22) 系统"></a>5.0 - 5.1(api:21-22) 系统</h3><h3 id="6-0-api-23-系统"><a href="#6-0-api-23-系统" class="headerlink" title="6.0(api:23) 系统"></a>6.0(api:23) 系统</h3><h3 id="7-0-api-24-系统"><a href="#7-0-api-24-系统" class="headerlink" title="7.0+(api:24) 系统"></a>7.0+(api:24) 系统</h3><h2 id="0x03-代码实现"><a href="#0x03-代码实现" class="headerlink" title="0x03 代码实现"></a>0x03 代码实现</h2><h2 id="0x04-总结"><a href="#0x04-总结" class="headerlink" title="0x04 总结"></a>0x04 总结</h2>
