@@ -11,7 +11,7 @@ description: 现在部分 app 出于安全性(比如加密算法)或者用户体
 ## 0x00 前言
 混淆加密主要是为了隐藏 dex 文件中关键的代码，力度从轻到重包括：静态变量的隐藏、函数的重复定义、函数的隐藏、以及整个类的隐藏。混淆后的 dex 文件依旧可以通过 dex2jar jade 等工具的反编译成 Java 源码，但是里面关键的代码已经看不到了。    
 **java 效果图：**     
-![效果图](./blog_images/20170206/compare-total.png)
+![效果图](/blog_images/20170206/compare-total.png)
 
 **smali 效果图：**     
 ![效果图](/blog_images/20170206/compare-smali.png)
