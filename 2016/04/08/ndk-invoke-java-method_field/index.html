@@ -77,7 +77,7 @@
 <link href="/css/main.css?v=5.1.1" rel="stylesheet" type="text/css" />
 
 
-  <meta name="keywords" content="android,ndk,jni," />
+  <meta name="keywords" content="ndk,android,jni," />
 
 
 
@@ -96,7 +96,7 @@
 <meta name="description" content="上一篇有提到 JNI 访问引用数组，涉及了 C/C++ 访问 Java 实例的方法和变量。虽然在之前的开发中，并没有用到 C/C++ 范围 Java 层数据，但是这部分内容还是很有用的。">
 <meta property="og:type" content="article">
 <meta property="og:title" content="NDK开发 - C/C++ 访问 Java 变量和方法">
-<meta property="og:url" content="http://gnaixx.github.io/2016/04/08/ndk-invoke-java-method_field/index.html">
+<meta property="og:url" content="http://gnaixx.cc/2016/04/08/ndk-invoke-java-method_field/index.html">
 <meta property="og:site_name" content="凸一_一凸">
 <meta property="og:description" content="上一篇有提到 JNI 访问引用数组，涉及了 C/C++ 访问 Java 实例的方法和变量。虽然在之前的开发中，并没有用到 C/C++ 范围 Java 层数据，但是这部分内容还是很有用的。">
 <meta property="og:image" content="https://gnaixx.github.io/blog_images/ndk/9.png">
@@ -134,7 +134,7 @@
 
 
 
-  <link rel="canonical" href="http://gnaixx.github.io/2016/04/08/ndk-invoke-java-method_field/"/>
+  <link rel="canonical" href="http://gnaixx.cc/2016/04/08/ndk-invoke-java-method_field/"/>
 
 
 
@@ -271,7 +271,7 @@
   
 
   <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
-    <link itemprop="mainEntityOfPage" href="http://gnaixx.github.io/2016/04/08/ndk-invoke-java-method_field/">
+    <link itemprop="mainEntityOfPage" href="http://gnaixx.cc/2016/04/08/ndk-invoke-java-method_field/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="凸一_一凸">
@@ -396,7 +396,7 @@
 <li>name: 变量名/方法名</li>
 <li>sig: 变量名/方法名签名ID   </li>
 </ul>
-<p>签名获取的方法在上一篇有提到过:<a href="https://gnaixx.github.io/2016/04/07/NDK%E5%BC%80%E5%8F%91-JNI%E6%95%B0%E7%BB%84%E6%95%B0%E6%8D%AE%E5%A4%84%E7%90%86/">NDK开发 - JNI数组数据处理</a></p>
+<p>签名获取的方法在上一篇有提到过:<a href="https://gnaixx.github.io/2016/04/07/NDK%E5%BC%80%E5%8F%91-JNI%E6%95%B0%E7%BB%84%E6%95%B0%E6%8D%AE%E5%A4%84%E7%90%86/" target="_blank" rel="external">NDK开发 - JNI数组数据处理</a></p>
 <p>第三步1：获取静态变量的值<br><code>jint GetStaticIntField(jclass clazz, jfieldID fieldID)</code>方法获取int类型静态变量的值，相同的函数还有 <code>GetStaticLongField</code>, <code>GetStaticFloatField</code>, <code>GetStaticDoubleField</code>等，引用类型都是用 <code>GetStaticObjectField</code>。   </p>
 <p>第三步2：调用静态函数，通过 JNI 的 <code>CallStaticObjectMethod(clazz, mid, name, age)</code> 函数调用 Java 的 <code>getStaticMethod</code> 静态函数，第一个参数为 Java 的 Class 对象，mid 为方法的签名， 后面的参数为 <code>getStaticMethod</code> 的参数，返回值为 jstring。同样也有 <code>CallStaticXXMethod</code> 方法调用表示不同的返回值。</p>
 <p>第四步：通过 <code>SetStaticIntField</code>改变静态变量的值。</p>
@@ -447,9 +447,9 @@
       
         <div class="post-tags">
           
-            <a href="/tags/android/" rel="tag"># android</a>
-          
             <a href="/tags/ndk/" rel="tag"># ndk</a>
+          
+            <a href="/tags/android/" rel="tag"># android</a>
           
             <a href="/tags/jni/" rel="tag"># jni</a>
           
@@ -781,7 +781,7 @@
     
       <script type="text/javascript">
         var disqus_config = function () {
-          this.page.url = 'http://gnaixx.github.io/2016/04/08/ndk-invoke-java-method_field/';
+          this.page.url = 'http://gnaixx.cc/2016/04/08/ndk-invoke-java-method_field/';
           this.page.identifier = '2016/04/08/ndk-invoke-java-method_field/';
           this.page.title = 'NDK开发 - C/C++ 访问 Java 变量和方法';
         };

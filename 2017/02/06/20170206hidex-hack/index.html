@@ -96,24 +96,24 @@
 <meta name="description" content="现在部分 app 出于安全性(比如加密算法)或者用户体验(热补丁修复bug)会考虑将部分模块采用热加载的形式 Load。所以针对这部分的 dex 进行加密是有必要的，如果 dex 是修复的加密算法，你总不想被人一下就反编译出来吧。当然也可以直接用一个加密算法对 dex 进行加密，Load 前进行解密就可以了，但是最好的加密就是让人分不清你是否加密了。一般逆向过程中拿到一个可以直接反编译成 java">
 <meta property="og:type" content="article">
 <meta property="og:title" content="DEX文件混淆加密">
-<meta property="og:url" content="http://gnaixx.github.io/2017/02/06/20170206hidex-hack/index.html">
+<meta property="og:url" content="http://gnaixx.cc/2017/02/06/20170206hidex-hack/index.html">
 <meta property="og:site_name" content="凸一_一凸">
 <meta property="og:description" content="现在部分 app 出于安全性(比如加密算法)或者用户体验(热补丁修复bug)会考虑将部分模块采用热加载的形式 Load。所以针对这部分的 dex 进行加密是有必要的，如果 dex 是修复的加密算法，你总不想被人一下就反编译出来吧。当然也可以直接用一个加密算法对 dex 进行加密，Load 前进行解密就可以了，但是最好的加密就是让人分不清你是否加密了。一般逆向过程中拿到一个可以直接反编译成 java">
-<meta property="og:image" content="http://gnaixx.github.io/blog_images/20170206/compare-total.png">
-<meta property="og:image" content="http://gnaixx.github.io/blog_images/20170206/compare-smali.png">
-<meta property="og:image" content="http://gnaixx.github.io/blog_images/20170206/field_ids.png">
-<meta property="og:image" content="http://gnaixx.github.io/blog_images/20170206/compare-static.png">
-<meta property="og:image" content="http://gnaixx.github.io/blog_images/20170206/virtual_methods.png">
-<meta property="og:image" content="http://gnaixx.github.io/blog_images/20170206/compare-mutil-methods.png">
-<meta property="og:image" content="http://gnaixx.github.io/blog_images/20170206/compare-hide-methods.png">
-<meta property="og:image" content="http://gnaixx.github.io/blog_images/20170206/compare-class.png">
-<meta property="og:image" content="http://gnaixx.github.io/blog_images/20170206/leb128.png">
-<meta property="og:image" content="http://gnaixx.github.io/blog_images/20170206/hp.png">
+<meta property="og:image" content="http://gnaixx.cc/blog_images/20170206/compare-total.png">
+<meta property="og:image" content="http://gnaixx.cc/blog_images/20170206/compare-smali.png">
+<meta property="og:image" content="http://gnaixx.cc/blog_images/20170206/field_ids.png">
+<meta property="og:image" content="http://gnaixx.cc/blog_images/20170206/compare-static.png">
+<meta property="og:image" content="http://gnaixx.cc/blog_images/20170206/virtual_methods.png">
+<meta property="og:image" content="http://gnaixx.cc/blog_images/20170206/compare-mutil-methods.png">
+<meta property="og:image" content="http://gnaixx.cc/blog_images/20170206/compare-hide-methods.png">
+<meta property="og:image" content="http://gnaixx.cc/blog_images/20170206/compare-class.png">
+<meta property="og:image" content="http://gnaixx.cc/blog_images/20170206/leb128.png">
+<meta property="og:image" content="http://gnaixx.cc/blog_images/20170206/hp.png">
 <meta property="og:updated_time" content="2017-03-14T06:35:32.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="DEX文件混淆加密">
 <meta name="twitter:description" content="现在部分 app 出于安全性(比如加密算法)或者用户体验(热补丁修复bug)会考虑将部分模块采用热加载的形式 Load。所以针对这部分的 dex 进行加密是有必要的，如果 dex 是修复的加密算法，你总不想被人一下就反编译出来吧。当然也可以直接用一个加密算法对 dex 进行加密，Load 前进行解密就可以了，但是最好的加密就是让人分不清你是否加密了。一般逆向过程中拿到一个可以直接反编译成 java">
-<meta name="twitter:image" content="http://gnaixx.github.io/blog_images/20170206/compare-total.png">
+<meta name="twitter:image" content="http://gnaixx.cc/blog_images/20170206/compare-total.png">
 
 
 
@@ -141,7 +141,7 @@
 
 
 
-  <link rel="canonical" href="http://gnaixx.github.io/2017/02/06/20170206hidex-hack/"/>
+  <link rel="canonical" href="http://gnaixx.cc/2017/02/06/20170206hidex-hack/"/>
 
 
 
@@ -278,7 +278,7 @@
   
 
   <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
-    <link itemprop="mainEntityOfPage" href="http://gnaixx.github.io/2017/02/06/20170206hidex-hack/">
+    <link itemprop="mainEntityOfPage" href="http://gnaixx.cc/2017/02/06/20170206hidex-hack/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="凸一_一凸">
@@ -393,7 +393,7 @@
         <h2 id="0x00-前言"><a href="#0x00-前言" class="headerlink" title="0x00 前言"></a>0x00 前言</h2><p>混淆加密主要是为了隐藏 dex 文件中关键的代码，力度从轻到重包括：静态变量的隐藏、函数的重复定义、函数的隐藏、以及整个类的隐藏。混淆后的 dex 文件依旧可以通过 dex2jar jade 等工具的反编译成 Java 源码，但是里面关键的代码已经看不到了。<br><strong>java 效果图：</strong><br><img src="/blog_images/20170206/compare-total.png" alt="效果图"></p>
 <p><strong>smali 效果图：</strong><br><img src="/blog_images/20170206/compare-smali.png" alt="效果图"></p>
 <p>源码地址和使用说明在 github 上 <strong><a href="https://github.com/gnaixx/hidex-hack" target="_blank" rel="external">hidex-hack</a></strong></p>
-<h2 id="0x01-dex格式分析"><a href="#0x01-dex格式分析" class="headerlink" title="0x01 dex格式分析"></a>0x01 dex格式分析</h2><p>dex 文件格式在上一篇有进行了比较详细的介绍，具体可看<strong><a href="http://gnaixx.cc/2016/11/26/20161126dex-file/" target="_blank" rel="external">dex文件格式分析</a></strong>，这里简单的介绍一下整个 dex 文件的布局。  </p>
+<h2 id="0x01-dex格式分析"><a href="#0x01-dex格式分析" class="headerlink" title="0x01 dex格式分析"></a>0x01 dex格式分析</h2><p>dex 文件格式在上一篇有进行了比较详细的介绍，具体可看<strong><a href="http://gnaixx.cc/2016/11/26/20161126dex-file/">dex文件格式分析</a></strong>，这里简单的介绍一下整个 dex 文件的布局。  </p>
 <p><strong>1.header(dex头部)</strong><br>header 概述了整个 dex 文件的分布情况，包括了：<strong>magic</strong>, <strong>checksum</strong>, <strong>signature</strong>, <strong>file_size</strong>, <strong>header_size</strong>, <strong>endian_tag</strong>, <strong>link</strong>, <strong>map</strong>, <strong>string_ids</strong>, <strong>type_ids</strong>, <strong>proto_ids</strong>, <strong>field_ids</strong>, <strong>method_ids</strong>, <strong>class_defs</strong>, <strong>data</strong>。</p>
 <ul>
 <li><strong>checksum</strong> 和 <strong>signature</strong> 是校验值，修改后需要对其进行修复</li>
@@ -879,7 +879,7 @@
     
       <script type="text/javascript">
         var disqus_config = function () {
-          this.page.url = 'http://gnaixx.github.io/2017/02/06/20170206hidex-hack/';
+          this.page.url = 'http://gnaixx.cc/2017/02/06/20170206hidex-hack/';
           this.page.identifier = '2017/02/06/20170206hidex-hack/';
           this.page.title = 'DEX文件混淆加密';
         };

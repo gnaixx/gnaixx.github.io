@@ -96,7 +96,7 @@
 <meta name="description" content="去年给运营同事解释了最简单的多开原理，最简单的方式通过修改包名达到多开的目的。很多 APK 现在已经不能通过这个方式达到多开了，虽然 LOW ,但是对了解多开原理还是有点用的。">
 <meta property="og:type" content="article">
 <meta property="og:title" content="APK多开原理">
-<meta property="og:url" content="http://gnaixx.github.io/2016/04/11/android-multi_apk/index.html">
+<meta property="og:url" content="http://gnaixx.cc/2016/04/11/android-multi_apk/index.html">
 <meta property="og:site_name" content="凸一_一凸">
 <meta property="og:description" content="去年给运营同事解释了最简单的多开原理，最简单的方式通过修改包名达到多开的目的。很多 APK 现在已经不能通过这个方式达到多开了，虽然 LOW ,但是对了解多开原理还是有点用的。">
 <meta property="og:image" content="https://gnaixx.github.io/blog_images/multi/1.png">
@@ -151,7 +151,7 @@
 
 
 
-  <link rel="canonical" href="http://gnaixx.github.io/2016/04/11/android-multi_apk/"/>
+  <link rel="canonical" href="http://gnaixx.cc/2016/04/11/android-multi_apk/"/>
 
 
 
@@ -288,7 +288,7 @@
   
 
   <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
-    <link itemprop="mainEntityOfPage" href="http://gnaixx.github.io/2016/04/11/android-multi_apk/">
+    <link itemprop="mainEntityOfPage" href="http://gnaixx.cc/2016/04/11/android-multi_apk/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="凸一_一凸">
@@ -434,7 +434,7 @@
 <h2 id="0x03-APK多开制作流程"><a href="#0x03-APK多开制作流程" class="headerlink" title="0x03 APK多开制作流程"></a>0x03 APK多开制作流程</h2><p>　　上面主要是介绍了多开的原理，制作的过程是基于拿到源码的情况下。但是通过了解我们其实可以通过一些工具很容易（其实很没这么简单）的破解市场上的 APK。</p>
 <h3 id="利用-apktool-反编译"><a href="#利用-apktool-反编译" class="headerlink" title="利用 apktool 反编译"></a>利用 apktool 反编译</h3><p>　　利用 apktool 对 APK 进行反编译，这里以上面的 Eclipse 项目为例：</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">apktool d multi_demo.apk -o output</div></pre></td></tr></table></figure>
-<p>apktool 工具在之前的一篇有提到过，里面有提供下载地址：<br><a href="https://gnaixx.github.io/2016/03/06/android-reverse-engineering/">Android程序逆向分析</a></p>
+<p>apktool 工具在之前的一篇有提到过，里面有提供下载地址：<br><a href="https://gnaixx.github.io/2016/03/06/android-reverse-engineering/" target="_blank" rel="external">Android程序逆向分析</a></p>
 <h3 id="修改-AndroidManifest-xml"><a href="#修改-AndroidManifest-xml" class="headerlink" title="修改 AndroidManifest.xml"></a>修改 AndroidManifest.xml</h3><p>　　将 package 属性从 <code>com.example.multi_demo</code> 改为 <code>com.example.multi_demo_2</code><br>因为 Activity 的包名也是 <code>com.example.multi_demo</code> 所以必须也要把 Activity 的 <code>android:name</code> 属性改为: <code>com.example.multi_demo.MainActivity</code> 不然会造成找不到该 Activity。<br><img width="700px" height="250px" src="https://gnaixx.github.io/blog_images/multi/20.png" style="display:inline-block"></p>
 <h3 id="重新编译"><a href="#重新编译" class="headerlink" title="重新编译"></a>重新编译</h3><p>　　修改后就可以重新编译 APK 了，还是用 apktool：</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">apktool b output -o multi-demo_2.apk</div></pre></td></tr></table></figure>
@@ -803,7 +803,7 @@
     
       <script type="text/javascript">
         var disqus_config = function () {
-          this.page.url = 'http://gnaixx.github.io/2016/04/11/android-multi_apk/';
+          this.page.url = 'http://gnaixx.cc/2016/04/11/android-multi_apk/';
           this.page.identifier = '2016/04/11/android-multi_apk/';
           this.page.title = 'APK多开原理';
         };

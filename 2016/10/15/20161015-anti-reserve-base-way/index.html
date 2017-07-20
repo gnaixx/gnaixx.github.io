@@ -77,7 +77,7 @@
 <link href="/css/main.css?v=5.1.1" rel="stylesheet" type="text/css" />
 
 
-  <meta name="keywords" content="ndk,reserve,proguard,sign,dex,DexClassLoader," />
+  <meta name="keywords" content="reserve,ndk,proguard,sign,dex,DexClassLoader," />
 
 
 
@@ -96,7 +96,7 @@
 <meta name="description" content="近些年来移动 APP 数量呈现爆炸式的增长，黑产也从原来的PC端移到了移动端，伴随而来的逆向攻击手段也越来越高明。本篇章主要介绍应用加固的最基础的四种方式：1.proguard 混淆 2.签名比对验证 3.ndk 编译 .so 动态库 4.代码动态加载">
 <meta property="og:type" content="article">
 <meta property="og:title" content="APK反逆向之二：四种基本加固方式">
-<meta property="og:url" content="http://gnaixx.github.io/2016/10/15/20161015-anti-reserve-base-way/index.html">
+<meta property="og:url" content="http://gnaixx.cc/2016/10/15/20161015-anti-reserve-base-way/index.html">
 <meta property="og:site_name" content="凸一_一凸">
 <meta property="og:description" content="近些年来移动 APP 数量呈现爆炸式的增长，黑产也从原来的PC端移到了移动端，伴随而来的逆向攻击手段也越来越高明。本篇章主要介绍应用加固的最基础的四种方式：1.proguard 混淆 2.签名比对验证 3.ndk 编译 .so 动态库 4.代码动态加载">
 <meta property="og:updated_time" content="2016-11-05T09:47:26.000Z">
@@ -130,7 +130,7 @@
 
 
 
-  <link rel="canonical" href="http://gnaixx.github.io/2016/10/15/20161015-anti-reserve-base-way/"/>
+  <link rel="canonical" href="http://gnaixx.cc/2016/10/15/20161015-anti-reserve-base-way/"/>
 
 
 
@@ -267,7 +267,7 @@
   
 
   <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
-    <link itemprop="mainEntityOfPage" href="http://gnaixx.github.io/2016/10/15/20161015-anti-reserve-base-way/">
+    <link itemprop="mainEntityOfPage" href="http://gnaixx.cc/2016/10/15/20161015-anti-reserve-base-way/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="凸一_一凸">
@@ -452,7 +452,7 @@
 <li>APK包加密的公钥就打包在APK包内，且不同的私钥对应不同的公钥。换句话言之，不同的私钥签名的APK公钥也必不相同。所以我们可以根据公钥的对比，来判断私钥是否一致。</li>
 </ol>
 <h3 id="APK签名比对的实现方式"><a href="#APK签名比对的实现方式" class="headerlink" title="APK签名比对的实现方式"></a>APK签名比对的实现方式</h3><p>具体的实现方式在之前的一篇博客中有进行了介绍，实现方式其实很简单：</p>
-<p><a href="http://gnaixx.cc/2016/04/19/android-protect-dex_apk_cert_check/" target="_blank" rel="external">APK自我保护 - DEX/APK/证书校验</a></p>
+<p><a href="http://gnaixx.cc/2016/04/19/android-protect-dex_apk_cert_check/">APK自我保护 - DEX/APK/证书校验</a></p>
 <h2 id="0x03-ndk-编译-so-动态库"><a href="#0x03-ndk-编译-so-动态库" class="headerlink" title="0x03 ndk 编译.so 动态库"></a>0x03 ndk 编译.so 动态库</h2><h3 id="简介-2"><a href="#简介-2" class="headerlink" title="简介"></a>简介</h3><p>逆向 ndk 跟逆向 java 代码难度真不是在一个等级上的，ndk 开发除了安全性相对 java 开发高很多，而且在运行效率也高很多。</p>
 <p>所以 NDK 开发相对于 JAVA 开发的优势：</p>
 <p>1.代码的保护。由于apk的java层代码很容易被反编译，而C/C++库反汇难度较大。</p>
@@ -462,13 +462,13 @@
 <p>但是 NDK 的兼容性相对 JAVA 差很多，所以在进行 NDK 开发的时候兼容性是一个很大的问题。</p>
 <h3 id="教程"><a href="#教程" class="headerlink" title="教程"></a>教程</h3><p>之前写了几篇关于 NDK 开发的文章基本覆盖了 NDK 开发的所有内容了。</p>
 <ul>
-<li><a href="http://gnaixx.cc/2016/03/07/ndk-android_studio-dev-env/" target="_blank" rel="external">NDK开发 - Android Studio环境搭建</a></li>
-<li><a href="http://gnaixx.cc/2016/03/22/ndk-precess/" target="_blank" rel="external">NDK开发 - JNI开发流程</a></li>
-<li><a href="http://gnaixx.cc/2016/03/30/ndk-jni_java-mapping/" target="_blank" rel="external">NDK开发 - JNI数据类型与Java数据类型映射关系</a></li>
-<li><a href="http://gnaixx.cc/2016/04/06/ndk-base_types-string/" target="_blank" rel="external">NDK开发 - JNI基本数据和字符串处理</a></li>
-<li><a href="http://gnaixx.cc/2016/04/07/ndk-array/" target="_blank" rel="external">NDK开发 - JNI数组数据处理</a></li>
-<li><a href="http://gnaixx.cc/2016/04/08/ndk-invoke-java-method_field/" target="_blank" rel="external">NDK开发 - C/C++ 访问 Java 变量和方法</a></li>
-<li><a href="http://gnaixx.cc/2016/04/08/ndk-local_global_weak-reference/" target="_blank" rel="external">NDK开发 - JNI 局部引用、全局引用和弱全局引用</a></li>
+<li><a href="http://gnaixx.cc/2016/03/07/ndk-android_studio-dev-env/">NDK开发 - Android Studio环境搭建</a></li>
+<li><a href="http://gnaixx.cc/2016/03/22/ndk-precess/">NDK开发 - JNI开发流程</a></li>
+<li><a href="http://gnaixx.cc/2016/03/30/ndk-jni_java-mapping/">NDK开发 - JNI数据类型与Java数据类型映射关系</a></li>
+<li><a href="http://gnaixx.cc/2016/04/06/ndk-base_types-string/">NDK开发 - JNI基本数据和字符串处理</a></li>
+<li><a href="http://gnaixx.cc/2016/04/07/ndk-array/">NDK开发 - JNI数组数据处理</a></li>
+<li><a href="http://gnaixx.cc/2016/04/08/ndk-invoke-java-method_field/">NDK开发 - C/C++ 访问 Java 变量和方法</a></li>
+<li><a href="http://gnaixx.cc/2016/04/08/ndk-local_global_weak-reference/">NDK开发 - JNI 局部引用、全局引用和弱全局引用</a></li>
 </ul>
 <p>这些教程都是基于 experimental 版本的 gradle 进行开发，但是这种版本的配置相对于普通版本的 gradle 有很多不同。并且创建一个新的 module 都需要更新 build.gradle 配置非常麻烦。</p>
 <p>最近 Android Studio 更新到了2.2 版本，可以支持两种方式的 NDK开发：</p>
@@ -541,9 +541,9 @@
       
         <div class="post-tags">
           
-            <a href="/tags/ndk/" rel="tag"># ndk</a>
-          
             <a href="/tags/reserve/" rel="tag"># reserve</a>
+          
+            <a href="/tags/ndk/" rel="tag"># ndk</a>
           
             <a href="/tags/proguard/" rel="tag"># proguard</a>
           
@@ -881,7 +881,7 @@
     
       <script type="text/javascript">
         var disqus_config = function () {
-          this.page.url = 'http://gnaixx.github.io/2016/10/15/20161015-anti-reserve-base-way/';
+          this.page.url = 'http://gnaixx.cc/2016/10/15/20161015-anti-reserve-base-way/';
           this.page.identifier = '2016/10/15/20161015-anti-reserve-base-way/';
           this.page.title = 'APK反逆向之二：四种基本加固方式';
         };
