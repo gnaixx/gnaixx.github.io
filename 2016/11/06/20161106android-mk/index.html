@@ -119,13 +119,13 @@
 
 <meta name="description" content="Android.mk 的可配置参数很多，但是其实在自己开发中用到的其实比较简单比较少。但是有必要知道ndk编译中可以使用那些参数。">
 <meta property="og:type" content="article">
-<meta property="og:title" content="Android.mk 配置">
+<meta property="og:title" content="Android.mk 配置参数">
 <meta property="og:url" content="http://gnaixx.cc/2016/11/06/20161106android-mk/index.html">
 <meta property="og:site_name" content="凸一_一凸">
 <meta property="og:description" content="Android.mk 的可配置参数很多，但是其实在自己开发中用到的其实比较简单比较少。但是有必要知道ndk编译中可以使用那些参数。">
-<meta property="og:updated_time" content="2016-11-06T14:45:59.000Z">
+<meta property="og:updated_time" content="2017-07-23T15:42:14.000Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="Android.mk 配置">
+<meta name="twitter:title" content="Android.mk 配置参数">
 <meta name="twitter:description" content="Android.mk 的可配置参数很多，但是其实在自己开发中用到的其实比较简单比较少。但是有必要知道ndk编译中可以使用那些参数。">
 
 
@@ -160,7 +160,7 @@
 
 
 
-  <title>Android.mk 配置 | 凸一_一凸</title>
+  <title>Android.mk 配置参数 | 凸一_一凸</title>
   
 
 
@@ -308,7 +308,7 @@
 
         
         
-          <h1 class="post-title" itemprop="name headline">Android.mk 配置</h1>
+          <h1 class="post-title" itemprop="name headline">Android.mk 配置参数</h1>
         
 
         <div class="post-meta">
@@ -371,7 +371,7 @@
 
           
           
-             <span id="/2016/11/06/20161106android-mk/" class="leancloud_visitors" data-flag-title="Android.mk 配置">
+             <span id="/2016/11/06/20161106android-mk/" class="leancloud_visitors" data-flag-title="Android.mk 配置参数">
                <span class="post-meta-divider">|</span>
                <span class="post-meta-item-icon">
                  <i class="fa fa-eye"></i>
@@ -403,11 +403,33 @@
       
 
       
-        <h2 id="0x00-LOCAL-PATH"><a href="#0x00-LOCAL-PATH" class="headerlink" title="0x00 LOCAL_PATH"></a>0x00 LOCAL_PATH</h2><p>根据 Android 构建系统要求，Android.mk 文档必须以 LOCAL_PATH 变量的定义开头。<br><code>LOCAL_PATH := $(call my-dir)</code><br>Android 构建系统利用 LOCAL_PATH 来定位源文件。因为将改变量设置为硬编码值不合适，所以 Android 构建系统提供了一个名为 my-dir 的宏功能。通过将该变量设置为 my-dir 宏功能的返回值，可以将其放在当前目录下。</p>
-<h2 id="0x01-CLEAR-VARS"><a href="#0x01-CLEAR-VARS" class="headerlink" title="0x01 CLEAR_VARS"></a>0x01 CLEAR_VARS</h2><p>Android 构建系统将 CLEAR_VARS 变量设置为 clear-vars.mk 片段的位置。包含 Makefile 片段可以清除除了 LOCAL_PATH 以外的LOCAL_name 变量，例如 LOCAL_MODULE 与 LOCAL_SRC_FILE 等。<br><code>Include $(CLEAR_VARS)</code><br>这样做是因为 Android 构建系统可以在单次执行中解析多个构建文件和模式定义，LOCAL_<name> 是全局变量。清除它们可以避免冲突，每一个原生组件被称为一个模块。</name></p>
-<h2 id="0x02-LOCAL-MODULE"><a href="#0x02-LOCAL-MODULE" class="headerlink" title="0x02 LOCAL_MODULE"></a>0x02 LOCAL_MODULE</h2><p>改变了是用来给这些模块设定一个唯一的名称。下面的代码将该模块的名称设为 hello-jni:<br><code>LOCAL_MODULE := hello-jni</code><br>因为模块名称也被用于给构建过程的所生成的文件命名，所以构建系统给文件添加适当的前缀和后缀。本例中， hello-jni 模块会生成一个共享文件且构建系统会将它命名为 libhello-jni.so。</p>
-<h2 id="0x03-LOCAL-SRC-FILES"><a href="#0x03-LOCAL-SRC-FILES" class="headerlink" title="0x03 LOCAL_SRC_FILES"></a>0x03 LOCAL_SRC_FILES</h2><p>该变量用来建立和组装这个模块的源文件列表。<br><code>LOCAL_SRC_FILES := hello-jni.c</code><br>这里，hello-jni 模块只有一个源文件生成，而 LOCAL_SRC_FILES 变量可以包含用空格分开的多个源文件名。</p>
-<h2 id="0x04-BUILD-SHARED-LIBRARY"><a href="#0x04-BUILD-SHARED-LIBRARY" class="headerlink" title="0x04 BUILD_SHARED_LIBRARY"></a>0x04 BUILD_SHARED_LIBRARY</h2><p>为了建立可供主应用程序使用的模块，必须将该模块变成共享库。Android NDK 构建系统将 BUILD_SHARED_LIBRARY 变量设置成 build_shared_libray.mk 文件保存的位置。改 Makefile 片段包含了将源文件构建和组装成共享库的必要过程。<br><code>include $(BUILD_SHARED_LIBRARY)</code>   </p>
+        <h2 id="0x00-LOCAL-PATH"><a href="#0x00-LOCAL-PATH" class="headerlink" title="0x00 LOCAL_PATH"></a>0x00 LOCAL_PATH</h2><p>根据 Android 构建系统要求，Android.mk 文档必须以 LOCAL_PATH 变量的定义开头。      </p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">LOCAL_PATH := $(call my-dir)</div></pre></td></tr></table></figure>
+<p>Android 构建系统利用 LOCAL_PATH 来定位源文件。因为将改变量设置为硬编码值不合适，所以 Android 构建系统提供了一个名为 my-dir 的宏功能。通过将该变量设置为 my-dir 宏功能的返回值，可以将其放在当前目录下。</p>
+<h2 id="0x01-CLEAR-VARS"><a href="#0x01-CLEAR-VARS" class="headerlink" title="0x01 CLEAR_VARS"></a>0x01 CLEAR_VARS</h2><p>Android 构建系统将 CLEAR_VARS 变量设置为 clear-vars.mk 片段的位置。包含 Makefile 片段可以清除除了 LOCAL_PATH 以外的LOCAL_name 变量，例如 LOCAL_MODULE 与 LOCAL_SRC_FILE 等。     </p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">Include $(CLEAR_VARS)</div></pre></td></tr></table></figure>
+<p>这样做是因为 Android 构建系统可以在单次执行中解析多个构建文件和模式定义，LOCAL_<name> 是全局变量。清除它们可以避免冲突，每一个原生组件被称为一个模块。</name></p>
+<h2 id="0x02-LOCAL-MODULE"><a href="#0x02-LOCAL-MODULE" class="headerlink" title="0x02 LOCAL_MODULE"></a>0x02 LOCAL_MODULE</h2><p>改变了是用来给这些模块设定一个唯一的名称。下面的代码将该模块的名称设为 hello-jni:</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">LOCAL_MODULE := hello-jni</div></pre></td></tr></table></figure>
+<p>因为模块名称也被用于给构建过程的所生成的文件命名，所以构建系统给文件添加适当的前缀和后缀。本例中， hello-jni 模块会生成一个共享文件且构建系统会将它命名为 libhello-jni.so。</p>
+<h2 id="0x03-LOCAL-SRC-FILES"><a href="#0x03-LOCAL-SRC-FILES" class="headerlink" title="0x03 LOCAL_SRC_FILES"></a>0x03 LOCAL_SRC_FILES</h2><p>该变量用来建立和组装这个模块的源文件列表。     </p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">LOCAL_SRC_FILES := hello-jni.c</div></pre></td></tr></table></figure>
+<p>这里，hello-jni 模块只有一个源文件生成，而 LOCAL_SRC_FILES 变量可以包含用空格分开的多个源文件名。</p>
+<h2 id="0x04-BUILD-SHARED-LIBRARY"><a href="#0x04-BUILD-SHARED-LIBRARY" class="headerlink" title="0x04 BUILD_SHARED_LIBRARY"></a>0x04 BUILD_SHARED_LIBRARY</h2><p>为了建立可供主应用程序使用的模块，必须将该模块变成共享库。Android NDK 构建系统将 BUILD_SHARED_LIBRARY 变量设置成 build_shared_libray.mk 文件保存的位置。改 Makefile 片段包含了将源文件构建和组装成共享库的必要过程。     </p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">include $(BUILD_SHARED_LIBRARY)</div></pre></td></tr></table></figure>
+<h2 id="0x05-BUILD-STATIC-LIBRARY"><a href="#0x05-BUILD-STATIC-LIBRARY" class="headerlink" title="0x05 BUILD_STATIC_LIBRARY"></a>0x05 BUILD_STATIC_LIBRARY</h2><p>建立静态库，Android 应用并不直接使用静态库，一般是将第三方代码作为静态库引入动态库中使用。</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">include $(BUILD_STATIC_LIBRARY)</div></pre></td></tr></table></figure>
+<h2 id="0x06-引入共享库和静态库"><a href="#0x06-引入共享库和静态库" class="headerlink" title="0x06 引入共享库和静态库"></a>0x06 引入共享库和静态库</h2><figure class="highlight xml"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">LOCAL_SHARED_LIBRARY := avilib_share</div><div class="line">LOCAL_STATIC_LIBRARY := avilib_static</div></pre></td></tr></table></figure>
+<h2 id="0x07-多项目共享模块"><a href="#0x07-多项目共享模块" class="headerlink" title="0x07 多项目共享模块"></a>0x07 多项目共享模块</h2><p>多个项目共享某个模块时，先将源码导入<code>%NDK_HOME%/source</code>,配置好对应的 Android.mk 文件。在需要的项目中添加：</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">LOCAL_SHARED_LIBRARIES := avilib</div><div class="line">$(call import-module, transcode/avilib)</div></pre></td></tr></table></figure>
+<h2 id="0x08-用-Prebuilt-库"><a href="#0x08-用-Prebuilt-库" class="headerlink" title="0x08 用 Prebuilt 库"></a>0x08 用 Prebuilt 库</h2><p>将已编译好的 so 文件作为项目的共享模块：</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">LOCAL_PATH := $(call my-dir)</div><div class="line">#第三方模块</div><div class="line">include $(CLEAR_VARS)</div><div class="line">LOCAL_MODULE := avilib</div><div class="line">LOCAL_SRC_FILES := libavilib.so</div><div class="line"></div><div class="line">include $(RREBUILT_SHARED_LIBRARY)</div></pre></td></tr></table></figure>
+<h2 id="0x09-构建可执行文件"><a href="#0x09-构建可执行文件" class="headerlink" title="0x09 构建可执行文件"></a>0x09 构建可执行文件</h2><figure class="highlight xml"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">include $(BUILD_EXECUTABLE)</div></pre></td></tr></table></figure>
+<h2 id="0x10-其他构建系统变量"><a href="#0x10-其他构建系统变量" class="headerlink" title="0x10 其他构建系统变量"></a>0x10 其他构建系统变量</h2><figure class="highlight xml"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div><div class="line">62</div><div class="line">63</div><div class="line">64</div><div class="line">65</div></pre></td><td class="code"><pre><div class="line">#目标 CPU 体系结构名称</div><div class="line">TARGET_ARCH := arm</div><div class="line"></div><div class="line">#目标 Android 平台名称</div><div class="line">TARGET_PLARFORM := andoid-3</div><div class="line"></div><div class="line">#目标 CPU 体系结构和 ABI 名称</div><div class="line">TARGET_ARCH_ABI := armeabi-v7a</div><div class="line"></div><div class="line">#目标平台和 ABI 串联</div><div class="line">TARGET_ABI := android-3-armeabi-v7a</div><div class="line"></div><div class="line">#重定向输出文件名（默认为 LOCAL_MODULE）</div><div class="line">LOCAL_MODULE_FILENAME := avilib</div><div class="line"></div><div class="line">#指定 C++ 源码文件扩展名</div><div class="line">LOCAL_CPP_EXTENSION := .cpp .cxx</div><div class="line"></div><div class="line">#指定模块所依赖的具体 C++ 特性</div><div class="line">LOCAL_CPP_FEATURES := rtti</div><div class="line"></div><div class="line">#可选目录列表，NDK安装目录的相对路径，用来搜索头文件</div><div class="line">LOCAL_C_INCLUDES := sources/shared-module</div><div class="line"></div><div class="line">#添加编译器标志（添加宏定义）</div><div class="line">LOCAL_CFLAGS := -DNDEBUG -DPROT=1234</div><div class="line"></div><div class="line">#添加编译器标志（添加宏定义）仅C++</div><div class="line">LOCAL_CPP_CFLAGS := -DNDEBUG -DPROT=1234</div><div class="line"></div><div class="line">#LOCAL_STATIC_LIBRARY变体，所有静态库内容（当几个静态库有循环依赖的时候很有用）</div><div class="line">LOCAL_WHOLE_STATIC_LIBRARY := avilib bvilib</div><div class="line"></div><div class="line">#链接标志的可选列表</div><div class="line">LOCAL_LDLIBS := -llog</div><div class="line"></div><div class="line">#禁止生产文件中进行缺失符号检查</div><div class="line">LOCAL_ALLOW_UNDEFINED_SYMBOLS :</div><div class="line"></div><div class="line">#指定要生成的 ARM 二进制类型</div><div class="line">LOCAL_ARM_MODE := arm</div><div class="line"></div><div class="line">#开启 NEON 指令</div><div class="line">LOCAL_ARM_NEON := true</div><div class="line"></div><div class="line">#禁用 NX bit 安全特性(Never Execute)</div><div class="line">LOCAL_DISABLE_NO_EXECUTE := true</div><div class="line"></div><div class="line">#记录一组编译器标志</div><div class="line">LOCAL_EXPORT_CFLAGS := -DENABLE_AUDIO</div><div class="line"></div><div class="line">#与上面类型，仅用于 C++</div><div class="line">LOCAL_EXPORT_CPPFLAGS := -DENABLE_AUDIO</div><div class="line"></div><div class="line">#与 LOCAL_EXPORT_CFLAGS 类型用于链接器标志</div><div class="line">LOCAL_EXPORT_LDFLAGS := -DENABLE_AUDIO</div><div class="line"></div><div class="line">#允许记录路径集</div><div class="line">LOCAL_EXPORT_C_INCLUDES :=</div><div class="line"></div><div class="line">#用于有大量资源或者独立的静态库/动态库的模块，分解命令长度</div><div class="line">LOCAL_SHORT_COMMANDS := true</div><div class="line"></div><div class="line">#定义了用于过滤来至 LOCAL_SRC_FILES变量的装配文件的应用程序</div><div class="line">LOCAL_FILTER_ASM :=</div></pre></td></tr></table></figure>
+<h2 id="0x11-其他构建系统函数宏"><a href="#0x11-其他构建系统函数宏" class="headerlink" title="0x11 其他构建系统函数宏"></a>0x11 其他构建系统函数宏</h2><figure class="highlight xml"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line">#返回当前目录下的所有子目录下的 Android.mk 构建文件列表</div><div class="line">include $(call all-subdir-makefiles)</div><div class="line"></div><div class="line">#放回当前 Android.mk 构建文件的路径</div><div class="line">this-makefile</div><div class="line"></div><div class="line">#返回包含当前构建文件的父 Android.mk 构建文件路径</div><div class="line">parent-makefile</div><div class="line"></div><div class="line">#和 parent-makefile 一样但用于祖父目录</div><div class="line">grand-parent-makefile</div></pre></td></tr></table></figure>
+<h2 id="0x12-定义新变量"><a href="#0x12-定义新变量" class="headerlink" title="0x12 定义新变量"></a>0x12 定义新变量</h2><p>LOCAL<em> 和 NDK</em> 开头的为预留构建名称，可使用 MY_ 开头的变量<br><figure class="highlight xml"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">MY_SRC_FILES := avilib.c platform_posix.c</div><div class="line"></div><div class="line">LOCAL_SRC_FILES := $(addprefix avilib/, $(MY_SRC_FILES))</div></pre></td></tr></table></figure></p>
+<h2 id="0x13-条件操作"><a href="#0x13-条件操作" class="headerlink" title="0x13 条件操作"></a>0x13 条件操作</h2><p>在每个体系结构中包含一个不同的源码文件集<br><figure class="highlight xml"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">ifeq ($(TARGET_ARCH), arm)</div><div class="line">	LOCAL_SRC_FILES += armonly.c</div><div class="line">else</div><div class="line">	LOCAL_SRC_FILES += generic.c</div><div class="line">endif</div></pre></td></tr></table></figure></p>
+<h2 id="0x14-Application-mk"><a href="#0x14-Application-mk" class="headerlink" title="0x14 Application.mk"></a>0x14 Application.mk</h2><figure class="highlight xml"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div></pre></td><td class="code"><pre><div class="line">#覆盖 Android.mk 构建的模块列表</div><div class="line">APP_MODULES := avilib </div><div class="line"></div><div class="line">#设置二进制文件的优化级别，默认 release</div><div class="line">APP_OPTIM := relase / debug</div><div class="line"></div><div class="line">#编译器标志</div><div class="line">APP_CLAGS</div><div class="line"></div><div class="line">#编译器标志，作用于 C++ 源文件</div><div class="line">APP_CPPLAGS</div><div class="line"></div><div class="line">#从非 jni 子目录下查找 Android.mk 构建文件</div><div class="line">APP_BUILD_SCRIPT</div><div class="line"></div><div class="line">#构建系统的二进制文件，默认 armeabi ABI</div><div class="line">APP_ABI := all / armeabi mips</div><div class="line"></div><div class="line">#使用不同 STL 实现库，默认 system 库</div><div class="line">APP_STL := stlport_shared</div><div class="line"></div><div class="line">#与 LOCAL_CPP_EXTENSIONS 变量相似，表明所有模块都依赖与具体的 C++ 特性，如 RTTI,exceptions</div><div class="line">APP_GUNSTL_FORCE_CPP_FEATURES</div><div class="line"></div><div class="line">#与 LOCAL_SHORT_COMMANDS 变量类似</div><div class="line">APP_SHORT_COMMANDS</div></pre></td></tr></table></figure>
 
       
     </div>
@@ -546,7 +568,7 @@
           
             <div class="site-state-item site-state-posts">
               <a href="/archives/">
-                <span class="site-state-item-count">40</span>
+                <span class="site-state-item-count">41</span>
                 <span class="site-state-item-name">日志</span>
               </a>
             </div>
@@ -628,7 +650,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#0x00-LOCAL-PATH"><span class="nav-number">1.</span> <span class="nav-text">0x00 LOCAL_PATH</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#0x01-CLEAR-VARS"><span class="nav-number">2.</span> <span class="nav-text">0x01 CLEAR_VARS</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#0x02-LOCAL-MODULE"><span class="nav-number">3.</span> <span class="nav-text">0x02 LOCAL_MODULE</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#0x03-LOCAL-SRC-FILES"><span class="nav-number">4.</span> <span class="nav-text">0x03 LOCAL_SRC_FILES</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#0x04-BUILD-SHARED-LIBRARY"><span class="nav-number">5.</span> <span class="nav-text">0x04 BUILD_SHARED_LIBRARY</span></a></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#0x00-LOCAL-PATH"><span class="nav-number">1.</span> <span class="nav-text">0x00 LOCAL_PATH</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#0x01-CLEAR-VARS"><span class="nav-number">2.</span> <span class="nav-text">0x01 CLEAR_VARS</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#0x02-LOCAL-MODULE"><span class="nav-number">3.</span> <span class="nav-text">0x02 LOCAL_MODULE</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#0x03-LOCAL-SRC-FILES"><span class="nav-number">4.</span> <span class="nav-text">0x03 LOCAL_SRC_FILES</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#0x04-BUILD-SHARED-LIBRARY"><span class="nav-number">5.</span> <span class="nav-text">0x04 BUILD_SHARED_LIBRARY</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#0x05-BUILD-STATIC-LIBRARY"><span class="nav-number">6.</span> <span class="nav-text">0x05 BUILD_STATIC_LIBRARY</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#0x06-引入共享库和静态库"><span class="nav-number">7.</span> <span class="nav-text">0x06 引入共享库和静态库</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#0x07-多项目共享模块"><span class="nav-number">8.</span> <span class="nav-text">0x07 多项目共享模块</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#0x08-用-Prebuilt-库"><span class="nav-number">9.</span> <span class="nav-text">0x08 用 Prebuilt 库</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#0x09-构建可执行文件"><span class="nav-number">10.</span> <span class="nav-text">0x09 构建可执行文件</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#0x10-其他构建系统变量"><span class="nav-number">11.</span> <span class="nav-text">0x10 其他构建系统变量</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#0x11-其他构建系统函数宏"><span class="nav-number">12.</span> <span class="nav-text">0x11 其他构建系统函数宏</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#0x12-定义新变量"><span class="nav-number">13.</span> <span class="nav-text">0x12 定义新变量</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#0x13-条件操作"><span class="nav-number">14.</span> <span class="nav-text">0x13 条件操作</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#0x14-Application-mk"><span class="nav-number">15.</span> <span class="nav-text">0x14 Application.mk</span></a></li></ol></div>
             
 
           </div>
@@ -773,7 +795,7 @@
         var disqus_config = function () {
           this.page.url = 'http://gnaixx.cc/2016/11/06/20161106android-mk/';
           this.page.identifier = '2016/11/06/20161106android-mk/';
-          this.page.title = 'Android.mk 配置';
+          this.page.title = 'Android.mk 配置参数';
         };
         var d = document, s = d.createElement('script');
         s.src = 'https://http-gnaixx-cc.disqus.com/embed.js';
