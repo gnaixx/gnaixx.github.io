@@ -13,7 +13,6 @@ description: 系统 API 不管 DexClassLoader 还是 PathClassLoader 都只支�
 区别比较大的是native层对Dex的解析处理，每个大版本处理的方式都有差异。其中4.0版本提供了一个接口可以以byte数组的方式加载Dex，但是art模式这个方法就取消了，后续版本也取消了。
 
 本文也只通过4.0的接口实现了自定义Dex，其他版本的加载方式通过NDK反射调用实现。
-
 **源码地址:**[https://github.com/gnaixx/hidex-hack](https://github.com/gnaixx/hidex-hack/tree/master/hidex-load)
 
 ## 0x01 Load流程
