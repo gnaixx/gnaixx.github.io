@@ -101,7 +101,7 @@
 <link href="/css/main.css?v=5.1.1" rel="stylesheet" type="text/css" />
 
 
-  <meta name="keywords" content="ndk,android,ollvm," />
+  <meta name="keywords" content="android,ndk,ollvm," />
 
 
 
@@ -123,7 +123,7 @@
 <meta property="og:url" content="http://gnaixx.cc/2017/07/25/20170725-ollvm/index.html">
 <meta property="og:site_name" content="凸一_一凸">
 <meta property="og:description" content="代码混淆能起到很好的反逆向分析，类似于 java 的 proguard 混淆和 dex 文件的 dexguard 混淆工具，c/c++ 也有对应的 ollvm 混淆组件。">
-<meta property="og:updated_time" content="2017-07-25T09:33:35.000Z">
+<meta property="og:updated_time" content="2017-07-25T10:35:04.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="OLLVM + NDK 混淆编译环境搭建">
 <meta name="twitter:description" content="代码混淆能起到很好的反逆向分析，类似于 java 的 proguard 混淆和 dex 文件的 dexguard 混淆工具，c/c++ 也有对应的 ollvm 混淆组件。">
@@ -407,21 +407,21 @@
 <p>The aim of this project is to provide an open-source fork of the LLVM compilation suite able to provide increased software security through code obfuscation and tamper-proofing. As we currently mostly work at the Intermediate Representation (IR) level, our tool is compatible with all programming languages (C, C++, Objective-C, Ada and Fortran) and target platforms (x86, x86-64, PowerPC, PowerPC-64, ARM, Thumb, SPARC, Alpha, CellSPU, MIPS, MSP430, SystemZ, and XCore) currently supported by LLVM.</p>
 <p>源码地址：<a href="https://github.com/obfuscator-llvm/obfuscator/" target="_blank" rel="external">https://github.com/obfuscator-llvm/obfuscator/</a></p>
 <h2 id="0x01-环境信息"><a href="#0x01-环境信息" class="headerlink" title="0x01 环境信息"></a>0x01 环境信息</h2><p>系统环境：MacOS<br>系统版本：10.12.5<br>NDK版本：android-ndk-r14b</p>
-<h2 id="0x02-下载编译"><a href="#0x02-下载编译" class="headerlink" title="0x02 下载编译"></a>0x02 下载编译</h2><p>github 上最新版本是4.0，但是配置好后发现 <code>-bcf</code> 功能有问题，所以又切换到版本3.6.1了。可以直接 clone github 项目编译，可参考提供的 wiki 文档：<a href="https://github.com/obfuscator-llvm/obfuscator/wiki/Installation" target="_blank" rel="external">Installation</a></p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">$ git <span class="built_in">clone</span> -b llvm-3.6.1 https://github.com/obfuscator-llvm/obfuscator.git</div><div class="line">$ mkdir build</div><div class="line">$ <span class="built_in">cd</span> build</div><div class="line">$ cmake -DCMAKE_BUILD_TYPE=Release ../obfuscator/</div><div class="line">$ make -j7</div></pre></td></tr></table></figure>
+<h2 id="0x02-下载编译"><a href="#0x02-下载编译" class="headerlink" title="0x02 下载编译"></a>0x02 下载编译</h2><p>github 上最新版本是4.0，可以直接 clone github 项目编译，可参考提供的 wiki 文档：<a href="https://github.com/obfuscator-llvm/obfuscator/wiki/Installation" target="_blank" rel="external">Installation</a></p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">$ git <span class="built_in">clone</span> -b llvm-4.0 https://github.com/obfuscator-llvm/obfuscator.git</div><div class="line">$ mkdir build</div><div class="line">$ <span class="built_in">cd</span> build</div><div class="line">$ cmake -DCMAKE_BUILD_TYPE=Release ../obfuscator/</div><div class="line">$ make -j7</div></pre></td></tr></table></figure>
 <p>这里编译的时候需要 cmake 工具，可以通过 Homebrew 直接安装。编译成功后，生成的文件在 build/bin 下</p>
-<h2 id="0x03-与-NDK-整合"><a href="#0x03-与-NDK-整合" class="headerlink" title="0x03 与 NDK 整合"></a>0x03 与 NDK 整合</h2><h3 id="新建编译链"><a href="#新建编译链" class="headerlink" title="新建编译链"></a>新建编译链</h3><p>在 android-ndk-r14b/toolchains 下新建目录 ollvm-3.6/prebuilt/darwin-x86_64，把前一步编译生成的结果拷贝到此目录下（主要是bin和lib）。</p>
+<h2 id="0x03-与-NDK-整合"><a href="#0x03-与-NDK-整合" class="headerlink" title="0x03 与 NDK 整合"></a>0x03 与 NDK 整合</h2><h3 id="新建编译链"><a href="#新建编译链" class="headerlink" title="新建编译链"></a>新建编译链</h3><p>在 android-ndk-r14b/toolchains 下新建目录 ollvm-4.0/prebuilt/darwin-x86_64，把前一步编译生成的结果拷贝到此目录下（主要是bin和lib）。</p>
 <p><strong><font color="red">这里最好直接复制 llvm 目录，然后进行修改。手动创建的时候遇到过编译失败，直接复制修改就没这种问题。</font></strong>     </p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">[armeabi-v7a] Compile++ thumb: native &amp;lt;= jni_export.cpp</div><div class="line">make: execvp: /Users/xiangqing/Documents/code/ollvm/build/bin: Permission denied</div><div class="line">make: *** [/Users/xiangqing/Documents/project/droid-ndk/example/src/main/obj/<span class="built_in">local</span>/armeabi-v7a/objs/native/jni_export.o] Error 127</div></pre></td></tr></table></figure>
-<h3 id="配置编译链"><a href="#配置编译链" class="headerlink" title="配置编译链"></a>配置编译链</h3><p>在 android-ndk-r14b/build/core/toolchains 目录下，新建目录 arm-linux-androideabi-clang-ollvm3.6，拷贝目录 arm-linux-androideabi-clang 下的文件 config.mk 与 setup.mk 到 arm-linux-androideabi-clang-ollvm3.6 中，修改setup.mk文件。</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div></pre></td><td class="code"><pre><div class="line"><span class="comment">#</span></div><div class="line"><span class="comment"># Override the toolchain prefix</span></div><div class="line"><span class="comment">#</span></div><div class="line"></div><div class="line"><span class="comment">############################ 原始配置 ############################</span></div><div class="line"><span class="comment">#LLVM_TOOLCHAIN_PREBUILT_ROOT := $(call get-toolchain-root,llvm)</span></div><div class="line"><span class="comment">#LLVM_TOOLCHAIN_PREFIX := $(LLVM_TOOLCHAIN_PREBUILT_ROOT)/bin/</span></div><div class="line"><span class="comment">#################################################################</span></div><div class="line"></div><div class="line"><span class="comment">############################ 修改后 #############################</span></div><div class="line">OLLVM_NAME := ollvm-3.6</div><div class="line">LLVM_TOOLCHAIN_PREBUILT_ROOT := $(call get-toolchain-root,$(OLLVM_NAME))</div><div class="line">LLVM_TOOLCHAIN_PREFIX := $(LLVM_TOOLCHAIN_PREBUILT_ROOT)/bin/</div><div class="line"></div><div class="line"><span class="comment">#其他配置不做修改</span></div><div class="line">......</div></pre></td></tr></table></figure>
-<p>config.mk 保存的是该编译链对应的 CPU 架构，所以上面修改完只能编译 armeabi 和 armeabi-v7a 架构的 so。如果需要编译其他架构需要做相应的修改。文件夹名也必须按照严格的格式，如 mips 的需要添加文件夹：mipsel-linux-android-clang-ollvm3.6，修改相应的 setup.mk 文件。</p>
+<h3 id="配置编译链"><a href="#配置编译链" class="headerlink" title="配置编译链"></a>配置编译链</h3><p>在 android-ndk-r14b/build/core/toolchains 目录下，新建目录 arm-linux-androideabi-clang-ollvm4.0，拷贝目录 arm-linux-androideabi-clang 下的文件 config.mk 与 setup.mk 到 arm-linux-androideabi-clang-ollvm4.0 中，修改setup.mk文件。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div></pre></td><td class="code"><pre><div class="line"><span class="comment">#</span></div><div class="line"><span class="comment"># Override the toolchain prefix</span></div><div class="line"><span class="comment">#</span></div><div class="line"></div><div class="line"><span class="comment">############################ 原始配置 ############################</span></div><div class="line"><span class="comment">#LLVM_TOOLCHAIN_PREBUILT_ROOT := $(call get-toolchain-root,llvm)</span></div><div class="line"><span class="comment">#LLVM_TOOLCHAIN_PREFIX := $(LLVM_TOOLCHAIN_PREBUILT_ROOT)/bin/</span></div><div class="line"><span class="comment">#################################################################</span></div><div class="line"></div><div class="line"><span class="comment">############################ 修改后 #############################</span></div><div class="line">OLLVM_NAME := ollvm-4.0</div><div class="line">LLVM_TOOLCHAIN_PREBUILT_ROOT := $(call get-toolchain-root,$(OLLVM_NAME))</div><div class="line">LLVM_TOOLCHAIN_PREFIX := $(LLVM_TOOLCHAIN_PREBUILT_ROOT)/bin/</div><div class="line"></div><div class="line"><span class="comment">#其他配置不做修改</span></div><div class="line">......</div></pre></td></tr></table></figure>
+<p>config.mk 保存的是该编译链对应的 CPU 架构，所以上面修改完只能编译 armeabi 和 armeabi-v7a 架构的 so。如果需要编译其他架构需要做相应的修改。文件夹名也必须按照严格的格式，如 mips 的需要添加文件夹：mipsel-linux-android-clang-ollvm4.0，修改相应的 setup.mk 文件。</p>
 <h2 id="0x04-OLLVM-使用"><a href="#0x04-OLLVM-使用" class="headerlink" title="0x04 OLLVM 使用"></a>0x04 OLLVM 使用</h2><p>使用 ollvm 进行 ndk 的编译需要对 Application.mk 和 Android.mk 文件做相应的修改。</p>
 <p>Android.mk 中添加混淆编译参数：</p>
 <figure class="highlight xml"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">LOCAL_CFLAGS += -mllvm -sub -mllvm -bcf -mllvm -fla</div></pre></td></tr></table></figure>
 <p>参数相关的文档可以看 github 上的wiki: <a href="https://github.com/obfuscator-llvm/obfuscator/wiki" target="_blank" rel="external">https://github.com/obfuscator-llvm/obfuscator/wiki</a></p>
 <p>Application.mk 中配置 NDK_TOOLCHAIN_VERSION</p>
-<figure class="highlight xml"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">#目前版本不支持 mips64</div><div class="line">APP_ABI := x86 armeabi-v7a x86_64 arm64-v8a mips armeabi</div><div class="line">NDK_TOOLCHAIN_VERSION := clang-ollvm3.6</div></pre></td></tr></table></figure>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">APP_ABI := x86 armeabi-v7a x86_64 arm64-v8a mips armeabi mips64</div><div class="line">NDK_TOOLCHAIN_VERSION := clang-ollvm4.0</div></pre></td></tr></table></figure>
 <p>参考文章： </p>
 <ul>
 <li><a href="http://blog.csdn.net/edwal/article/details/72897205#reply" target="_blank" rel="external">OLLVM + android-ndk-r14b 混淆编译环境搭建</a></li>
@@ -456,9 +456,9 @@
       
         <div class="post-tags">
           
-            <a href="/tags/ndk/" rel="tag"># ndk</a>
-          
             <a href="/tags/android/" rel="tag"># android</a>
+          
+            <a href="/tags/ndk/" rel="tag"># ndk</a>
           
             <a href="/tags/ollvm/" rel="tag"># ollvm</a>
           
