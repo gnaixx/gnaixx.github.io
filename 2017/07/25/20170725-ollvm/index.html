@@ -101,7 +101,7 @@
 <link href="/css/main.css?v=5.1.1" rel="stylesheet" type="text/css" />
 
 
-  <meta name="keywords" content="android,manifest," />
+  <meta name="keywords" content="ndk,android,ollvm," />
 
 
 
@@ -117,16 +117,16 @@
 
 
 
-<meta name="description" content="在android开发中你需要配置不同的Sdk版本，每个版本都有其特定的含义">
+<meta name="description" content="代码混淆能起到很好的反逆向分析，类似于 java 的 proguard 混淆和 dex 文件的 dexguard 混淆工具，c/c++ 也有对应的 ollvm 混淆组件。">
 <meta property="og:type" content="article">
-<meta property="og:title" content="AndroidManifest中sdkVersion含义">
-<meta property="og:url" content="http://gnaixx.cc/2015/11/08/android-manifest-sdk_version/index.html">
+<meta property="og:title" content="OLLVM + NDK 混淆编译环境搭建">
+<meta property="og:url" content="http://gnaixx.cc/2017/07/25/20170725-ollvm/index.html">
 <meta property="og:site_name" content="凸一_一凸">
-<meta property="og:description" content="在android开发中你需要配置不同的Sdk版本，每个版本都有其特定的含义">
-<meta property="og:updated_time" content="2016-11-05T09:49:53.000Z">
+<meta property="og:description" content="代码混淆能起到很好的反逆向分析，类似于 java 的 proguard 混淆和 dex 文件的 dexguard 混淆工具，c/c++ 也有对应的 ollvm 混淆组件。">
+<meta property="og:updated_time" content="2017-07-25T09:33:35.000Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="AndroidManifest中sdkVersion含义">
-<meta name="twitter:description" content="在android开发中你需要配置不同的Sdk版本，每个版本都有其特定的含义">
+<meta name="twitter:title" content="OLLVM + NDK 混淆编译环境搭建">
+<meta name="twitter:description" content="代码混淆能起到很好的反逆向分析，类似于 java 的 proguard 混淆和 dex 文件的 dexguard 混淆工具，c/c++ 也有对应的 ollvm 混淆组件。">
 
 
 
@@ -154,13 +154,13 @@
 
 
 
-  <link rel="canonical" href="http://gnaixx.cc/2015/11/08/android-manifest-sdk_version/"/>
+  <link rel="canonical" href="http://gnaixx.cc/2017/07/25/20170725-ollvm/"/>
 
 
 
 
 
-  <title>AndroidManifest中sdkVersion含义 | 凸一_一凸</title>
+  <title>OLLVM + NDK 混淆编译环境搭建 | 凸一_一凸</title>
   
 
 
@@ -291,7 +291,7 @@
   
 
   <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
-    <link itemprop="mainEntityOfPage" href="http://gnaixx.cc/2015/11/08/android-manifest-sdk_version/">
+    <link itemprop="mainEntityOfPage" href="http://gnaixx.cc/2017/07/25/20170725-ollvm/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="凸一_一凸">
@@ -308,7 +308,7 @@
 
         
         
-          <h1 class="post-title" itemprop="name headline">AndroidManifest中sdkVersion含义</h1>
+          <h1 class="post-title" itemprop="name headline">OLLVM + NDK 混淆编译环境搭建</h1>
         
 
         <div class="post-meta">
@@ -320,8 +320,8 @@
               
                 <span class="post-meta-item-text">发表于</span>
               
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2015-11-08T23:16:22+08:00">
-                2015-11-08
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-07-25T09:36:27+08:00">
+                2017-07-25
               </time>
             
 
@@ -361,9 +361,9 @@
                 <span class="post-meta-item-icon">
                   <i class="fa fa-comment-o"></i>
                 </span>
-                <a href="/2015/11/08/android-manifest-sdk_version/#comments" itemprop="discussionUrl">
+                <a href="/2017/07/25/20170725-ollvm/#comments" itemprop="discussionUrl">
                   <span class="post-comments-count disqus-comment-count"
-                        data-disqus-identifier="2015/11/08/android-manifest-sdk_version/" itemprop="commentCount"></span>
+                        data-disqus-identifier="2017/07/25/20170725-ollvm/" itemprop="commentCount"></span>
                 </a>
               </span>
             
@@ -371,7 +371,7 @@
 
           
           
-             <span id="/2015/11/08/android-manifest-sdk_version/" class="leancloud_visitors" data-flag-title="AndroidManifest中sdkVersion含义">
+             <span id="/2017/07/25/20170725-ollvm/" class="leancloud_visitors" data-flag-title="OLLVM + NDK 混淆编译环境搭建">
                <span class="post-meta-divider">|</span>
                <span class="post-meta-item-icon">
                  <i class="fa fa-eye"></i>
@@ -389,7 +389,7 @@
 
           
               <div class="post-description">
-                  在android开发中你需要配置不同的Sdk版本，每个版本都有其特定的含义
+                  代码混淆能起到很好的反逆向分析，类似于 java 的 proguard 混淆和 dex 文件的 dexguard 混淆工具，c/c++ 也有对应的 ollvm 混淆组件。
               </div>
           
 
@@ -403,21 +403,30 @@
       
 
       
-        <p>在android开发中你需要配置不同的Sdk版本，每个版本都有其特定的含义。</p>
-<h2 id="0x00-Eclipse"><a href="#0x00-Eclipse" class="headerlink" title="0x00 Eclipse"></a>0x00 Eclipse</h2><p>在使用eclipse开发android应用程序时可以发现AndroidManifest.xml文件中有下面几行代码</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">&lt;uses-sdk</div><div class="line">        android:minSdkVersion=<span class="string">"14"</span></div><div class="line">        android:targetSdkVersion=<span class="string">"23"</span> /&gt;</div></pre></td></tr></table></figure>
-<p>另外在project.propert文件中定义了compileSdkVersion</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">target=android-<span class="number">23</span></div></pre></td></tr></table></figure>
-<h2 id="0x01-Android-Studio-IDEA"><a href="#0x01-Android-Studio-IDEA" class="headerlink" title="0x01 Android Studio/IDEA"></a>0x01 Android Studio/IDEA</h2><p>而在使用Android studio/idea开发时不在使用Ant作为自动化构建工具改用gradle，所以大部分配置信息都在build.gradle文件中。</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line">compileSdkVersion <span class="number">23</span></div><div class="line">buildToolsVersion <span class="string">"23.0.2"</span></div><div class="line"></div><div class="line">defaultConfig &#123;</div><div class="line">   applicationId <span class="string">"com.example.gnaix.material"</span></div><div class="line">   minSdkVersion <span class="number">14</span></div><div class="line">   targetSdkVersion <span class="number">23</span></div><div class="line">   versionCode <span class="number">1</span></div><div class="line">   versionName <span class="string">"1.0"</span></div><div class="line">&#125;</div></pre></td></tr></table></figure>
-<p>虽然我很喜欢as，但是必须说一句as的编译速度比eclipse慢好多。</p>
-<h2 id="0x02-SdkVersion含义"><a href="#0x02-SdkVersion含义" class="headerlink" title="0x02 *SdkVersion含义"></a>0x02 <em>*</em>SdkVersion含义</h2><ol>
-<li>compileSdkVersion: 编译源码的Android SDK版本号</li>
-<li>minSdkVersion: apk最低支持版本</li>
-<li>maxSdkVersion: apk最高支持版本(一般不设置)</li>
-<li>targetSdkVersion: 指点了具体的api，在该版本设备上运行时只会调用该版本实现的API，而不是早期版本的API（上一篇介绍permission中有提到该配置）   </li>
-<li>buildTooVersion: 构建工具的版本号，其中包括了打包工具aapt、dx等。工具目录位于sdk_path/build-tools/xx.xx.xx。可以用高版本build-tool去构建一个低版本的sdk工程</li>
-</ol>
+        <h2 id="0x00-OLLVM-简介"><a href="#0x00-OLLVM-简介" class="headerlink" title="0x00 OLLVM 简介"></a>0x00 OLLVM 简介</h2><p>Obfuscator-LLVM is a project initiated in June 2010 by the information security group of the University of Applied Sciences and Arts Western Switzerland of Yverdon-les-Bains (HEIG-VD).</p>
+<p>The aim of this project is to provide an open-source fork of the LLVM compilation suite able to provide increased software security through code obfuscation and tamper-proofing. As we currently mostly work at the Intermediate Representation (IR) level, our tool is compatible with all programming languages (C, C++, Objective-C, Ada and Fortran) and target platforms (x86, x86-64, PowerPC, PowerPC-64, ARM, Thumb, SPARC, Alpha, CellSPU, MIPS, MSP430, SystemZ, and XCore) currently supported by LLVM.</p>
+<p>源码地址：<a href="https://github.com/obfuscator-llvm/obfuscator/" target="_blank" rel="external">https://github.com/obfuscator-llvm/obfuscator/</a></p>
+<h2 id="0x01-环境信息"><a href="#0x01-环境信息" class="headerlink" title="0x01 环境信息"></a>0x01 环境信息</h2><p>系统环境：MacOS<br>系统版本：10.12.5<br>NDK版本：android-ndk-r14b</p>
+<h2 id="0x02-下载编译"><a href="#0x02-下载编译" class="headerlink" title="0x02 下载编译"></a>0x02 下载编译</h2><p>github 上最新版本是4.0，但是配置好后发现 <code>-bcf</code> 功能有问题，所以又切换到版本3.6.1了。可以直接 clone github 项目编译，可参考提供的 wiki 文档：<a href="https://github.com/obfuscator-llvm/obfuscator/wiki/Installation" target="_blank" rel="external">Installation</a></p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">$ git <span class="built_in">clone</span> -b llvm-3.6.1 https://github.com/obfuscator-llvm/obfuscator.git</div><div class="line">$ mkdir build</div><div class="line">$ <span class="built_in">cd</span> build</div><div class="line">$ cmake -DCMAKE_BUILD_TYPE=Release ../obfuscator/</div><div class="line">$ make -j7</div></pre></td></tr></table></figure>
+<p>这里编译的时候需要 cmake 工具，可以通过 Homebrew 直接安装。编译成功后，生成的文件在 build/bin 下</p>
+<h2 id="0x03-与-NDK-整合"><a href="#0x03-与-NDK-整合" class="headerlink" title="0x03 与 NDK 整合"></a>0x03 与 NDK 整合</h2><h3 id="新建编译链"><a href="#新建编译链" class="headerlink" title="新建编译链"></a>新建编译链</h3><p>在 android-ndk-r14b/toolchains 下新建目录 ollvm-3.6/prebuilt/darwin-x86_64，把前一步编译生成的结果拷贝到此目录下（主要是bin和lib）。</p>
+<p><strong><font color="red">这里最好直接复制 llvm 目录，然后进行修改。手动创建的时候遇到过编译失败，直接复制修改就没这种问题。</font></strong>     </p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">[armeabi-v7a] Compile++ thumb: native &amp;lt;= jni_export.cpp</div><div class="line">make: execvp: /Users/xiangqing/Documents/code/ollvm/build/bin: Permission denied</div><div class="line">make: *** [/Users/xiangqing/Documents/project/droid-ndk/example/src/main/obj/<span class="built_in">local</span>/armeabi-v7a/objs/native/jni_export.o] Error 127</div></pre></td></tr></table></figure>
+<h3 id="配置编译链"><a href="#配置编译链" class="headerlink" title="配置编译链"></a>配置编译链</h3><p>在 android-ndk-r14b/build/core/toolchains 目录下，新建目录 arm-linux-androideabi-clang-ollvm3.6，拷贝目录 arm-linux-androideabi-clang 下的文件 config.mk 与 setup.mk 到 arm-linux-androideabi-clang-ollvm3.6 中，修改setup.mk文件。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div></pre></td><td class="code"><pre><div class="line"><span class="comment">#</span></div><div class="line"><span class="comment"># Override the toolchain prefix</span></div><div class="line"><span class="comment">#</span></div><div class="line"></div><div class="line"><span class="comment">############################ 原始配置 ############################</span></div><div class="line"><span class="comment">#LLVM_TOOLCHAIN_PREBUILT_ROOT := $(call get-toolchain-root,llvm)</span></div><div class="line"><span class="comment">#LLVM_TOOLCHAIN_PREFIX := $(LLVM_TOOLCHAIN_PREBUILT_ROOT)/bin/</span></div><div class="line"><span class="comment">#################################################################</span></div><div class="line"></div><div class="line"><span class="comment">############################ 修改后 #############################</span></div><div class="line">OLLVM_NAME := ollvm-3.6</div><div class="line">LLVM_TOOLCHAIN_PREBUILT_ROOT := $(call get-toolchain-root,$(OLLVM_NAME))</div><div class="line">LLVM_TOOLCHAIN_PREFIX := $(LLVM_TOOLCHAIN_PREBUILT_ROOT)/bin/</div><div class="line"></div><div class="line"><span class="comment">#其他配置不做修改</span></div><div class="line">......</div></pre></td></tr></table></figure>
+<p>config.mk 保存的是该编译链对应的 CPU 架构，所以上面修改完只能编译 armeabi 和 armeabi-v7a 架构的 so。如果需要编译其他架构需要做相应的修改。文件夹名也必须按照严格的格式，如 mips 的需要添加文件夹：mipsel-linux-android-clang-ollvm3.6，修改相应的 setup.mk 文件。</p>
+<h2 id="0x04-OLLVM-使用"><a href="#0x04-OLLVM-使用" class="headerlink" title="0x04 OLLVM 使用"></a>0x04 OLLVM 使用</h2><p>使用 ollvm 进行 ndk 的编译需要对 Application.mk 和 Android.mk 文件做相应的修改。</p>
+<p>Android.mk 中添加混淆编译参数：</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">LOCAL_CFLAGS += -mllvm -sub -mllvm -bcf -mllvm -fla</div></pre></td></tr></table></figure>
+<p>参数相关的文档可以看 github 上的wiki: <a href="https://github.com/obfuscator-llvm/obfuscator/wiki" target="_blank" rel="external">https://github.com/obfuscator-llvm/obfuscator/wiki</a></p>
+<p>Application.mk 中配置 NDK_TOOLCHAIN_VERSION</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">#目前版本不支持 mips64</div><div class="line">APP_ABI := x86 armeabi-v7a x86_64 arm64-v8a mips armeabi</div><div class="line">NDK_TOOLCHAIN_VERSION := clang-ollvm3.6</div></pre></td></tr></table></figure>
+<p>参考文章： </p>
+<ul>
+<li><a href="http://blog.csdn.net/edwal/article/details/72897205#reply" target="_blank" rel="external">OLLVM + android-ndk-r14b 混淆编译环境搭建</a></li>
+<li><a href="http://fuzion24.github.io/android/obfuscation/ndk/llvm/o-llvm/2014/07/27/android-obfuscation-o-llvm-ndk/" target="_blank" rel="external">Obfuscating Android Applications using O-LLVM and the NDK</a></li>
+</ul>
 
       
     </div>
@@ -447,9 +456,11 @@
       
         <div class="post-tags">
           
+            <a href="/tags/ndk/" rel="tag"># ndk</a>
+          
             <a href="/tags/android/" rel="tag"># android</a>
           
-            <a href="/tags/manifest/" rel="tag"># manifest</a>
+            <a href="/tags/ollvm/" rel="tag"># ollvm</a>
           
         </div>
       
@@ -462,8 +473,8 @@
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
-              <a href="/2015/11/07/android-permission/" rel="next" title="Android中Permission的分类">
-                <i class="fa fa-chevron-left"></i> Android中Permission的分类
+              <a href="/2017/07/23/20170723-ndk-pro/" rel="next" title="NDK 高级编程(笔记)">
+                <i class="fa fa-chevron-left"></i> NDK 高级编程(笔记)
               </a>
             
           </div>
@@ -471,10 +482,6 @@
           <span class="post-nav-divider"></span>
 
           <div class="post-nav-prev post-nav-item">
-            
-              <a href="/2015/11/09/android-drawerLayout/" rel="prev" title="Android抽屉菜单的实现-DrawerLayout">
-                Android抽屉菜单的实现-DrawerLayout <i class="fa fa-chevron-right"></i>
-              </a>
             
           </div>
         </div>
@@ -636,7 +643,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#0x00-Eclipse"><span class="nav-number">1.</span> <span class="nav-text">0x00 Eclipse</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#0x01-Android-Studio-IDEA"><span class="nav-number">2.</span> <span class="nav-text">0x01 Android Studio/IDEA</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#0x02-SdkVersion含义"><span class="nav-number">3.</span> <span class="nav-text">0x02 *SdkVersion含义</span></a></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#0x00-OLLVM-简介"><span class="nav-number">1.</span> <span class="nav-text">0x00 OLLVM 简介</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#0x01-环境信息"><span class="nav-number">2.</span> <span class="nav-text">0x01 环境信息</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#0x02-下载编译"><span class="nav-number">3.</span> <span class="nav-text">0x02 下载编译</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#0x03-与-NDK-整合"><span class="nav-number">4.</span> <span class="nav-text">0x03 与 NDK 整合</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#新建编译链"><span class="nav-number">4.1.</span> <span class="nav-text">新建编译链</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#配置编译链"><span class="nav-number">4.2.</span> <span class="nav-text">配置编译链</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#0x04-OLLVM-使用"><span class="nav-number">5.</span> <span class="nav-text">0x04 OLLVM 使用</span></a></li></ol></div>
             
 
           </div>
@@ -779,9 +786,9 @@
     
       <script type="text/javascript">
         var disqus_config = function () {
-          this.page.url = 'http://gnaixx.cc/2015/11/08/android-manifest-sdk_version/';
-          this.page.identifier = '2015/11/08/android-manifest-sdk_version/';
-          this.page.title = 'AndroidManifest中sdkVersion含义';
+          this.page.url = 'http://gnaixx.cc/2017/07/25/20170725-ollvm/';
+          this.page.identifier = '2017/07/25/20170725-ollvm/';
+          this.page.title = 'OLLVM + NDK 混淆编译环境搭建';
         };
         var d = document, s = d.createElement('script');
         s.src = 'https://http-gnaixx-cc.disqus.com/embed.js';
