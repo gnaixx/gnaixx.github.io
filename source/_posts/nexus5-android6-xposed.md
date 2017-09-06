@@ -1,7 +1,7 @@
 title: "nexus5 刷 Android6.0+Xposed"
 date: 2016-07-24 19:14:54
 categories: android
-tags: [xposed nexus5]
+tags: [xposed, nexus5]
 toc: true
 description: 这几天把手机弄坏了好几次，每次都需要重新刷一遍。刷系统+root+刷recovery+安装xposed。
 
