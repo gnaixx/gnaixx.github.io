@@ -1,0 +1,966 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+    
+      
+    
+
+    
+  
+
+  
+    
+      
+    
+
+    
+  
+
+  
+    
+      
+    
+
+    
+  
+
+  
+    
+      
+    
+
+    
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Monda:300,300italic,400,400italic,700,700italic|Monda:300,300italic,400,400italic,700,700italic|Monda:300,300italic,400,400italic,700,700italic|Monda:300,300italic,400,400italic,700,700italic|Monda:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.1" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="android,hook,cydia," />
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/images/favicon.ico?v=5.1.1" />
+
+
+
+
+
+
+<meta name="description" content="相较于 Xposed 框架 Cydia Substrate 支持 Hook Native 代码，并且也可以做成 apk 插件。但是官方介绍中 Cydia Substrate 框架只支持 4.0 一下的系统，估计作者也不更新了。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Cydia Substrate(Android) 检测方法">
+<meta property="og:url" content="http://gnaixx.cc/2017/09/06/20170906-cydia/index.html">
+<meta property="og:site_name" content="凸一_一凸">
+<meta property="og:description" content="相较于 Xposed 框架 Cydia Substrate 支持 Hook Native 代码，并且也可以做成 apk 插件。但是官方介绍中 Cydia Substrate 框架只支持 4.0 一下的系统，估计作者也不更新了。">
+<meta property="og:image" content="http://gnaixx.cc/blog_images/20170906/method-hook.png">
+<meta property="og:image" content="http://gnaixx.cc/blog_images/20170906/method-orignal.png">
+<meta property="og:updated_time" content="2017-09-06T15:25:20.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Cydia Substrate(Android) 检测方法">
+<meta name="twitter:description" content="相较于 Xposed 框架 Cydia Substrate 支持 Hook Native 代码，并且也可以做成 apk 插件。但是官方介绍中 Cydia Substrate 框架只支持 4.0 一下的系统，估计作者也不更新了。">
+<meta name="twitter:image" content="http://gnaixx.cc/blog_images/20170906/method-hook.png">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    sidebar: {"position":"left","display":"post","offset":12,"offset_float":0,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://gnaixx.cc/2017/09/06/20170906-cydia/"/>
+
+
+
+
+
+  <title>Cydia Substrate(Android) 检测方法 | 凸一_一凸</title>
+  
+
+
+
+
+
+  <script type="text/javascript">
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?bb104a561bbdd3b6666195d45e5581a9";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">凸一_一凸</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">gnaixx</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+            标签
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+    <link itemprop="mainEntityOfPage" href="http://gnaixx.cc/2017/09/06/20170906-cydia/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="凸一_一凸">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/custom_avatar.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="凸一_一凸">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">Cydia Substrate(Android) 检测方法</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-09-06T23:14:43+08:00">
+                2017-09-06
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/android/" itemprop="url" rel="index">
+                    <span itemprop="name">android</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2017/09/06/20170906-cydia/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count disqus-comment-count"
+                        data-disqus-identifier="2017/09/06/20170906-cydia/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+             <span id="/2017/09/06/20170906-cydia/" class="leancloud_visitors" data-flag-title="Cydia Substrate(Android) 检测方法">
+               <span class="post-meta-divider">|</span>
+               <span class="post-meta-item-icon">
+                 <i class="fa fa-eye"></i>
+               </span>
+               
+                 <span class="post-meta-item-text">阅读次数 </span>
+               
+                 <span class="leancloud-visitors-count"></span>
+             </span>
+          
+
+          
+
+          
+
+          
+              <div class="post-description">
+                  相较于 Xposed 框架 Cydia Substrate 支持 Hook Native 代码，并且也可以做成 apk 插件。但是官方介绍中 Cydia Substrate 框架只支持 4.0 一下的系统，估计作者也不更新了。
+              </div>
+          
+
+        </div>
+      </header>
+    
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h2 id="0x00-简介"><a href="#0x00-简介" class="headerlink" title="0x00 简介"></a>0x00 简介</h2><h2 id="0x01-文件特征扫描"><a href="#0x01-文件特征扫描" class="headerlink" title="0x01 文件特征扫描"></a>0x01 文件特征扫描</h2><p><strong>1. 安装包检测</strong><br>Cydia Substrate 框架的特定安装包，包名：”com.saurik.substrate”。</p>
+<p><strong>2. maps 文件内容检测</strong><br>主要扫描注入的 so 文件，特征字符串以 <code>substrate</code> 为主。</p>
+<p><strong>3. /system/bin 下文件</strong><br>安装后添加了两个 substrate 的 lib 链接库：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">lrwxrwxrwx root     root              2017-08-29 21:18 libsubstrate-dvm.so -&gt; /data/data/com.saurik.substrate/lib/libsubstrate-dvm.so</div><div class="line">lrwxrwxrwx root     root              2017-08-29 21:18 libsubstrate.so -&gt; /data/data/com.saurik.substrate/lib/libsubstrate.so</div></pre></td></tr></table></figure>
+<h2 id="0x02-Framework-Class-扫描"><a href="#0x02-Framework-Class-扫描" class="headerlink" title="0x02 Framework Class 扫描"></a>0x02 Framework Class 扫描</h2><p><strong>1. 错误堆栈</strong></p>
+<p><strong>PS:该方式目前的方案可以改进</strong></p>
+<p>正常错误堆栈：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div></pre></td><td class="code"><pre><div class="line">java.lang.Exception: AntiHook</div><div class="line">     at com.example.gnaixx.antihook.detect.DetectSubstrate.detectByException(DetectSubstrate.java:<span class="number">38</span>)</div><div class="line">     at com.example.gnaixx.antihook.MainActivity.detectSubstrate(MainActivity.java:<span class="number">94</span>)</div><div class="line">     at com.example.gnaixx.antihook.MainActivity.onClick(MainActivity.java:<span class="number">41</span>)</div><div class="line">     at android.view.View.performClick(View.java:<span class="number">5769</span>)</div><div class="line">     at android.view.View$PerformClick.run(View.java:<span class="number">22946</span>)</div><div class="line">     at android.os.Handler.handleCallback(Handler.java:<span class="number">836</span>)</div><div class="line">     at android.os.Handler.dispatchMessage(Handler.java:<span class="number">103</span>)</div><div class="line">     at android.os.Looper.loop(Looper.java:<span class="number">203</span>)</div><div class="line">     at android.app.ActivityThread.main(ActivityThread.java:<span class="number">6451</span>)</div><div class="line">     at java.lang.reflect.Method.invoke(Native Method)</div><div class="line">     at com.android.internal.os.ZygoteInit$MethodAndArgsCaller.run(ZygoteInit.java:<span class="number">1134</span>)</div><div class="line">     at com.android.internal.os.ZygoteInit.main(ZygoteInit.java:<span class="number">995</span>)</div></pre></td></tr></table></figure>
+<p>正常的错误堆栈底层只调用了一次 <code>com.android.internal.os.ZygoteInit.main</code><br>方法。</p>
+<p>异常错误堆栈1(非被 Hook 函数 Throw Exception)：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">java.lang.Exception: AntiHook</div><div class="line">     .......</div><div class="line">     at com.android.internal.os.ZygoteInit$MethodAndArgsCaller.run(ZygoteInit.java:<span class="number">785</span>)</div><div class="line">     at com.android.internal.os.ZygoteInit.main(ZygoteInit.java:<span class="number">601</span>)</div><div class="line">     at com.android.internal.os.ZygoteInit.main(Native Method)</div><div class="line">     at dalvik.system.NativeStart.main(Native Method)</div></pre></td></tr></table></figure>
+<p>非被 Hook 函数 Throw Exception 时，<code>dalvik.system.NativeStart.main</code> 调用后会出现2次 <code>com.android.internal.os.ZygoteInit.main</code>。</p>
+<p>异常错误堆栈2(被 Hook 函数 Throw Exception):</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div></pre></td><td class="code"><pre><div class="line">java.lang.Exception: AntiHook</div><div class="line">    at com.example.gnaixx.antihook.util.TestUtil.test1(TestUtil.java:<span class="number">13</span>)</div><div class="line">    at com.saurik.substrate._MS$MethodPointer.invoke(Native Method)</div><div class="line">    at com.saurik.substrate.MS$MethodAlteration.invoke(MS.java:<span class="number">99</span>)</div><div class="line">    at com.example.substrate_plugin.Main$<span class="number">1</span>$<span class="number">1</span>.invoked(Main.java:<span class="number">26</span>)</div><div class="line">    at com.example.substrate_plugin.Main$<span class="number">1</span>$<span class="number">1</span>.invoked(Main.java:<span class="number">20</span>)</div><div class="line">    at com.saurik.substrate.MS$<span class="number">2</span>.invoked(MS.java:<span class="number">68</span>)</div><div class="line">    at com.example.gnaixx.antihook.util.TestUtil.test1(Native Method)</div><div class="line">    ......</div><div class="line">    at com.android.internal.os.ZygoteInit$MethodAndArgsCaller.run(ZygoteInit.java:<span class="number">785</span>)</div><div class="line">    at com.android.internal.os.ZygoteInit.main(ZygoteInit.java:<span class="number">601</span>)</div><div class="line">    at com.android.internal.os.ZygoteInit.main(Native Method)</div><div class="line">    at dalvik.system.NativeStart.main(Native Method)</div></pre></td></tr></table></figure>
+<p>如果是被 Hook 的函数 Throw Exception 除了上述的特征2次 <code>com.android.internal.os.ZygoteInit.main</code>。在调用的函数前还有一段特征:</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">......</div><div class="line"><span class="number">1</span>. at com.saurik.substrate._MS$MethodPointer.invoke(Native Method)</div><div class="line"><span class="number">2</span>. at com.saurik.substrate.MS$MethodAlteration.invoke(MS.java:<span class="number">99</span>)</div><div class="line"><span class="number">3</span>. at com.example.substrate_plugin.Main$<span class="number">1</span>$<span class="number">1</span>.invoked(Main.java:<span class="number">26</span>)</div><div class="line"><span class="number">4</span>. at com.example.substrate_plugin.Main$<span class="number">1</span>$<span class="number">1</span>.invoked(Main.java:<span class="number">20</span>)</div><div class="line"><span class="number">5</span>. at com.saurik.substrate.MS$<span class="number">2</span>.invoked(MS.java:<span class="number">68</span>)</div><div class="line">......</div></pre></td></tr></table></figure>
+<p>1、2、5 行是 Cydia Substrate framework 中的 Class，3、4 为插件的 Class。所以如果错误堆栈中出现了 1、2、5 的类名也可以作为一个特征。</p>
+<p><strong>2. Load Class</strong></p>
+<p>通过错误堆栈可以看出一部分注入的 Java 类，可以通过 frida 将框架所有调用的 Class 扫出来：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">import</span> frida</div><div class="line"><span class="keyword">import</span> sys</div><div class="line"></div><div class="line"></div><div class="line">device = frida.get_usb_device()</div><div class="line">front_app = device.get_frontmost_application()</div><div class="line">print(front_app)</div><div class="line">session = device.attach(front_app.identifier)</div><div class="line"></div><div class="line"><span class="function"><span class="keyword">def</span> <span class="title">on_message</span><span class="params">(message, data)</span>:</span></div><div class="line">    <span class="keyword">if</span> message[<span class="string">'type'</span>] == <span class="string">'send'</span>:</div><div class="line">        print(<span class="string">"[*] &#123;0&#125;"</span>.format(message[<span class="string">'payload'</span>]))</div><div class="line">    <span class="keyword">else</span>:</div><div class="line">        print(message)</div><div class="line"></div><div class="line">jscode = <span class="string">"""</span></div><div class="line">var classes = Java.enumerateLoadedClassesSync();</div><div class="line">for(var i=0; i&lt;classes.length; i++)&#123;</div><div class="line">    send(classes[i]);</div><div class="line">&#125;</div><div class="line">"""</div><div class="line">script = session.create_script(jscode)</div><div class="line">script.on(<span class="string">'message'</span>, on_message)</div><div class="line">print(<span class="string">'[*] Running CTF'</span>)</div><div class="line">script.load()</div><div class="line">sys.stdin.read()</div></pre></td></tr></table></figure>
+<p>扫出来的相关 Class 主要有以下几个：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line">[*] Lcom/saurik/substrate/_MS<span class="variable">$MethodHook</span>;</div><div class="line">[*] Lcom/saurik/substrate/_MS<span class="variable">$MethodPointer</span>;</div><div class="line">[*] Lcom/saurik/substrate/SubstrateClassLoader;</div><div class="line">[*] Lcom/saurik/substrate/MS<span class="variable">$ClassLoadHook</span>;</div><div class="line">[*] Lcom/saurik/substrate/_MS<span class="variable">$ClassLoadHook</span>;</div><div class="line">[*] Lcom/saurik/substrate/MS<span class="variable">$1</span>;</div><div class="line">[*] Lcom/saurik/substrate/MS<span class="variable">$2</span>;</div><div class="line">[*] Lcom/saurik/substrate/MS;</div><div class="line">[*] Lcom/saurik/substrate/_MS;</div></pre></td></tr></table></figure>
+<p>这几个类如果通过 ClassLoader.loadClass 或者 Class.forClass 获取都会找不到对应的类，除了 <code>SubstrateClassLoader</code>,通过在插件中递归打印它自己的 ClassLoader：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">com.saurik.substrate.SubstrateClassLoader[DexPathList[[zip file <span class="string">"/data/app/com.example.substrate_plugin-1.apk"</span>],nativeLibraryDirectories=[/vendor/lib, /system/lib]]]</div><div class="line">dalvik.system.PathClassLoader[DexPathList[[directory <span class="string">"."</span>],nativeLibraryDirectories=[/vendor/lib, /system/lib]]]</div><div class="line">java.lang.BootClassLoader@41643fd0</div></pre></td></tr></table></figure>
+<p>SubstrateClassLoader 继承了 PathClassLoader 并且加载了其他插件，所以可以通过检测SubstrateClassLoader 来判断:</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">ClassLoader.getSystemClassLoader().loadClass(<span class="string">"com.saurik.substrate.SubstrateClassLoader"</span>);</div></pre></td></tr></table></figure>
+<h2 id="0x03-Java-被-Hook-函数扫描"><a href="#0x03-Java-被-Hook-函数扫描" class="headerlink" title="0x03 Java 被 Hook 函数扫描"></a>0x03 Java 被 Hook 函数扫描</h2><p>substrate hook 方式和</p>
+<h2 id="0x04-Native-被-Hook-函数扫描"><a href="#0x04-Native-被-Hook-函数扫描" class="headerlink" title="0x04 Native 被 Hook 函数扫描"></a>0x04 Native 被 Hook 函数扫描</h2><p><strong>分析 Native Hook 函数特征</strong></p>
+<p>通过编写 Substrate 插件 hook native 函数。利用 IDA 动态调试查看函数指令和机器码：<br><img src="/blog_images/20170906/method-hook.png" alt="hook"></p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">78 47 c0 46 </div><div class="line">04 f0 1f e5 </div><div class="line">8d a0 54 41 </div><div class="line">10 bc 01 b4</div><div class="line">20 bc 0b 90 </div><div class="line">......</div></pre></td></tr></table></figure>
+<p>指令 <code>BX PC</code> 执行了跳转操作，最后根据动态调试结果, <code>41540a8d</code>(Little-Endian)即为函数跳转后的执行地址，也就是hook后修改的函数地址。</p>
+<p>原始指令集和对应的机器码：<br><img src="/blog_images/20170906/method-orignal.png" alt="orignal"></p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">b0 b5 02 af </div><div class="line">8c b0 04 b4 </div><div class="line">08 bc 02 b4</div><div class="line">10 bc 01 b4</div><div class="line">20 bc 0b 90</div><div class="line">.......</div></pre></td></tr></table></figure>
+<p>对比原始函数的机器码和 hook 后函数的机器，可以发现函数的前 12 个字节被修改了。</p>
+<p><strong>识别方案</strong></p>
+<ul>
+<li>通过获取函数地址</li>
+<li>分析地址前四个机器码是否为 <code>78 47 c0 46</code>(跳转指令)</li>
+<li>获取第 9 位开始的地址</li>
+<li>通过地址和 maps 中内存信息匹配获取到注入的 so</li>
+</ul>
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/android/" rel="tag"># android</a>
+          
+            <a href="/tags/hook/" rel="tag"># hook</a>
+          
+            <a href="/tags/cydia/" rel="tag"># cydia</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2017/08/27/20170827-xposed/" rel="next" title="Xposed Hook 原理和检测方法">
+                <i class="fa fa-chevron-left"></i> Xposed Hook 原理和检测方法
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+      <div id="disqus_thread">
+        <noscript>
+          Please enable JavaScript to view the
+          <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a>
+        </noscript>
+      </div>
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="/images/custom_avatar.jpg"
+               alt="凸一_一凸" />
+          <p class="site-author-name" itemprop="name">凸一_一凸</p>
+           
+              <p class="site-description motion-element" itemprop="description"></p>
+          
+        </div>
+        <nav class="site-state motion-element">
+
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/archives/">
+                <span class="site-state-item-count">44</span>
+                <span class="site-state-item-name">日志</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-categories">
+              <a href="/categories/index.html">
+                <span class="site-state-item-count">5</span>
+                <span class="site-state-item-name">分类</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-tags">
+              <a href="/tags/index.html">
+                <span class="site-state-item-count">45</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+            
+              <span class="links-of-author-item">
+                <a href="https://github.com/gnaixx" target="_blank" title="GitHub">
+                  
+                    <i class="fa fa-fw fa-github"></i>
+                  
+                  GitHub
+                </a>
+              </span>
+            
+          
+        </div>
+
+        
+        
+
+        
+        
+          <div class="links-of-blogroll motion-element links-of-blogroll-block">
+            <div class="links-of-blogroll-title">
+              <i class="fa  fa-fw fa-globe"></i>
+              友情链接
+            </div>
+            <ul class="links-of-blogroll-list">
+              
+                <li class="links-of-blogroll-item">
+                  <a href="https://waynecz.github.io/" title="安全小弟的全栈大哥" target="_blank">安全小弟的全栈大哥</a>
+                </li>
+              
+            </ul>
+          </div>
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#0x00-简介"><span class="nav-number">1.</span> <span class="nav-text">0x00 简介</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#0x01-文件特征扫描"><span class="nav-number">2.</span> <span class="nav-text">0x01 文件特征扫描</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#0x02-Framework-Class-扫描"><span class="nav-number">3.</span> <span class="nav-text">0x02 Framework Class 扫描</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#0x03-Java-被-Hook-函数扫描"><span class="nav-number">4.</span> <span class="nav-text">0x03 Java 被 Hook 函数扫描</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#0x04-Native-被-Hook-函数扫描"><span class="nav-number">5.</span> <span class="nav-text">0x04 Native 被 Hook 函数扫描</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy;  2015 - 
+  <span itemprop="copyrightYear">2018</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">凸一_一凸</span>
+</div>
+
+
+<div class="powered-by">
+  由 <a class="theme-link" href="https://hexo.io">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Mist
+  </a>
+</div>
+
+
+        
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.1"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.1"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.1"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.1"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.1"></script>
+
+
+
+  
+
+
+  
+
+    
+      <script id="dsq-count-scr" src="https://http-gnaixx-cc.disqus.com/count.js" async></script>
+    
+
+    
+      <script type="text/javascript">
+        var disqus_config = function () {
+          this.page.url = 'http://gnaixx.cc/2017/09/06/20170906-cydia/';
+          this.page.identifier = '2017/09/06/20170906-cydia/';
+          this.page.title = 'Cydia Substrate(Android) 检测方法';
+        };
+        var d = document, s = d.createElement('script');
+        s.src = 'https://http-gnaixx-cc.disqus.com/embed.js';
+        s.setAttribute('data-timestamp', '' + +new Date());
+        (d.head || d.body).appendChild(s);
+      </script>
+    
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+  <script src="https://cdn1.lncld.net/static/js/av-core-mini-0.6.4.js"></script>
+  <script>AV.initialize("oQgGP7T7KLGlmEGXQEOdOMMo-gzGzoHsz", "CdrzL7gQBF3T923tO4oxyqBo");</script>
+  <script>
+    function showTime(Counter) {
+      var query = new AV.Query(Counter);
+      var entries = [];
+      var $visitors = $(".leancloud_visitors");
+
+      $visitors.each(function () {
+        entries.push( $(this).attr("id").trim() );
+      });
+
+      query.containedIn('url', entries);
+      query.find()
+        .done(function (results) {
+          var COUNT_CONTAINER_REF = '.leancloud-visitors-count';
+
+          if (results.length === 0) {
+            $visitors.find(COUNT_CONTAINER_REF).text(0);
+            return;
+          }
+
+          for (var i = 0; i < results.length; i++) {
+            var item = results[i];
+            var url = item.get('url');
+            var time = item.get('time');
+            var element = document.getElementById(url);
+
+            $(element).find(COUNT_CONTAINER_REF).text(time);
+          }
+          for(var i = 0; i < entries.length; i++) {
+            var url = entries[i];
+            var element = document.getElementById(url);
+            var countSpan = $(element).find(COUNT_CONTAINER_REF);
+            if( countSpan.text() == '') {
+              countSpan.text(0);
+            }
+          }
+        })
+        .fail(function (object, error) {
+          console.log("Error: " + error.code + " " + error.message);
+        });
+    }
+
+    function addCount(Counter) {
+      var $visitors = $(".leancloud_visitors");
+      var url = $visitors.attr('id').trim();
+      var title = $visitors.attr('data-flag-title').trim();
+      var query = new AV.Query(Counter);
+
+      query.equalTo("url", url);
+      query.find({
+        success: function(results) {
+          if (results.length > 0) {
+            var counter = results[0];
+            counter.fetchWhenSave(true);
+            counter.increment("time");
+            counter.save(null, {
+              success: function(counter) {
+                var $element = $(document.getElementById(url));
+                $element.find('.leancloud-visitors-count').text(counter.get('time'));
+              },
+              error: function(counter, error) {
+                console.log('Failed to save Visitor num, with error message: ' + error.message);
+              }
+            });
+          } else {
+            var newcounter = new Counter();
+            /* Set ACL */
+            var acl = new AV.ACL();
+            acl.setPublicReadAccess(true);
+            acl.setPublicWriteAccess(true);
+            newcounter.setACL(acl);
+            /* End Set ACL */
+            newcounter.set("title", title);
+            newcounter.set("url", url);
+            newcounter.set("time", 1);
+            newcounter.save(null, {
+              success: function(newcounter) {
+                var $element = $(document.getElementById(url));
+                $element.find('.leancloud-visitors-count').text(newcounter.get('time'));
+              },
+              error: function(newcounter, error) {
+                console.log('Failed to create');
+              }
+            });
+          }
+        },
+        error: function(error) {
+          console.log('Error:' + error.code + " " + error.message);
+        }
+      });
+    }
+
+    $(function() {
+      var Counter = AV.Object.extend("Counter");
+      if ($('.leancloud_visitors').length == 1) {
+        addCount(Counter);
+      } else if ($('.post-title-link').length > 1) {
+        showTime(Counter);
+      }
+    });
+  </script>
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

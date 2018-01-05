@@ -1,0 +1,1056 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+    
+      
+    
+
+    
+  
+
+  
+    
+      
+    
+
+    
+  
+
+  
+    
+      
+    
+
+    
+  
+
+  
+    
+      
+    
+
+    
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Monda:300,300italic,400,400italic,700,700italic|Monda:300,300italic,400,400italic,700,700italic|Monda:300,300italic,400,400italic,700,700italic|Monda:300,300italic,400,400italic,700,700italic|Monda:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.1" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="android,hook,xposed," />
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/images/favicon.ico?v=5.1.1" />
+
+
+
+
+
+
+<meta name="description" content="xposed 应该是应用最多的 Android hook框架了。插件开发成本相对比较低，并且能直接打包成 apk 发给普通用户使用。通过梳理 xposed 的实现原理，对与 hook 检测会有不少新的思路。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Xposed Hook 原理和检测方法">
+<meta property="og:url" content="http://gnaixx.cc/2017/08/27/20170827-xposed/index.html">
+<meta property="og:site_name" content="凸一_一凸">
+<meta property="og:description" content="xposed 应该是应用最多的 Android hook框架了。插件开发成本相对比较低，并且能直接打包成 apk 发给普通用户使用。通过梳理 xposed 的实现原理，对与 hook 检测会有不少新的思路。">
+<meta property="og:image" content="http://gnaixx.cc/blog_images/20170827/app_process.png">
+<meta property="og:updated_time" content="2017-09-06T15:16:29.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Xposed Hook 原理和检测方法">
+<meta name="twitter:description" content="xposed 应该是应用最多的 Android hook框架了。插件开发成本相对比较低，并且能直接打包成 apk 发给普通用户使用。通过梳理 xposed 的实现原理，对与 hook 检测会有不少新的思路。">
+<meta name="twitter:image" content="http://gnaixx.cc/blog_images/20170827/app_process.png">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    sidebar: {"position":"left","display":"post","offset":12,"offset_float":0,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://gnaixx.cc/2017/08/27/20170827-xposed/"/>
+
+
+
+
+
+  <title>Xposed Hook 原理和检测方法 | 凸一_一凸</title>
+  
+
+
+
+
+
+  <script type="text/javascript">
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?bb104a561bbdd3b6666195d45e5581a9";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">凸一_一凸</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">gnaixx</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+            标签
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+    <link itemprop="mainEntityOfPage" href="http://gnaixx.cc/2017/08/27/20170827-xposed/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="凸一_一凸">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/custom_avatar.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="凸一_一凸">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">Xposed Hook 原理和检测方法</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-08-27T14:18:56+08:00">
+                2017-08-27
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/android/" itemprop="url" rel="index">
+                    <span itemprop="name">android</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2017/08/27/20170827-xposed/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count disqus-comment-count"
+                        data-disqus-identifier="2017/08/27/20170827-xposed/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+             <span id="/2017/08/27/20170827-xposed/" class="leancloud_visitors" data-flag-title="Xposed Hook 原理和检测方法">
+               <span class="post-meta-divider">|</span>
+               <span class="post-meta-item-icon">
+                 <i class="fa fa-eye"></i>
+               </span>
+               
+                 <span class="post-meta-item-text">阅读次数 </span>
+               
+                 <span class="leancloud-visitors-count"></span>
+             </span>
+          
+
+          
+
+          
+
+          
+              <div class="post-description">
+                  xposed 应该是应用最多的 Android hook框架了。插件开发成本相对比较低，并且能直接打包成 apk 发给普通用户使用。通过梳理 xposed 的实现原理，对与 hook 检测会有不少新的思路。
+              </div>
+          
+
+        </div>
+      </header>
+    
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h2 id="0x00-Xposed-简介"><a href="#0x00-Xposed-简介" class="headerlink" title="0x00 Xposed 简介"></a>0x00 Xposed 简介</h2><blockquote>
+<p>Xposed is a framework for modules that can change the behavior of the system and apps without touching any APKs. That’s great because it means that modules can work for different versions and even ROMs without any changes (as long as the original code was not changed too much). It’s also easy to undo. As all changes are done in the memory, you just need to deactivate the module and reboot to get your original system back. There are many other advantages, but here is just one more: Multiple modules can do changes to the same part of the system or app. With modified APKs, you to decide for one. No way to combine them, unless the author builds multiple APKs with different combinations.</p>
+</blockquote>
+<p>官方网站:<a href="http://repo.xposed.info/" target="_blank" rel="external">http://repo.xposed.info/</a><br>Xposed源码:<a href="https://github.com/rovo89" target="_blank" rel="external">https://github.com/rovo89</a></p>
+<p>要正常运行 Xposed 需要以下的几个模块:</p>
+<ul>
+<li>XposedBridge.jar: 负责在 Native 层和 Framework 层进行交互。Module 开发就是基于该 jar 包。</li>
+<li>Xposed 模块: Xposed 的 C++ 部分，主要是用来替换 /system/bin/app_process,并注入 XposedBridge.jar。同时为 XposedBride 提供 JNI 方法。</li>
+<li>XposedInstaller: Xposed 的安装包，负责 Module 的管理。</li>
+<li>XposedModule: Xposed 插件, 想要 hook 一些东西，就需要自己开发一个插件。</li>
+<li>android_art（art）: 应用 art 和 dalvik 实现的 hook 方式不一样，作者对  libart.so 进行了重写。</li>
+</ul>
+<h2 id="0x01-插件开发"><a href="#0x01-插件开发" class="headerlink" title="0x01 插件开发"></a>0x01 插件开发</h2><p>  在将原理前先看下怎么开发插件会比较好的理解入口，安装好 xposed 框架后开发插件其实很简单。</p>
+<p><strong>1.创建一个 Android 项目</strong></p>
+<p>普通的 Android 项目就可以。</p>
+<p><strong>2.引入 Xposed Framework API</strong></p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">dependencies &#123;</div><div class="line">  provided 'de.robv.android.xposed:api:82'</div><div class="line">  //如果需要引入文档，方便查看的话</div><div class="line">  provided 'de.robv.android.xposed:api:82:sources'</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>相关文档：</p>
+<ul>
+<li><a href="https://bintray.com/rovo89/de.robv.android.xposed/api" target="_blank" rel="external">https://bintray.com/rovo89/de.robv.android.xposed/api</a></li>
+<li><a href="http://api.xposed.info/reference/packages.html" target="_blank" rel="external">http://api.xposed.info/reference/packages.html</a></li>
+</ul>
+<p><strong>3.修改 AndroidManifest.xml</strong></p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div></pre></td><td class="code"><pre><div class="line"><span class="tag">&lt;<span class="name">application</span></span></div><div class="line">        <span class="attr">android:icon</span>=<span class="string">"@drawable/ic_launcher"</span></div><div class="line">        <span class="attr">android:label</span>=<span class="string">"@string/app_name"</span> &gt;</div><div class="line">        <span class="tag">&lt;<span class="name">meta-data</span></span></div><div class="line">            <span class="attr">android:name</span>=<span class="string">"xposedmodule"</span></div><div class="line">            <span class="attr">android:value</span>=<span class="string">"true"</span> /&gt;</div><div class="line">        <span class="tag">&lt;<span class="name">meta-data</span></span></div><div class="line">            <span class="attr">android:name</span>=<span class="string">"xposeddescription"</span></div><div class="line">            <span class="attr">android:value</span>=<span class="string">"description"</span> /&gt;</div><div class="line">        <span class="tag">&lt;<span class="name">meta-data</span></span></div><div class="line">            <span class="attr">android:name</span>=<span class="string">"xposedminversion"</span></div><div class="line">            <span class="attr">android:value</span>=<span class="string">"53"</span> /&gt;</div><div class="line"><span class="tag">&lt;/<span class="name">application</span>&gt;</span></div></pre></td></tr></table></figure>
+<p><strong>4.Hook 实现</strong></p>
+<p>创建一个类并集成 IXposedHookLoadPackage 接口:</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">package</span> com.example.xposed_plugin;</div><div class="line"></div><div class="line"><span class="keyword">import</span> <span class="keyword">static</span> de.robv.android.xposed.XposedHelpers.findAndHookMethod;</div><div class="line"><span class="keyword">import</span> de.robv.android.xposed.IXposedHookLoadPackage;</div><div class="line"><span class="keyword">import</span> de.robv.android.xposed.XC_MethodHook;</div><div class="line"><span class="keyword">import</span> de.robv.android.xposed.callbacks.XC_LoadPackage.LoadPackageParam;</div><div class="line"></div><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">TutorialAnt</span> <span class="keyword">implements</span> <span class="title">IXposedHookLoadPackage</span> </span>&#123;</div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">handleLoadPackage</span><span class="params">(<span class="keyword">final</span> LoadPackageParam lpparam)</span> <span class="keyword">throws</span> Throwable </span>&#123;</div><div class="line">        <span class="keyword">if</span> (!lpparam.packageName.equals(<span class="string">"com.example.gnaixx.antihook"</span>))</div><div class="line">            <span class="keyword">return</span>;</div><div class="line"></div><div class="line">        findAndHookMethod(<span class="string">"com.example.gnaixx.antihook.util.TestUtil"</span>, lpparam.classLoader, <span class="string">"test1"</span>, <span class="keyword">new</span> XC_MethodHook() &#123;</div><div class="line">            <span class="meta">@Override</span></div><div class="line">            <span class="function"><span class="keyword">protected</span> <span class="keyword">void</span> <span class="title">beforeHookedMethod</span><span class="params">(MethodHookParam param)</span> <span class="keyword">throws</span> Throwable </span>&#123;</div><div class="line">                <span class="comment">// this will be called before the clock was updated by the original method</span></div><div class="line">            &#125;</div><div class="line">            <span class="meta">@Override</span></div><div class="line">            <span class="function"><span class="keyword">protected</span> <span class="keyword">void</span> <span class="title">afterHookedMethod</span><span class="params">(MethodHookParam param)</span> <span class="keyword">throws</span> Throwable </span>&#123;</div><div class="line">                <span class="comment">// this will be called after the clock was updated by the original method</span></div><div class="line">            &#125;</div><div class="line">    &#125;);</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p><strong>5.声明实现</strong></p>
+<p>在 assets 目录下创建一个空文件，命名为 xposed_init。这个文件每一行记录一个 Hook 实现类的完整路径。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">com.example.xposed_plugin.TutorialAnt</div></pre></td></tr></table></figure>
+<p>到这里一个 Xposed 插件就可以安装使用了。</p>
+<h2 id="0x03-XposedBridge-实现分析"><a href="#0x03-XposedBridge-实现分析" class="headerlink" title="0x03 XposedBridge 实现分析"></a>0x03 XposedBridge 实现分析</h2><h3 id="1-Method-Hook"><a href="#1-Method-Hook" class="headerlink" title="1.Method Hook"></a>1.Method Hook</h3><p>从开发过程中可以发现 <code>findAndHookMethod()</code> 作为一个 hook 的入口函数，以这个点开始分析：</p>
+<p><strong>XposedHelpers.java</strong></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div></pre></td><td class="code"><pre><div class="line"><span class="comment">//入口</span></div><div class="line"><span class="keyword">public</span> <span class="keyword">static</span> XC_MethodHook.<span class="function">Unhook <span class="title">findAndHookMethod</span><span class="params">(String className, ClassLoader classLoader, String methodName, Object... parameterTypesAndCallback)</span> </span>&#123;</div><div class="line">	<span class="keyword">return</span> findAndHookMethod(findClass(className, classLoader), methodName, parameterTypesAndCallback);</div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="comment">//参数校验</span></div><div class="line"><span class="keyword">public</span> <span class="keyword">static</span> XC_MethodHook.<span class="function">Unhook <span class="title">findAndHookMethod</span><span class="params">(Class&lt;?&gt; clazz, String methodName, Object... parameterTypesAndCallback)</span> </span>&#123;</div><div class="line">	<span class="comment">//...</span></div><div class="line"></div><div class="line">	XC_MethodHook callback = (XC_MethodHook) parameterTypesAndCallback[parameterTypesAndCallback.length-<span class="number">1</span>];</div><div class="line">	Method m = findMethodExact(clazz, methodName, getParameterClasses(clazz.getClassLoader(), parameterTypesAndCallback));</div><div class="line"></div><div class="line">	<span class="keyword">return</span> XposedBridge.hookMethod(m, callback);</div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="comment">//获取被 hook 函数 Method</span></div><div class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> Method <span class="title">findMethodExact</span><span class="params">(Class&lt;?&gt; clazz, String methodName, Class&lt;?&gt;... parameterTypes)</span> </span>&#123;</div><div class="line">	String fullMethodName = clazz.getName() + <span class="string">'#'</span> + methodName + getParametersString(parameterTypes) + <span class="string">"#exact"</span>;</div><div class="line"></div><div class="line">	<span class="keyword">if</span> (methodCache.containsKey(fullMethodName)) &#123;</div><div class="line">		Method method = methodCache.get(fullMethodName);</div><div class="line">		<span class="keyword">if</span> (method == <span class="keyword">null</span>)</div><div class="line">			<span class="keyword">throw</span> <span class="keyword">new</span> NoSuchMethodError(fullMethodName);</div><div class="line">		<span class="keyword">return</span> method;</div><div class="line">	&#125;</div><div class="line">	<span class="comment">//...</span></div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>主线程主要是三个函数的调用 findAndHookMethod -&gt; findAndHookMethod -&gt; XposedBridge.hookMethod。 <strong>findMethodExact</strong> 函数有个变量需要关注 <code>methodCache</code>，这个变量保存了所有被 Hook 函数的全称。</p>
+<p><strong>XposedBridge.java</strong></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div></pre></td><td class="code"><pre><div class="line"><span class="comment">//组织参数</span></div><div class="line"><span class="keyword">public</span> <span class="keyword">static</span> XC_MethodHook.<span class="function">Unhook <span class="title">hookMethod</span><span class="params">(Member hookMethod, XC_MethodHook callback)</span> </span>&#123;</div><div class="line">	<span class="comment">//...</span></div><div class="line"></div><div class="line">	<span class="keyword">boolean</span> newMethod = <span class="keyword">false</span>;</div><div class="line">	CopyOnWriteSortedSet&lt;XC_MethodHook&gt; callbacks;</div><div class="line">	<span class="keyword">synchronized</span> (sHookedMethodCallbacks) &#123;</div><div class="line">		callbacks = sHookedMethodCallbacks.get(hookMethod);</div><div class="line">		<span class="keyword">if</span> (callbacks == <span class="keyword">null</span>) &#123;</div><div class="line">			callbacks = <span class="keyword">new</span> CopyOnWriteSortedSet&lt;&gt;();</div><div class="line">			sHookedMethodCallbacks.put(hookMethod, callbacks); <span class="comment">//保存了被 hook 函数的所有 callback 方法</span></div><div class="line">			newMethod = <span class="keyword">true</span>;</div><div class="line">		&#125;</div><div class="line">	&#125;</div><div class="line">	callbacks.add(callback);</div><div class="line"></div><div class="line">	<span class="keyword">if</span> (newMethod) &#123;</div><div class="line">		Class&lt;?&gt; declaringClass = hookMethod.getDeclaringClass();</div><div class="line">		<span class="keyword">int</span> slot;</div><div class="line">		Class&lt;?&gt;[] parameterTypes;</div><div class="line">		Class&lt;?&gt; returnType;</div><div class="line">		<span class="keyword">if</span> (runtime == RUNTIME_ART) &#123;</div><div class="line">			slot = <span class="number">0</span>;</div><div class="line">			parameterTypes = <span class="keyword">null</span>;</div><div class="line">			returnType = <span class="keyword">null</span>;</div><div class="line">		&#125; <span class="keyword">else</span> <span class="keyword">if</span> (hookMethod <span class="keyword">instanceof</span> Method) &#123;</div><div class="line">			slot = getIntField(hookMethod, <span class="string">"slot"</span>); <span class="comment">//dalvik 可以通过 slot 找到对应的方法指针</span></div><div class="line">			parameterTypes = ((Method) hookMethod).getParameterTypes();</div><div class="line">			returnType = ((Method) hookMethod).getReturnType();</div><div class="line">		&#125; <span class="keyword">else</span> &#123;</div><div class="line">			slot = getIntField(hookMethod, <span class="string">"slot"</span>);</div><div class="line">			parameterTypes = ((Constructor&lt;?&gt;) hookMethod).getParameterTypes();</div><div class="line">			returnType = <span class="keyword">null</span>;</div><div class="line">		&#125;</div><div class="line"></div><div class="line">		AdditionalHookInfo additionalInfo = <span class="keyword">new</span> AdditionalHookInfo(callbacks, parameterTypes, returnType);</div><div class="line">		hookMethodNative(hookMethod, declaringClass, slot, additionalInfo);</div><div class="line">	&#125;</div><div class="line"></div><div class="line">	<span class="keyword">return</span> callback.new Unhook(hookMethod);</div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="comment">//native 方法</span></div><div class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">native</span> <span class="keyword">synchronized</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">hookMethodNative</span><span class="params">(Member method, Class&lt;?&gt; declaringClass, <span class="keyword">int</span> slot, Object additionalInfo)</span></span>;</div></pre></td></tr></table></figure>
+<p>这里有个比较关键的字段 <strong>sHookedMethodCallbacks</strong>,它保存了被 hook 函数的所有回调函数，就是在开发插件的时候我们定义的 beforeHookedMethod 和 afterHookedMethod。</p>
+<p>到这里 XposedBridge 部分其实就已经结束了，相对比较简单。还有一个关键的函数 <strong>XposedBridge.handleHookedMethod</strong>,他就是函数在调用的时候执行 callback 的关键。</p>
+<p>###2.Field Hook<br>成员变量的 hook 相对比较简单，主要是通过放射相关的代码进行 Hook。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> Field <span class="title">findField</span><span class="params">(Class&lt;?&gt; clazz, String fieldName)</span> </span>&#123;</div><div class="line">	String fullFieldName = clazz.getName() + <span class="string">'#'</span> + fieldName;</div><div class="line"></div><div class="line">	<span class="keyword">if</span> (fieldCache.containsKey(fullFieldName)) &#123; <span class="comment">//保存了所有被 hook 的字段名称</span></div><div class="line">		Field field = fieldCache.get(fullFieldName);</div><div class="line">		<span class="keyword">if</span> (field == <span class="keyword">null</span>)</div><div class="line">			<span class="keyword">throw</span> <span class="keyword">new</span> NoSuchFieldError(fullFieldName);</div><div class="line">		<span class="keyword">return</span> field;</div><div class="line">	&#125;</div><div class="line">	<span class="comment">//...</span></div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>可以看到 fieldCache 变量和 methodCache 一样保存了被 hook 的相关字段全称。</p>
+<h2 id="0x04-Xposed-Native-分析"><a href="#0x04-Xposed-Native-分析" class="headerlink" title="0x04 Xposed Native 分析"></a>0x04 Xposed Native 分析</h2><p>Native 部分分为两块，一块是 app_process 的代码，一部分是 xposed_dalvik/art.so 的代码。</p>
+<h3 id="1-app-process-替换和-libxposed-dalvik-art-so注入"><a href="#1-app-process-替换和-libxposed-dalvik-art-so注入" class="headerlink" title="1.app_process 替换和 libxposed_dalvik/art.so注入"></a>1.app_process 替换和 libxposed_dalvik/art.so注入</h3><p>app_process 也叫做 zygote 进程，是 Android 开启的第一个进程，后续的应用进程都是由该进程孵化的。zygote 进程再启动中会创建 dalvik 虚拟机实例，并加载 java 运行库。</p>
+<p>在安装 Xposed 的时候，会替换掉原来的 app_process，并将 XposedBridge.jar 加入到 system/framework/，将 libxposed_dalvik/art.so 复制到 /system/lib , 如果是 art 虚拟机，还会替换 libart.so。</p>
+<p>可以先看下简单的流程图：<br><img src="/blog_images/20170827/app_process.png" alt="app_process 流程"></p>
+<p>zygote 进程有个 main 函数(以app_main.cpp为例, app_main.cpp为 dalvik, app_main2.cpp 为 art)：</p>
+<p><strong>main(int, char* const[])</strong></p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">(<span class="keyword">int</span> argc, <span class="keyword">char</span>* <span class="keyword">const</span> argv[])</span></span></div><div class="line">&#123;</div><div class="line">    <span class="comment">//...</span></div><div class="line">    </div><div class="line">    AppRuntime runtime;</div><div class="line">    <span class="comment">//...</span></div><div class="line"></div><div class="line">	<span class="comment">//初始化xposed</span></div><div class="line">    isXposedLoaded = xposed::initialize(zygote, startSystemServer, className, argc, argv);</div><div class="line">    <span class="keyword">if</span> (zygote) &#123;</div><div class="line">    	<span class="comment">//加载 AndroidRuntime 启动 Dalvik/Art 和 xposed</span></div><div class="line">        runtime.start(isXposedLoaded ? XPOSED_CLASS_DOTS_ZYGOTE : <span class="string">"com.android.internal.os.ZygoteInit"</span>,</div><div class="line">                startSystemServer ? <span class="string">"start-system-server"</span> : <span class="string">""</span>);</div><div class="line">    &#125; <span class="keyword">else</span> <span class="keyword">if</span> (className) &#123;</div><div class="line">        <span class="comment">// Remainder of args get passed to startup class main()</span></div><div class="line">        runtime.mClassName = className;</div><div class="line">        runtime.mArgC = argc - i;</div><div class="line">        runtime.mArgV = argv + i;</div><div class="line">        runtime.start(isXposedLoaded ? XPOSED_CLASS_DOTS_TOOLS : <span class="string">"com.android.internal.os.RuntimeInit"</span>,</div><div class="line">                application ? <span class="string">"application"</span> : <span class="string">"tool"</span>);</div><div class="line">    &#125; <span class="keyword">else</span> &#123;</div><div class="line">        <span class="built_in">fprintf</span>(<span class="built_in">stderr</span>, <span class="string">"Error: no class name or --zygote supplied.\n"</span>);</div><div class="line">        app_usage();</div><div class="line">        LOG_ALWAYS_FATAL(<span class="string">"app_process: no class name or --zygote supplied."</span>);</div><div class="line">        <span class="keyword">return</span> <span class="number">10</span>;</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>initialize 主要是将 XposedBridge.jar 加到环境变量中，这样任意 App 打开的时候都会加载该 jar。</p>
+<p><strong>xposed::initialize(bool, bool, const char<em>, int, char</em> const[])</strong></p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">bool</span> <span class="title">initialize</span><span class="params">(<span class="keyword">bool</span> zygote, <span class="keyword">bool</span> startSystemServer, <span class="keyword">const</span> <span class="keyword">char</span>* className, <span class="keyword">int</span> argc, <span class="keyword">char</span>* <span class="keyword">const</span> argv[])</span> </span>&#123;</div><div class="line">	<span class="comment">//Initialize Xposed (unless it is disabled).</span></div><div class="line">	<span class="comment">//...</span></div><div class="line">	</div><div class="line">    <span class="keyword">return</span> addJarToClasspath();</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p><strong>addJarToClasspath()</strong></p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">bool</span> <span class="title">addJarToClasspath</span><span class="params">()</span> </span>&#123;</div><div class="line">    ALOGI(<span class="string">"-----------------"</span>);</div><div class="line">    <span class="keyword">if</span> (access(XPOSED_JAR, R_OK) == <span class="number">0</span>) &#123;</div><div class="line">    	<span class="comment">//XPOSED_JAR="/system/framework/XposedBridge.jar"</span></div><div class="line">        <span class="keyword">if</span> (!addPathToEnv(<span class="string">"CLASSPATH"</span>, XPOSED_JAR)) </div><div class="line">            <span class="keyword">return</span> <span class="literal">false</span>;</div><div class="line"></div><div class="line">        ALOGI(<span class="string">"Added Xposed (%s) to CLASSPATH"</span>, XPOSED_JAR);</div><div class="line">        <span class="keyword">return</span> <span class="literal">true</span>;</div><div class="line">    &#125; <span class="keyword">else</span> &#123;</div><div class="line">        ALOGE(<span class="string">"ERROR: Could not access Xposed jar '%s'"</span>, XPOSED_JAR);</div><div class="line">        <span class="keyword">return</span> <span class="literal">false</span>;</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>到这里每个 app 打开的时候就会被注入 XposedBridge.jar。</p>
+<p>在回到 main 方法中，接下来就执行了 runtime.start。runtime 是 AppRuntime 对象并继承了 AnroidRuntime。</p>
+<p><strong>AppRuntime</strong></p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">class</span> AppRuntime : <span class="keyword">public</span> AndroidRuntime</div><div class="line">&#123;</div><div class="line"><span class="keyword">public</span>:</div><div class="line">    AppRuntime()</div><div class="line">        : mParentDir(<span class="literal">NULL</span>)</div><div class="line">        , mClassName(<span class="literal">NULL</span>)</div><div class="line">        , mClass(<span class="literal">NULL</span>)</div><div class="line">        , mArgC(<span class="number">0</span>)</div><div class="line">        , mArgV(<span class="literal">NULL</span>)</div><div class="line">    &#123;&#125;</div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">const</span> <span class="keyword">char</span>* <span class="title">getClassName</span><span class="params">()</span> <span class="keyword">const</span></span>&#123; <span class="comment">//...&#125;</span></div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">virtual</span> <span class="keyword">void</span> <span class="title">onVmCreated</span><span class="params">(JNIEnv* env)</span></span></div><div class="line">    &#123;</div><div class="line">        <span class="keyword">if</span> (isXposedLoaded)</div><div class="line">            xposed::onVmCreated(env); <span class="comment">//注册 XposedBridge 相关 JNI 函数</span></div><div class="line">        <span class="comment">//...</span></div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">virtual</span> <span class="keyword">void</span> <span class="title">onStarted</span><span class="params">()</span></span>&#123;<span class="comment">//..&#125;</span></div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">virtual</span> <span class="keyword">void</span> <span class="title">onZygoteInit</span><span class="params">()</span></span>&#123;<span class="comment">//...&#125;</span></div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">virtual</span> <span class="keyword">void</span> <span class="title">onExit</span><span class="params">(<span class="keyword">int</span> code)</span></span>&#123;<span class="comment">//...&#125;</span></div><div class="line">	<span class="comment">//...</span></div><div class="line">&#125;;</div></pre></td></tr></table></figure>
+<p>可以看出来定义中并没有实现 start 函数，所以 start 方法应该是在 AndroidRuntime 中，查看 AndroidRuntime.cpp 源码（需要自己搜索）可以发现 start 方法中有调用 <strong>onVmCreated</strong>, 而 AndroidRuntime.onVmCreated 的实现是空的。   </p>
+<p><strong>AndroidRuntime.cpp</strong></p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div></pre></td><td class="code"><pre><div class="line"></div><div class="line"><span class="keyword">void</span> AndroidRuntime::start(<span class="keyword">const</span> <span class="keyword">char</span>* className, <span class="keyword">const</span> <span class="keyword">char</span>* options)</div><div class="line">&#123;</div><div class="line">    ALOGD(<span class="string">"\n&gt;&gt;&gt;&gt;&gt;&gt; AndroidRuntime START %s &lt;&lt;&lt;&lt;&lt;&lt;\n"</span>,</div><div class="line">            className != <span class="literal">NULL</span> ? className : <span class="string">"(unknown)"</span>);</div><div class="line">    <span class="comment">//...</span></div><div class="line">    </div><div class="line">    onVmCreated(env);</div><div class="line">    <span class="comment">//...</span></div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="keyword">void</span> AndroidRuntime::onVmCreated(JNIEnv* env)</div><div class="line">&#123;</div><div class="line">    <span class="comment">// If AndroidRuntime had anything to do here, we'd have done it in 'start'.</span></div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>但是 AppRuntime 中定义了 vitual void onVmCreated(JNIEnv* env), 所以最后又回到了 AppRuntime.onVmCreated。AppRuntime.onVmCreated 又调用了 xposed::onVmCreated</p>
+<p><strong>xposed::onVmCreated(JNIEnv* )</strong></p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">void</span> <span class="title">onVmCreated</span><span class="params">(JNIEnv* env)</span> </span>&#123;</div><div class="line">    <span class="comment">// Determine the currently active runtime</span></div><div class="line">    <span class="keyword">const</span> <span class="keyword">char</span>* xposedLibPath = <span class="literal">NULL</span>;</div><div class="line">    <span class="keyword">if</span> (!determineRuntime(&amp;xposedLibPath)) &#123; <span class="comment">//判断是 dalvik 还是 art 并返回相应的so</span></div><div class="line">        ALOGE(<span class="string">"Could not determine runtime, not loading Xposed"</span>);</div><div class="line">        <span class="keyword">return</span>;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="comment">// Load the suitable libxposed_*.so for it</span></div><div class="line">    <span class="keyword">void</span>* xposedLibHandle = dlopen(xposedLibPath, RTLD_NOW);</div><div class="line">    <span class="comment">//...</span></div><div class="line">    </div><div class="line">    <span class="comment">//获取 xposedInitLib 函数指针</span></div><div class="line">    *(<span class="keyword">void</span> **) (&amp;xposedInitLib) = dlsym(xposedLibHandle, <span class="string">"xposedInitLib"</span>);</div><div class="line">    <span class="comment">//...</span></div><div class="line"></div><div class="line">	<span class="comment">//执行 xposedInitLib 函数，该函数内修改了xposed-&gt;onVmCrated 函数地址</span></div><div class="line">    <span class="keyword">if</span> (xposedInitLib(xposed)) &#123;</div><div class="line">        xposed-&gt;onVmCreated(env);</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>determineRuntime 函数判断当前运行的环境是 dalvik 还是 art,如果是 dalvik 返回 <code>libxposed_dalvik.so</code>,如果是 art 返回 <code>libxposed_art.so</code>。通过 dlsym 获取 xposedInitLib 函数地址并执行该函数。</p>
+<p><strong>xposedInitLib(XposedShared* )</strong></p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">bool</span> <span class="title">xposedInitLib</span><span class="params">(XposedShared* shared)</span> </span>&#123;</div><div class="line">    xposed = shared;</div><div class="line">    xposed-&gt;onVmCreated = &amp;onVmCreatedCommon;</div><div class="line">    <span class="keyword">return</span> <span class="literal">true</span>;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>这里操作很简单，只是修改了 xposed-&gt;onVmCreated 函数指针，所以在xposed::onVmCreated(JNIEnv* ) 最后一行实际执行的是 onVmCreatedCommon。</p>
+<p><strong>onVmCreatedCommon(JNIEnv* )</strong></p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">void</span> <span class="title">onVmCreatedCommon</span><span class="params">(JNIEnv* env)</span> </span>&#123;</div><div class="line">    <span class="keyword">if</span> (!initXposedBridge(env) || !initZygoteService(env)) &#123;</div><div class="line">        <span class="keyword">return</span>;</div><div class="line">    &#125;</div><div class="line">    <span class="comment">//...</span></div><div class="line"></div><div class="line">    <span class="keyword">if</span> (!onVmCreated(env)) &#123;</div><div class="line">        <span class="keyword">return</span>;</div><div class="line">    &#125;</div><div class="line">	<span class="comment">//..</span></div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>initXposedBridge 和 initZygoteService 主要是注册了相关的JNI方法。同时获取了一个比较关键的 methodID:<code>handleHookedMethod</code>。这个函数负责处理被 hook 函数的回调。</p>
+<p>在 onVmCreatedCommon 的最后调用了 onVmCreated(env) 这个函数是在 libxposed_dalvik/art.so 中定义的。</p>
+<p><strong>onVmCreated(JNIEnv* )</strong></p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div></pre></td><td class="code"><pre><div class="line"><span class="comment">//dalvik</span></div><div class="line"><span class="function"><span class="keyword">bool</span> <span class="title">onVmCreated</span><span class="params">(JNIEnv* env)</span> </span>&#123;</div><div class="line">    <span class="comment">//...</span></div><div class="line">	<span class="comment">//注册 invokeOriginalMethodNative JNI函数</span></div><div class="line">    Method* xposedInvokeOriginalMethodNative = (Method*) env-&gt;GetStaticMethodID(classXposedBridge, <span class="string">"invokeOriginalMethodNative"</span>,</div><div class="line">        <span class="string">"(Ljava/lang/reflect/Member;I[Ljava/lang/Class;Ljava/lang/Class;Ljava/lang/Object;[Ljava/lang/Object;)Ljava/lang/Object;"</span>);</div><div class="line">    <span class="comment">//...</span></div><div class="line">    dvmSetNativeFunc(xposedInvokeOriginalMethodNative, XposedBridge_invokeOriginalMethodNative, <span class="literal">NULL</span>);</div><div class="line">    <span class="comment">//...</span></div><div class="line">    <span class="keyword">return</span> <span class="literal">true</span>;</div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="comment">//art</span></div><div class="line"><span class="function"><span class="keyword">bool</span> <span class="title">onVmCreated</span><span class="params">(JNIEnv*)</span> </span>&#123;</div><div class="line">    <span class="comment">//作者重新了libart.so 并重新定义了ArtMetod,这里添加了 jclass 和 methodID</span></div><div class="line">    ArtMethod::xposed_callback_class = classXposedBridge;</div><div class="line">    ArtMethod::xposed_callback_method = methodXposedBridgeHandleHookedMethod;</div><div class="line">    <span class="keyword">return</span> <span class="literal">true</span>;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>到这里替换后的 app_process 功能基本上结束，主要做了三件事：</p>
+<ul>
+<li>将 XposedBridge.jar 添加到 CLASSPATH</li>
+<li>注入 libxposed_dalik/art.so 并执行 xposedInitLib</li>
+<li>注册相关的 JNI 函数</li>
+</ul>
+<h3 id="2-被-Hook-函数调用流程"><a href="#2-被-Hook-函数调用流程" class="headerlink" title="2.被 Hook 函数调用流程"></a>2.被 Hook 函数调用流程</h3><p>被 Hook 函数调用主要涉及三个函数：</p>
+<ul>
+<li>hookMethodNative: 修改原始函数结构</li>
+<li>handleHookedMethod: 处理被 hook 函数的回调</li>
+<li>invokeOriginalMethodNative: 执行原始函数</li>
+</ul>
+<p>因为 dalvik 和 art 实现方式不同，所以对他们的处理也是不一样。</p>
+<h4 id="dalvik-虚拟机"><a href="#dalvik-虚拟机" class="headerlink" title="dalvik 虚拟机"></a>dalvik 虚拟机</h4><p>回到 XposedBridge.hookMethodNative 这个函数修改了 native 的 Method 结构。</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">void</span> <span class="title">XposedBridge_hookMethodNative</span><span class="params">(JNIEnv* env, jclass clazz, jobject reflectedMethodIndirect,</span></span></div><div class="line">            jobject declaredClassIndirect, jint slot, jobject additionalInfoIndirect) &#123;</div><div class="line">    <span class="comment">// ...</span></div><div class="line">    <span class="comment">// 通过 slot 获取原始函数的指针</span></div><div class="line">    Method* method = dvmSlotToMethod(declaredClass, slot);</div><div class="line">    <span class="comment">//..</span></div><div class="line">    </div><div class="line">    <span class="comment">// Save a copy of the original method and other hook info</span></div><div class="line">    XposedHookInfo* hookInfo = (XposedHookInfo*) <span class="built_in">calloc</span>(<span class="number">1</span>, <span class="keyword">sizeof</span>(XposedHookInfo));</div><div class="line">    <span class="built_in">memcpy</span>(hookInfo, method, <span class="keyword">sizeof</span>(hookInfo-&gt;originalMethodStruct));</div><div class="line">    hookInfo-&gt;reflectedMethod = dvmDecodeIndirectRef(dvmThreadSelf(), env-&gt;NewGlobalRef(reflectedMethodIndirect));</div><div class="line">    hookInfo-&gt;additionalInfo = dvmDecodeIndirectRef(dvmThreadSelf(), env-&gt;NewGlobalRef(additionalInfoIndirect));</div><div class="line"></div><div class="line">    <span class="comment">// Replace method with our own code</span></div><div class="line">    SET_METHOD_FLAG(method, ACC_NATIVE);</div><div class="line">    method-&gt;nativeFunc = &amp;hookedMethodCallback; <span class="comment">//nativeFunc 指向hookedMethodCallback函数地址</span></div><div class="line">    method-&gt;insns = (<span class="keyword">const</span> u2*) hookInfo; <span class="comment">//保留了原始函数和hook的信息</span></div><div class="line">    method-&gt;registersSize = method-&gt;insSize;</div><div class="line">    method-&gt;outsSize = <span class="number">0</span>;</div><div class="line">    <span class="comment">//...</span></div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>这里需要理解 两个变量的含义 <code>method-&gt;nativeFunc</code> 和 <code>method-&gt;insns</code>，查看源码：<br><a href="http://androidxref.com/4.4.2_r1/xref/dalvik/vm/oo/Object.h" target="_blank" rel="external">dalvik/vm/oo/Object.h</a>:</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">struct</span> Method &#123;</div><div class="line">    ...</div><div class="line">    <span class="comment">/*</span></div><div class="line">     * The remaining items are not used for abstract or native methods.</div><div class="line">     * (JNI is currently hijacking "insns" as a function pointer, set</div><div class="line">     * after the first call.  For internal-native this stays null.)</div><div class="line">     */</div><div class="line"></div><div class="line">    <span class="comment">/* the actual code */</span></div><div class="line">    <span class="keyword">const</span> u2*       insns;          <span class="comment">/* instructions, in memory-mapped .dex */</span></div><div class="line"></div><div class="line">    <span class="comment">/*</span></div><div class="line">     * JNI: native method ptr; could be actual function or a JNI bridge.  We</div><div class="line">     * don't currently discriminate between DalvikBridgeFunc and</div><div class="line">     * DalvikNativeFunc; the former takes an argument superset (i.e. two</div><div class="line">     * extra args) which will be ignored.  If necessary we can use</div><div class="line">     * insns==NULL to detect JNI bridge vs. internal native.</div><div class="line">     */</div><div class="line">    DalvikBridgeFunc nativeFunc;</div><div class="line">	...</div><div class="line">&#125;;</div></pre></td></tr></table></figure>
+<p>nativeFunc 保存的是 JNI 函数对应的 native 代码。而且通过判断insns==NULL 可以判断一个函数是 JNI bridge 还是 internal native。xposed 将 HookInfo 地址保存在 insns。</p>
+<p>所以在调用被 Hook 函数时，会先调用 nativeFunc 保存的地址的函数，也就是 libxposed_dalvik.so 中定义的 hookedMethodCallback：</p>
+<p><strong>hookedMethodCallback(const u4<em>, JValue</em>, const Method<em>, ::Thread</em>)</strong></p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">void</span> <span class="title">hookedMethodCallback</span><span class="params">(<span class="keyword">const</span> u4* args, JValue* pResult, <span class="keyword">const</span> Method* method, ::Thread* self)</span> </span>&#123;</div><div class="line">    ...</div><div class="line">	<span class="comment">// 从 method-&gt;insns 取出 HookInfo</span></div><div class="line">    XposedHookInfo* hookInfo = (XposedHookInfo*) method-&gt;insns;</div><div class="line">    Method* original = (Method*) hookInfo;</div><div class="line">    Object* originalReflected = hookInfo-&gt;reflectedMethod;</div><div class="line">    Object* additionalInfo = hookInfo-&gt;additionalInfo;</div><div class="line"></div><div class="line">    <span class="comment">// convert/box arguments 整理参数</span></div><div class="line">    ...</div><div class="line">    </div><div class="line">    <span class="comment">// call the Java handler function 调用 XposedBridge.handleHookedMethod()</span></div><div class="line">    JValue result;</div><div class="line">    dvmCallMethod(self, (Method*) methodXposedBridgeHandleHookedMethod, <span class="literal">NULL</span>, &amp;result,</div><div class="line">        originalReflected, (<span class="keyword">int</span>) original, additionalInfo, thisObject, argsArray);</div><div class="line"></div><div class="line">    ...</div><div class="line"></div><div class="line">    <span class="comment">// return result with proper type 获取返回值</span></div><div class="line">    ...</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>上面函数通过 dvmCallMethod 调用了 XposedBridge.handleHookedMethod 并把 HookInfo 作为参数传过去。<br><strong>XposedBridge.handleHookedMethod()</strong></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div><div class="line">62</div><div class="line">63</div><div class="line">64</div><div class="line">65</div><div class="line">66</div><div class="line">67</div><div class="line">68</div><div class="line">69</div><div class="line">70</div><div class="line">71</div><div class="line">72</div><div class="line">73</div><div class="line">74</div><div class="line">75</div><div class="line">76</div><div class="line">77</div><div class="line">78</div><div class="line">79</div><div class="line">80</div><div class="line">81</div><div class="line">82</div><div class="line">83</div><div class="line">84</div><div class="line">85</div><div class="line">86</div><div class="line">87</div><div class="line">88</div><div class="line">89</div><div class="line">90</div><div class="line">91</div><div class="line">92</div></pre></td><td class="code"><pre><div class="line">	<span class="function"><span class="keyword">private</span> <span class="keyword">static</span> Object <span class="title">handleHookedMethod</span><span class="params">(Member method, <span class="keyword">int</span> originalMethodId, Object additionalInfoObj,</span></span></div><div class="line">			Object thisObject, Object[] args) <span class="keyword">throws</span> Throwable &#123;</div><div class="line">		AdditionalHookInfo additionalInfo = (AdditionalHookInfo) additionalInfoObj;</div><div class="line">		<span class="comment">//如果关闭hook，或者callback个数为0，直接调用invokeOriginalMethodNative</span></div><div class="line">		...</div><div class="line"></div><div class="line">		MethodHookParam param = <span class="keyword">new</span> MethodHookParam();</div><div class="line">		param.method = method;</div><div class="line">		param.thisObject = thisObject;</div><div class="line">		param.args = args;</div><div class="line"></div><div class="line">		<span class="comment">// call "before method" callbacks</span></div><div class="line">		<span class="keyword">int</span> beforeIdx = <span class="number">0</span>;</div><div class="line">		<span class="keyword">do</span> &#123;</div><div class="line">			<span class="keyword">try</span> &#123;</div><div class="line">				((XC_MethodHook) callbacksSnapshot[beforeIdx]).beforeHookedMethod(param);</div><div class="line">			&#125; <span class="keyword">catch</span> (Throwable t) &#123;</div><div class="line">				XposedBridge.log(t);</div><div class="line"></div><div class="line">				<span class="comment">// reset result (ignoring what the unexpectedly exiting callback did)</span></div><div class="line">				param.setResult(<span class="keyword">null</span>);</div><div class="line">				param.returnEarly = <span class="keyword">false</span>;</div><div class="line">				<span class="keyword">continue</span>;</div><div class="line">			&#125;</div><div class="line"></div><div class="line">			<span class="keyword">if</span> (param.returnEarly) &#123;</div><div class="line">				<span class="comment">// skip remaining "before" callbacks and corresponding "after" callbacks</span></div><div class="line">				beforeIdx++;</div><div class="line">				<span class="keyword">break</span>;</div><div class="line">			&#125;</div><div class="line">		&#125; <span class="keyword">while</span> (++beforeIdx &lt; callbacksLength);</div><div class="line"></div><div class="line">		<span class="comment">// call original method if not requested otherwise</span></div><div class="line">		<span class="keyword">if</span> (!param.returnEarly) &#123;</div><div class="line">			<span class="keyword">try</span> &#123;</div><div class="line">				param.setResult(invokeOriginalMethodNative(method, originalMethodId,</div><div class="line">						additionalInfo.parameterTypes, additionalInfo.returnType, param.thisObject, param.args));</div><div class="line">			&#125; <span class="keyword">catch</span> (InvocationTargetException e) &#123;</div><div class="line">				param.setThrowable(e.getCause());</div><div class="line">			&#125;</div><div class="line">		&#125;</div><div class="line"></div><div class="line">		<span class="comment">// call "after method" callbacks</span></div><div class="line">		<span class="keyword">int</span> afterIdx = beforeIdx - <span class="number">1</span>;</div><div class="line">		<span class="keyword">do</span> &#123;</div><div class="line">			Object lastResult =  param.getResult();</div><div class="line">			Throwable lastThrowable = param.getThrowable();</div><div class="line"></div><div class="line">			<span class="keyword">try</span> &#123;</div><div class="line">				((XC_MethodHook) callbacksSnapshot[afterIdx]).afterHookedMethod(param);</div><div class="line">			&#125; <span class="keyword">catch</span> (Throwable t) &#123;</div><div class="line">				XposedBridge.log(t);</div><div class="line"></div><div class="line">				<span class="comment">// reset to last result (ignoring what the unexpectedly exiting callback did)</span></div><div class="line">				<span class="keyword">if</span> (lastThrowable == <span class="keyword">null</span>)</div><div class="line">					param.setResult(lastResult);</div><div class="line">				<span class="keyword">else</span></div><div class="line">					param.setThrowable(lastThrowable);</div><div class="line">			&#125;</div><div class="line">		&#125; <span class="keyword">while</span> (--afterIdx &gt;= <span class="number">0</span>);</div><div class="line"></div><div class="line">		<span class="comment">// return</span></div><div class="line">		<span class="keyword">if</span> (param.hasThrowable())</div><div class="line">			<span class="keyword">throw</span> param.getThrowable();</div><div class="line">		<span class="keyword">else</span></div><div class="line">			<span class="keyword">return</span> param.getResult();</div><div class="line">	&#125;</div><div class="line">``` </div><div class="line">函数解析了 AdditionalHookInfo, 根据保存的 callback, 依次调用XC_MethodHook.beforeHookedMethod、invokeOriginalMethodNative、XC_MethodHook.afterHookedMethod</div><div class="line"></div><div class="line">invokeOriginalMethodNative 是通过修改 Method.invokeNative 对于的 <span class="keyword">native</span> 方法，获取到原始函数的返回值</div><div class="line"></div><div class="line">**XposedBridge_invokeOriginalMethodNative(<span class="keyword">const</span> u4*, JValue*,<span class="keyword">const</span> Method*, ::Thread*)**</div><div class="line"></div><div class="line">```C++</div><div class="line"><span class="comment">/**</span></div><div class="line"> * Simplified copy of Method.invokeNative(), but calls the original (non-hooked) method</div><div class="line"> * and has no access checks. Used to call the real implementation of hooked methods.</div><div class="line"> */</div><div class="line"><span class="function"><span class="keyword">void</span> <span class="title">XposedBridge_invokeOriginalMethodNative</span><span class="params">(<span class="keyword">const</span> u4* args, JValue* pResult,</span></span></div><div class="line">            <span class="keyword">const</span> Method* method, ::Thread* self) &#123;</div><div class="line">    ...</div><div class="line">    </div><div class="line">    ArrayObject* params = (ArrayObject*) args[<span class="number">2</span>];</div><div class="line">    ClassObject* returnType = (ClassObject*) args[<span class="number">3</span>];</div><div class="line">    Object* thisObject = (Object*) args[<span class="number">4</span>]; <span class="comment">// null for static methods</span></div><div class="line">    ArrayObject* argList = (ArrayObject*) args[<span class="number">5</span>];</div><div class="line"></div><div class="line">    <span class="comment">// invoke the method</span></div><div class="line">    pResult-&gt;l = dvmInvokeMethod(thisObject, meth, argList, params, returnType, <span class="keyword">true</span>);</div><div class="line">    <span class="keyword">return</span>;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>到这里 dalvik 虚拟机的 Hook Method 流程就结束了。</p>
+<h4 id="art-虚拟机"><a href="#art-虚拟机" class="headerlink" title="art 虚拟机"></a>art 虚拟机</h4><p>再回到 XposedBridge.hookMethodNative 这个函数，对于的 native 的处理</p>
+<p><strong>XposedBridge_hookMethodNative(JNIEnv* , jclass, jobject,<br>            jobject, jint, jobject)</strong></p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">void</span> <span class="title">XposedBridge_hookMethodNative</span><span class="params">(JNIEnv* env, jclass, jobject javaReflectedMethod,</span></span></div><div class="line">            jobject, jint, jobject javaAdditionalInfo) &#123;</div><div class="line">    <span class="comment">//...</span></div><div class="line"></div><div class="line">    <span class="comment">// Get the ArtMethod of the method to be hooked.</span></div><div class="line">    <span class="function">ScopedObjectAccess <span class="title">soa</span><span class="params">(env)</span></span>;</div><div class="line">    ArtMethod* artMethod = ArtMethod::FromReflectedMethod(soa, javaReflectedMethod);</div><div class="line"></div><div class="line">    <span class="comment">// Hook the method</span></div><div class="line">    artMethod-&gt;EnableXposedHook(soa, javaAdditionalInfo);</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>函数很简单只是将 javaAdditonalInfo 添加到 artMethod。但是正常的ArtMethod 结构是没有 EnableXposedHook 方法的。这里是作者重新编译了 libart.so, 修改了 ArtMethod 的定义代码。</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">void</span> ArtMethod::EnableXposedHook(ScopedObjectAccess&amp; soa, jobject additional_info) &#123;</div><div class="line">  ...</div><div class="line"></div><div class="line">  <span class="comment">// Create a backup of the ArtMethod object</span></div><div class="line">  <span class="keyword">auto</span>* cl = Runtime::Current()-&gt;GetClassLinker();</div><div class="line">  ArtMethod* backup_method = cl-&gt;AllocArtMethodArray(soa.Self(), <span class="number">1</span>);</div><div class="line">  backup_method-&gt;CopyFrom(<span class="keyword">this</span>, cl-&gt;GetImagePointerSize());</div><div class="line">  backup_method-&gt;SetAccessFlags(backup_method-&gt;GetAccessFlags() | kAccXposedOriginalMethod);</div><div class="line"></div><div class="line">  <span class="comment">// Create a Method/Constructor object for the backup ArtMethod object</span></div><div class="line">  mirror::AbstractMethod* reflect_method;</div><div class="line">  <span class="keyword">if</span> (IsConstructor()) &#123;</div><div class="line">    reflect_method = mirror::Constructor::CreateFromArtMethod(soa.Self(), backup_method);</div><div class="line">  &#125; <span class="keyword">else</span> &#123;</div><div class="line">    reflect_method = mirror::Method::CreateFromArtMethod(soa.Self(), backup_method);</div><div class="line">  &#125;</div><div class="line">  reflect_method-&gt;SetAccessible&lt;<span class="literal">false</span>&gt;(<span class="literal">true</span>);</div><div class="line"></div><div class="line">  <span class="comment">// Save extra information in a separate structure, stored instead of the native method</span></div><div class="line">  XposedHookInfo* hookInfo = <span class="keyword">reinterpret_cast</span>&lt;XposedHookInfo*&gt;(<span class="built_in">calloc</span>(<span class="number">1</span>, <span class="keyword">sizeof</span>(XposedHookInfo)));</div><div class="line">  hookInfo-&gt;reflectedMethod = soa.Vm()-&gt;AddGlobalRef(soa.Self(), reflect_method);</div><div class="line">  hookInfo-&gt;additionalInfo = soa.Env()-&gt;NewGlobalRef(additional_info);</div><div class="line">  hookInfo-&gt;originalMethod = backup_method;</div><div class="line">  </div><div class="line">  <span class="comment">//通过setEntryPointFromJni 将 XposedHookInfo 写入当前函数</span></div><div class="line">  SetEntryPointFromJni(<span class="keyword">reinterpret_cast</span>&lt;<span class="keyword">uint8_t</span>*&gt;(hookInfo));</div><div class="line"></div><div class="line">  ...</div><div class="line">  <span class="comment">//重新设置 EntryPointFromQuickCompiledCode 值为GetQuickProxyInvokeHandler 的返回值art_quick_proxy_invoke_handler 以此达到hook的目的</span></div><div class="line">  SetEntryPointFromQuickCompiledCode(GetQuickProxyInvokeHandler());</div><div class="line">  <span class="comment">//设置当前方法以机器指令执行</span></div><div class="line">  SetEntryPointFromInterpreter(artInterpreterToCompiledCodeBridge);</div><div class="line">  <span class="comment">//将此方法设置为 非native(~kAccNative) 方法，且为xposed hook 的方法（kAccXposedHookedMethod）</span></div><div class="line">  SetAccessFlags((GetAccessFlags() &amp; ~kAccNative &amp; ~kAccSynchronized) | kAccXposedHookedMethod);</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p> EnableXposedHook，会创建一个hookInfo 将original、before、after 方法存入，然后通过 SetEntryPointFromJni 方法将hookinfo 保存到ArtMethod 中。</p>
+<p>在之后 通过SetEntryPointFromInterpreter 方法强制设置 java 方法为，本地机器码执行。</p>
+<p>通过SetEntryPointFromQuickCompiledCode 改变机器码执行时的函数入口为 art_quick_proxy_invoke_handler 到此函数的整个hook 流程就已经完成。</p>
+<p>所以在调用被 Hook 函数时，会先调用 ArtMethod.invoke, 经过 SetEntryPointFromQuickCompiledCode 的设置，最后会调用artQuickProxyInvokeHandler(这一段没看懂)，在 artQuickProxyInvokeHandler 中调用了 InvokeXposedHandleHookedMethod 到这里和 dalvik 一样了。</p>
+<p>整个流程: ArtMethod::invoke -&gt; artQuickProxyInvokeHandler -&gt; InvokeXposedHandleHookedMethod -&gt; XposedBridge.handleHookedMethod -&gt; invokeOriginalMethodNative</p>
+<h2 id="0x05-检测方式"><a href="#0x05-检测方式" class="headerlink" title="0x05 检测方式"></a>0x05 检测方式</h2><h3 id="1-安装包检测"><a href="#1-安装包检测" class="headerlink" title="1.安装包检测"></a>1.安装包检测</h3><p>Xposed 框架需要安装 XposedInstaller 进行管理，可以检测 是否安装了 XposedInstaller。不过该方法准确性不高，有可能 Xposed 框架没有运行。</p>
+<h3 id="2-错误堆栈检测"><a href="#2-错误堆栈检测" class="headerlink" title="2.错误堆栈检测"></a>2.错误堆栈检测</h3><p>Xposed 框架在 app_process 中注入了 XposedBridge.jar 所以在错误堆栈中会有 <code>de.robv.android.xposed.XposedBridge</code> 相关的信息。</p>
+<h3 id="3-maps-文件检测"><a href="#3-maps-文件检测" class="headerlink" title="3.maps 文件检测"></a>3.maps 文件检测</h3><p>Xposed 框架在 zygote 进程中注入了 libxposed_dalvik/art.so 和 XposedBridge.jar 所以在每个应用启动的时候 maps 文件都会包含上面两个linker。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div></pre></td><td class="code"><pre><div class="line">angler:/ <span class="comment"># cat /proc/6429/maps | egrep 'Xposed|xposed'</span></div><div class="line">ab05c000-ab069000 r-xp 00000000 103:0b 2424                              /system/bin/app_process32_xposed</div><div class="line">ab06a000-ab06c000 r--p 0000d000 103:0b 2424                              /system/bin/app_process32_xposed</div><div class="line">ab06c000-ab06d000 rw-p 0000f000 103:0b 2424                              /system/bin/app_process32_xposed</div><div class="line">e24a3000<span class="_">-e</span>27c6000 r--p 00000000 fd:00 318935                             /data/dalvik-cache/arm/data@app@com.example.xposed_plugin-2@base.apk@classes.dex</div><div class="line">e27c6000<span class="_">-e</span>2960000 r-xp 00323000 fd:00 318935                             /data/dalvik-cache/arm/data@app@com.example.xposed_plugin-2@base.apk@classes.dex</div><div class="line">e298d000<span class="_">-e</span>298e000 r--p 004bd000 fd:00 318935                             /data/dalvik-cache/arm/data@app@com.example.xposed_plugin-2@base.apk@classes.dex</div><div class="line">e298e000<span class="_">-e</span>298f000 rw-p 004be000 fd:00 318935                             /data/dalvik-cache/arm/data@app@com.example.xposed_plugin-2@base.apk@classes.dex</div><div class="line">e57d2000<span class="_">-e</span>582c000 r--p 00000000 fd:00 318929                             /data/dalvik-cache/arm/system@framework@XposedBridge.jar@classes.dex</div><div class="line">e582c000<span class="_">-e</span>586d000 r-xp 0005a000 fd:00 318929                             /data/dalvik-cache/arm/system@framework@XposedBridge.jar@classes.dex</div><div class="line">e5873000<span class="_">-e</span>5874000 r--p 0009b000 fd:00 318929                             /data/dalvik-cache/arm/system@framework@XposedBridge.jar@classes.dex</div><div class="line">e5874000<span class="_">-e</span>5875000 rw-p 0009c000 fd:00 318929                             /data/dalvik-cache/arm/system@framework@XposedBridge.jar@classes.dex</div><div class="line">ef103000-ef104000 r-<span class="_">-s</span> 00019000 103:0b 2422                              /system/framework/XposedBridge.jar</div><div class="line">ef13c000-ef145000 r-xp 00000000 103:0b 2432                              /system/lib/libxposed_art.so</div><div class="line">ef145000-ef146000 r--p 00008000 103:0b 2432                              /system/lib/libxposed_art.so</div><div class="line">ef146000-ef147000 rw-p 00009000 103:0b 2432                              /system/lib/libxposed_art.so</div><div class="line">ef148000-ef14a000 r--p 00000000 fd:00 318930                             /data/dalvik-cache/arm/data@dalvik-cache@xposed_XResourcesSuperClass.dex</div><div class="line">ef14b000-ef14c000 r--p 00002000 fd:00 318930                             /data/dalvik-cache/arm/data@dalvik-cache@xposed_XResourcesSuperClass.dex</div><div class="line">ef14c000-ef14d000 rw-p 00003000 fd:00 318930                             /data/dalvik-cache/arm/data@dalvik-cache@xposed_XResourcesSuperClass.dex</div></pre></td></tr></table></figure>
+<h3 id="4-app-process-检测"><a href="#4-app-process-检测" class="headerlink" title="4.app_process 检测"></a>4.app_process 检测</h3><p>Xposed 会替换原始的 app_process 并备份原始的文件，dalvik下会有app_process.orig 文件。art下会多出四个文件。</p>
+<ul>
+<li>app_process32_xposed</li>
+<li>app_process32_original</li>
+<li>app_process64_xposed</li>
+<li>app_process64_original</li>
+</ul>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div></pre></td><td class="code"><pre><div class="line"><span class="comment"># dalvik</span></div><div class="line">-rwxr-xr-x root     shell       21980 2017-08-28 02:31 app_process</div><div class="line">-rwxr-xr-x root     shell        9560 2014-06-13 07:06 app_process.orig</div><div class="line"></div><div class="line"><span class="comment"># art</span></div><div class="line">lrwxr-xr-x  1 root shell     13 2009-01-01 16:00 app_process -&gt; app_process64</div><div class="line">lrwxrwxrwx  1 root root      32 2017-01-01 23:07 app_process32 -&gt; /system/bin/app_process32_xposed</div><div class="line">-rwxr-xr-x  1 root shell  22040 2009-01-01 16:00 app_process32_original</div><div class="line">-rwxr-xr-x  1 root shell  99772 2017-01-01 23:07 app_process32_xposed</div><div class="line">lrwxrwxrwx  1 root root      32 2017-01-01 23:07 app_process64 -&gt; /system/bin/app_process64_xposed</div><div class="line">-rwxr-xr-x  1 root shell  18600 2009-01-01 16:00 app_process64_original</div><div class="line">-rwxr-xr-x  1 root shell 113904 2017-01-01 23:07 app_process64_xposed</div></pre></td></tr></table></figure>
+<p>除了文件名，app_process 文件内部也包含了很多 xposed 字符相关的特征</p>
+<h3 id="5-修饰符检测-dalvik"><a href="#5-修饰符检测-dalvik" class="headerlink" title="5.修饰符检测(dalvik)"></a>5.修饰符检测(dalvik)</h3><p>dalvik 虚拟机通过修改 nativeFunc 和 insns 地址实现了 Hook 但是同时也会把被 Hook 函数变了 native 函数。</p>
+<h3 id="6-被-Hook-函数和字段检测"><a href="#6-被-Hook-函数和字段检测" class="headerlink" title="6.被 Hook 函数和字段检测"></a>6.被 Hook 函数和字段检测</h3><p>XposedBridge.jar 中缓存了被 Hook 函数和字段，如:</p>
+<ul>
+<li>XposedHelpers.fieldCache: 被 Hook 的所有字段</li>
+<li>XposedHelpers.methodCache: 被 Hook 的所有函数</li>
+<li>XposedBridge.sHookedMethodCallbacks: 被 Hook 的函数及对应的 Callback。</li>
+</ul>
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/android/" rel="tag"># android</a>
+          
+            <a href="/tags/hook/" rel="tag"># hook</a>
+          
+            <a href="/tags/xposed/" rel="tag"># xposed</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2017/07/25/20170725-ollvm/" rel="next" title="OLLVM + NDK 混淆编译环境搭建">
+                <i class="fa fa-chevron-left"></i> OLLVM + NDK 混淆编译环境搭建
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2017/09/06/20170906-cydia/" rel="prev" title="Cydia Substrate(Android) 检测方法">
+                Cydia Substrate(Android) 检测方法 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+      <div id="disqus_thread">
+        <noscript>
+          Please enable JavaScript to view the
+          <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a>
+        </noscript>
+      </div>
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="/images/custom_avatar.jpg"
+               alt="凸一_一凸" />
+          <p class="site-author-name" itemprop="name">凸一_一凸</p>
+           
+              <p class="site-description motion-element" itemprop="description"></p>
+          
+        </div>
+        <nav class="site-state motion-element">
+
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/archives/">
+                <span class="site-state-item-count">44</span>
+                <span class="site-state-item-name">日志</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-categories">
+              <a href="/categories/index.html">
+                <span class="site-state-item-count">5</span>
+                <span class="site-state-item-name">分类</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-tags">
+              <a href="/tags/index.html">
+                <span class="site-state-item-count">45</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+            
+              <span class="links-of-author-item">
+                <a href="https://github.com/gnaixx" target="_blank" title="GitHub">
+                  
+                    <i class="fa fa-fw fa-github"></i>
+                  
+                  GitHub
+                </a>
+              </span>
+            
+          
+        </div>
+
+        
+        
+
+        
+        
+          <div class="links-of-blogroll motion-element links-of-blogroll-block">
+            <div class="links-of-blogroll-title">
+              <i class="fa  fa-fw fa-globe"></i>
+              友情链接
+            </div>
+            <ul class="links-of-blogroll-list">
+              
+                <li class="links-of-blogroll-item">
+                  <a href="https://waynecz.github.io/" title="安全小弟的全栈大哥" target="_blank">安全小弟的全栈大哥</a>
+                </li>
+              
+            </ul>
+          </div>
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#0x00-Xposed-简介"><span class="nav-number">1.</span> <span class="nav-text">0x00 Xposed 简介</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#0x01-插件开发"><span class="nav-number">2.</span> <span class="nav-text">0x01 插件开发</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#0x03-XposedBridge-实现分析"><span class="nav-number">3.</span> <span class="nav-text">0x03 XposedBridge 实现分析</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-Method-Hook"><span class="nav-number">3.1.</span> <span class="nav-text">1.Method Hook</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#0x04-Xposed-Native-分析"><span class="nav-number">4.</span> <span class="nav-text">0x04 Xposed Native 分析</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-app-process-替换和-libxposed-dalvik-art-so注入"><span class="nav-number">4.1.</span> <span class="nav-text">1.app_process 替换和 libxposed_dalvik/art.so注入</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-被-Hook-函数调用流程"><span class="nav-number">4.2.</span> <span class="nav-text">2.被 Hook 函数调用流程</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#dalvik-虚拟机"><span class="nav-number">4.2.1.</span> <span class="nav-text">dalvik 虚拟机</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#art-虚拟机"><span class="nav-number">4.2.2.</span> <span class="nav-text">art 虚拟机</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#0x05-检测方式"><span class="nav-number">5.</span> <span class="nav-text">0x05 检测方式</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-安装包检测"><span class="nav-number">5.1.</span> <span class="nav-text">1.安装包检测</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-错误堆栈检测"><span class="nav-number">5.2.</span> <span class="nav-text">2.错误堆栈检测</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-maps-文件检测"><span class="nav-number">5.3.</span> <span class="nav-text">3.maps 文件检测</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-app-process-检测"><span class="nav-number">5.4.</span> <span class="nav-text">4.app_process 检测</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#5-修饰符检测-dalvik"><span class="nav-number">5.5.</span> <span class="nav-text">5.修饰符检测(dalvik)</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#6-被-Hook-函数和字段检测"><span class="nav-number">5.6.</span> <span class="nav-text">6.被 Hook 函数和字段检测</span></a></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy;  2015 - 
+  <span itemprop="copyrightYear">2018</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">凸一_一凸</span>
+</div>
+
+
+<div class="powered-by">
+  由 <a class="theme-link" href="https://hexo.io">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Mist
+  </a>
+</div>
+
+
+        
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.1"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.1"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.1"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.1"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.1"></script>
+
+
+
+  
+
+
+  
+
+    
+      <script id="dsq-count-scr" src="https://http-gnaixx-cc.disqus.com/count.js" async></script>
+    
+
+    
+      <script type="text/javascript">
+        var disqus_config = function () {
+          this.page.url = 'http://gnaixx.cc/2017/08/27/20170827-xposed/';
+          this.page.identifier = '2017/08/27/20170827-xposed/';
+          this.page.title = 'Xposed Hook 原理和检测方法';
+        };
+        var d = document, s = d.createElement('script');
+        s.src = 'https://http-gnaixx-cc.disqus.com/embed.js';
+        s.setAttribute('data-timestamp', '' + +new Date());
+        (d.head || d.body).appendChild(s);
+      </script>
+    
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+  <script src="https://cdn1.lncld.net/static/js/av-core-mini-0.6.4.js"></script>
+  <script>AV.initialize("oQgGP7T7KLGlmEGXQEOdOMMo-gzGzoHsz", "CdrzL7gQBF3T923tO4oxyqBo");</script>
+  <script>
+    function showTime(Counter) {
+      var query = new AV.Query(Counter);
+      var entries = [];
+      var $visitors = $(".leancloud_visitors");
+
+      $visitors.each(function () {
+        entries.push( $(this).attr("id").trim() );
+      });
+
+      query.containedIn('url', entries);
+      query.find()
+        .done(function (results) {
+          var COUNT_CONTAINER_REF = '.leancloud-visitors-count';
+
+          if (results.length === 0) {
+            $visitors.find(COUNT_CONTAINER_REF).text(0);
+            return;
+          }
+
+          for (var i = 0; i < results.length; i++) {
+            var item = results[i];
+            var url = item.get('url');
+            var time = item.get('time');
+            var element = document.getElementById(url);
+
+            $(element).find(COUNT_CONTAINER_REF).text(time);
+          }
+          for(var i = 0; i < entries.length; i++) {
+            var url = entries[i];
+            var element = document.getElementById(url);
+            var countSpan = $(element).find(COUNT_CONTAINER_REF);
+            if( countSpan.text() == '') {
+              countSpan.text(0);
+            }
+          }
+        })
+        .fail(function (object, error) {
+          console.log("Error: " + error.code + " " + error.message);
+        });
+    }
+
+    function addCount(Counter) {
+      var $visitors = $(".leancloud_visitors");
+      var url = $visitors.attr('id').trim();
+      var title = $visitors.attr('data-flag-title').trim();
+      var query = new AV.Query(Counter);
+
+      query.equalTo("url", url);
+      query.find({
+        success: function(results) {
+          if (results.length > 0) {
+            var counter = results[0];
+            counter.fetchWhenSave(true);
+            counter.increment("time");
+            counter.save(null, {
+              success: function(counter) {
+                var $element = $(document.getElementById(url));
+                $element.find('.leancloud-visitors-count').text(counter.get('time'));
+              },
+              error: function(counter, error) {
+                console.log('Failed to save Visitor num, with error message: ' + error.message);
+              }
+            });
+          } else {
+            var newcounter = new Counter();
+            /* Set ACL */
+            var acl = new AV.ACL();
+            acl.setPublicReadAccess(true);
+            acl.setPublicWriteAccess(true);
+            newcounter.setACL(acl);
+            /* End Set ACL */
+            newcounter.set("title", title);
+            newcounter.set("url", url);
+            newcounter.set("time", 1);
+            newcounter.save(null, {
+              success: function(newcounter) {
+                var $element = $(document.getElementById(url));
+                $element.find('.leancloud-visitors-count').text(newcounter.get('time'));
+              },
+              error: function(newcounter, error) {
+                console.log('Failed to create');
+              }
+            });
+          }
+        },
+        error: function(error) {
+          console.log('Error:' + error.code + " " + error.message);
+        }
+      });
+    }
+
+    $(function() {
+      var Counter = AV.Object.extend("Counter");
+      if ($('.leancloud_visitors').length == 1) {
+        addCount(Counter);
+      } else if ($('.post-title-link').length > 1) {
+        showTime(Counter);
+      }
+    });
+  </script>
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>
