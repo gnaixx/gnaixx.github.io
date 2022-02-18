@@ -19,11 +19,11 @@
                 dd.runtime.permission.requestAuthCode({
                     corpId: "ding191d0eb30a8aadf2ee0f45d8e4f7c288",
                     onSuccess: function(result) {
-                        alert(result)
-                        console.log(result.code);
+                        alert(JSON.stringify(result));
+                        console.log(result);
                     },
                     onFail : function(err) {
-                        alert(err)
+                        alert(JSON.stringify(err));
                         console.log(err);
                     }
                 });
