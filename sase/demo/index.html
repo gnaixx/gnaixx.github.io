@@ -1,7 +1,25 @@
 
 <html>
-<header><title>This is title</title></header>
-<body>
-Hello world
-</body>
+    <script></script>
+    <header>
+        <title>This is title</title>
+    </header>
+    <body>
+        Hello world
+        <script src="https://g.alicdn.com/dingding/dingtalk-jsapi/2.13.42/dingtalk.open.js"></script>
+        <script>
+            dd.ready(function() {
+                // dd.ready参数为回调函数，在环境准备就绪时触发，jsapi的调用需要保证在该回调函数触发后调用，否则无效。
+                dd.runtime.permission.requestAuthCode({
+                    corpId: "corpid",
+                    onSuccess: function(result) {
+                        /*{
+                            code: 'hYLK98jkf0m' //string authCode
+                        }*/
+                    },
+                    onFail : function(err) {}
+                });
+            });
+        </script>
+    </body>
 </html>
