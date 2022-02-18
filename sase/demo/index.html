@@ -17,14 +17,13 @@
             dd.ready(function() {
                 // dd.ready参数为回调函数，在环境准备就绪时触发，jsapi的调用需要保证在该回调函数触发后调用，否则无效。
                 dd.runtime.permission.requestAuthCode({
-                    corpId: "corpid",
+                    corpId: "ding191d0eb30a8aadf2ee0f45d8e4f7c288",
                     onSuccess: function(result) {
-                        /*{
-                            code: 'hYLK98jkf0m' //string authCode
-                        }*/
+                        alert(result)
                         console.log(result.code);
                     },
                     onFail : function(err) {
+                        alert(err)
                         console.log(err);
                     }
                 });
