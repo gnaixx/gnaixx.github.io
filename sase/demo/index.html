@@ -7,7 +7,13 @@
     <body>
         Hello world
         <script src="https://g.alicdn.com/dingding/dingtalk-jsapi/2.13.42/dingtalk.open.js"></script>
-        <script>
+        <script type="text/javascript">
+            function myfun(){
+                console.log('hello world');
+                alert("this window.onload");
+            }
+            /*用window.onload调用myfun()*/
+            window.onload = myfun;//不要括号
             dd.ready(function() {
                 // dd.ready参数为回调函数，在环境准备就绪时触发，jsapi的调用需要保证在该回调函数触发后调用，否则无效。
                 dd.runtime.permission.requestAuthCode({
