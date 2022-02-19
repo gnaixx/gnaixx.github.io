@@ -24,7 +24,7 @@
                 dd.runtime.permission.requestAuthCode({
                     corpId: 'ding191d0eb30a8aadf2ee0f45d8e4f7c288',
                     onSuccess: function(result) {
-                        alert('AuthCode: ' + result.code);
+                        alert(JSON.stringify(result));
                     },
                     onFail: function(err) {
                         alert('requestAuthCode fail: ' + JSON.stringify(err));
@@ -35,7 +35,7 @@
                 dd.runtime.permission.requestAuthCode({
                     corpId: 'ding191d0eb30a8aadf2ee0f45d8e4f7c288',
                     onSuccess: function(result) {
-                        alert('AuthCode: ' + result.code);
+                        alert(JSON.stringify(result));
                         window.location.href = "xunxiu://xunxiu?code=" + result.code;
                     },
                     onFail: function(err) {
