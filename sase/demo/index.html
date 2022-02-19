@@ -32,6 +32,7 @@
                 });
             }
             function onBack() {
+                window.location.href = "xunxiu://xunxiu?code=";
                 dd.runtime.permission.requestAuthCode({
                     corpId: 'ding191d0eb30a8aadf2ee0f45d8e4f7c288',
                     onSuccess: function(result) {
