@@ -50,30 +50,21 @@
                         // 'device.notification.prompt',
                         // 'biz.ding.post',
                         // 'biz.util.openLink',
-                        'device.launcher.lanuchApp',
+                        'device.launcher.launchApp',
                     ] // 必填，需要使用的jsapi列表，注意：不要带dd。
                 });
 
+                // 该方法必须带上，用来捕获鉴权出现的异常信息，否则不方便排查出现的问题
                 dd.error(function (err) {
                     alert('dd error: ' + JSON.stringify(err));
-                })//该方法必须带上，用来捕获鉴权出现的异常信息，否则不方便排查出现的问题
+                })
             }
 
             function onAuth() {
                 dd.runtime.permission.requestAuthCode({
                     corpId: 'ding191d0eb30a8aadf2ee0f45d8e4f7c288',
                     onSuccess: function(result) {
-                        //alert(JSON.stringify(result));
-                        dd.device.notification.alert({
-                            message: "测试",
-                            title: "提示",//可传空
-                            buttonName: "收到",
-                            onSuccess : function() {
-                                //onSuccess将在点击button之后回调
-                                /*回调*/
-                            },
-                            onFail : function(err) {}
-                        });
+                        alert(JSON.stringify(result));
                     },
                     onFail: function(err) {
                         alert('requestAuthCode fail: ' + JSON.stringify(err));
@@ -87,7 +78,6 @@
                         corpId: 'ding191d0eb30a8aadf2ee0f45d8e4f7c288',
                         onSuccess: function(result) {
                             // alert(JSON.stringify(result));
-                            // window.location.href = "dingtalk://back?code=" + result.code;
                             // window.location.href = "dingtalk://back?code=" + result.code;
 
                             dd.device.launcher.launchApp({
