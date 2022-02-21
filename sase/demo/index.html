@@ -72,28 +72,29 @@
             }
 
             function onBack() {
-                // window.location.href = "xunxiu://xunxiu?code=";
-                dd.runtime.permission.requestAuthCode({
-                    corpId: 'ding191d0eb30a8aadf2ee0f45d8e4f7c288',
-                    onSuccess: function(result) {
-                        // alert(JSON.stringify(result));
-                        window.location.href = "dingtalk://back?code=" + result.code;
-                        // window.location.href = "dingtalk://back?code=" + result.code;
+                dd.ready(function() {
+                    dd.runtime.permission.requestAuthCode({
+                        corpId: 'ding191d0eb30a8aadf2ee0f45d8e4f7c288',
+                        onSuccess: function(result) {
+                            // alert(JSON.stringify(result));
+                            window.location.href = "dingtalk://back?code=" + result.code;
+                            // window.location.href = "dingtalk://back?code=" + result.code;
 
-                        dd.device.launcher.launchApp({
-                            app: "xunxiu://xunxiu?code=" + result.code,
-                            onSuccess: function(result) {
-                                alert(JSON.stringify(result));
-                            },
-                            onFail: function(err) {
-                                alert('launchApp fail: ' + JSON.stringify(err));
-                            }
-                        });
-                    },
-                    onFail: function(err) {
-                        alert('requestAuthCode fail: ' + JSON.stringify(err));
-                        // window.location.href = "xunxiu://xunxiu?code=";
-                    }
+                            dd.device.launcher.launchApp({
+                                app: "xunxiu://xunxiu?code=" + result.code,
+                                onSuccess: function(result) {
+                                    alert(JSON.stringify(result));
+                                },
+                                onFail: function(err) {
+                                    alert('launchApp fail: ' + JSON.stringify(err));
+                                }
+                            });
+                        },
+                        onFail: function(err) {
+                            alert('requestAuthCode fail: ' + JSON.stringify(err));
+                            // window.location.href = "xunxiu://xunxiu?code=";
+                        }
+                    });
                 });
             }
 
