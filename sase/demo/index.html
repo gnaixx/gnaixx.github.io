@@ -54,6 +54,16 @@
                         'device.launcher.launchApp',
                     ] // 必填，需要使用的jsapi列表，注意：不要带dd。
                 });
+                dd.ready(function() {
+                    dd.device.base.getUUID({
+                        onSuccess : function(data) {
+                            alert("uuid:" + data.uuid);
+                        },
+                        onFail : function(err) {
+                            alert(JSON.stringify(err));
+                        }
+                    });
+                });
 
                 // 该方法必须带上，用来捕获鉴权出现的异常信息，否则不方便排查出现的问题
                 dd.error(function (err) {
