@@ -93,7 +93,9 @@
                                 onSuccess : function(data) {
                                     alert("uuid:" + data.uuid);
                                 },
-                                onFail : function(err) {}
+                                onFail : function(err) {
+                                    alert(JSON.stringify(err));
+                                }
                             });
                         },
                         onFail: function(err) {
