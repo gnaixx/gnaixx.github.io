@@ -28,6 +28,29 @@
                 // alert("CorpId:" + corpId);
                 var div = document.getElementById("content");
                 div.innerHTML = "corpId:\n" + corpId;
+
+                dd.config({
+                    agentId: '1469631025', // 必填，微应用ID
+                    corpId: 'ding191d0eb30a8aadf2ee0f45d8e4f7c288',//必填，企业ID
+                    timeStamp: '1645446272825', // 必填，生成签名的时间戳
+                    nonceStr: 'xunxiu', // 必填，自定义固定字符串。
+                    signature: '578728776a567ceffcc03dac2fcb4eed3f04d0c6c0b8fc2f7326dadd9c7d3e50', // 必填，签名
+                    type:0,   //选填。0表示微应用的jsapi,1表示服务窗的jsapi；不填默认为0。该参数从dingtalk.js的0.8.3版本开始支持
+                    jsApiList : [
+                        // 'runtime.info',
+                        // 'biz.contact.choose',
+                        // 'device.notification.confirm',
+                        // 'device.notification.alert',
+                        // 'device.notification.prompt',
+                        // 'biz.ding.post',
+                        // 'biz.util.openLink',
+                        'device.launcher.lanuchApp',
+                    ] // 必填，需要使用的jsapi列表，注意：不要带dd。
+                });
+
+                dd.error(function (err) {
+                    alert('dd error: ' + JSON.stringify(err));
+                })//该方法必须带上，用来捕获鉴权出现的异常信息，否则不方便排查出现的问题
             }
             window.onload = myfun;
 
