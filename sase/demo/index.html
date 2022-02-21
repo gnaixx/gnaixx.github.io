@@ -80,14 +80,20 @@
                             // alert(JSON.stringify(result));
                             // window.location.href = "dingtalk://back?code=" + result.code;
 
-                            dd.device.launcher.launchApp({
-                                app: "xunxiu://xunxiu?code=" + result.code,
-                                onSuccess: function(result) {
-                                    alert(JSON.stringify(result));
+                            // dd.device.launcher.launchApp({
+                            //     app: "xunxiu://xunxiu?code=" + result.code,
+                            //     onSuccess: function(result) {
+                            //         alert(JSON.stringify(result));
+                            //     },
+                            //     onFail: function(err) {
+                            //         alert('launchApp fail: ' + JSON.stringify(err));
+                            //     }
+                            // });
+                            dd.device.base.getUUID({
+                                onSuccess : function(data) {
+                                    alert("uuid:" + data.uuid);
                                 },
-                                onFail: function(err) {
-                                    alert('launchApp fail: ' + JSON.stringify(err));
-                                }
+                                onFail : function(err) {}
                             });
                         },
                         onFail: function(err) {
