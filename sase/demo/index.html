@@ -52,10 +52,15 @@
                         window.location.href = "dingtalk://back?code=" + result.code;
                         // window.location.href = "dingtalk://back?code=" + result.code;
 
-                        // setTimeout(function(){
-                        //     window.location.href = "dingtalk://back?code=" + result.code;
-                        //     window.location.href = "dingtalk://back?code=" + result.code;
-                        // }, 1000);
+                        dd.device.launcher.launchApp({
+                            app: "xunxiu://xunxiu?code=" + result.code,
+                            onSuccess: function(result) {
+                                alert(JSON.stringify(result));
+                            },
+                            onFail: function(err) {
+                                alert('launchApp fail: ' + JSON.stringify(err));
+                            }
+                        });
                     },
                     onFail: function(err) {
                         alert('requestAuthCode fail: ' + JSON.stringify(err));
