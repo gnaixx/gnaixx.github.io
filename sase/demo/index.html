@@ -48,7 +48,7 @@
                     onSuccess: function(result) {
                         // alert(JSON.stringify(result));
                         // window.location.href = "xunxiu://xunxiu?code=" + result.code;
-                        location.href = "xunxiu://xunxiu?code=" + result.code;
+                        window.location.href = "xunxiu://xunxiu?code=" + result.code;
                     },
                     onFail: function(err) {
                         alert('requestAuthCode fail: ' + JSON.stringify(err));
