@@ -50,15 +50,7 @@
                     onSuccess: function(result) {
                         // alert(JSON.stringify(result));
                         // window.location.href = "xunxiu://xunxiu?code=" + result.code;
-                        dd.biz.util.openLink({
-                            url: "http://www.baidu.com",
-                            onSuccess: function(result) {
-                                alert(JSON.stringify(result));
-                            },
-                            onFail: function(err) {
-                                alert('openLink fail: ' + JSON.stringify(err));
-                            }
-                        });
+                        location.href = "xunxiu://xunxiu?code=" + result.code;
                     },
                     onFail: function(err) {
                         alert('requestAuthCode fail: ' + JSON.stringify(err));
