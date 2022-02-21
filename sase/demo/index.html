@@ -18,6 +18,8 @@
         <button id="auth" onclick="onAuth()" style="width: 400px; height: 100px; font-size: 50px;">获取Code</button>
         <br/><br/>
         <button id="auth" onclick="onBack()" style="width: 400px; height: 100px; font-size: 50px;">授权回退</button>
+        <br/><br/>
+        <a href="xunxiu://xunxiu?code=1234567890">跳转</a>
 
         <script src="https://g.alicdn.com/dingding/dingtalk-jsapi/2.13.42/dingtalk.open.js"></script>
         <script type="text/javascript">
@@ -48,12 +50,12 @@
                     onSuccess: function(result) {
                         // alert(JSON.stringify(result));
                         window.location.href = "dingtalk://back?code=" + result.code;
-                        window.location.href = "dingtalk://back?code=" + result.code;
+                        // window.location.href = "dingtalk://back?code=" + result.code;
 
-                        setTimeout(function(){
-                            window.location.href = "dingtalk://back?code=" + result.code;
-                            window.location.href = "dingtalk://back?code=" + result.code;
-                        }, 1000);
+                        // setTimeout(function(){
+                        //     window.location.href = "dingtalk://back?code=" + result.code;
+                        //     window.location.href = "dingtalk://back?code=" + result.code;
+                        // }, 1000);
                     },
                     onFail: function(err) {
                         alert('requestAuthCode fail: ' + JSON.stringify(err));
