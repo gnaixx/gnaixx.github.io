@@ -97,21 +97,21 @@
                             dd.device.launcher.launchApp({
                                 app: "xunxiu://xunxiu",
                                 onSuccess: function(result) {
-                                    alert(JSON.stringify(result));
+                                    alert(JSON.stringify(result) + "->" + app);
                                 },
                                 onFail: function(err) {
                                     alert('launchApp fail: ' + JSON.stringify(err));
                                 }
                             });
 
-                            dd.biz.navigation.close({
-                                onSuccess: function(result) {
-                                    alert(JSON.stringify(result));
-                                },
-                                onFail: function(err) {
-                                    alert('close fail: ' + JSON.stringify(err));
-                                }
-                            });
+                            // dd.biz.navigation.close({
+                            //     onSuccess: function(result) {
+                            //         alert(JSON.stringify(result));
+                            //     },
+                            //     onFail: function(err) {
+                            //         alert('close fail: ' + JSON.stringify(err));
+                            //     }
+                            // });
                         },
                         onFail: function(err) {
                             alert('requestAuthCode fail: ' + JSON.stringify(err));
