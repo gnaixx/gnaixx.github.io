@@ -95,7 +95,7 @@
                             // window.location.href = "dingtalk://back?code=" + result.code;
 
                             dd.device.launcher.launchApp({
-                                app: "xunxiu",
+                                app: "xunxiu://xunxiu",
                                 onSuccess: function(result) {
                                     alert(JSON.stringify(result));
                                 },
@@ -103,7 +103,7 @@
                                     alert('launchApp fail: ' + JSON.stringify(err));
                                 }
                             });
-                            
+
                             dd.biz.navigation.close({
                                 onSuccess: function(result) {
                                     alert(JSON.stringify(result));
