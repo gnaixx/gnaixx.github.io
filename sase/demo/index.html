@@ -52,7 +52,8 @@
                         // 'biz.ding.post',
                         // 'biz.util.openLink',
                         'device.launcher.launchApp',
-                        'device.base.getUUID'
+                        'device.base.getUUID',
+                        'biz.navigation.close'
                     ] // 必填，需要使用的jsapi列表，注意：不要带dd。
                 });
                 dd.ready(function() {
@@ -102,14 +103,15 @@
                                     alert('launchApp fail: ' + JSON.stringify(err));
                                 }
                             });
-                            // dd.device.base.getUUID({
-                            //     onSuccess : function(data) {
-                            //         alert("uuid:" + data.uuid);
-                            //     },
-                            //     onFail : function(err) {
-                            //         alert(JSON.stringify(err));
-                            //     }
-                            // });
+                            
+                            dd.biz.navigation.close({
+                                onSuccess: function(result) {
+                                    alert(JSON.stringify(result));
+                                },
+                                onFail: function(err) {
+                                    alert('close fail: ' + JSON.stringify(err));
+                                }
+                            });
                         },
                         onFail: function(err) {
                             alert('requestAuthCode fail: ' + JSON.stringify(err));
